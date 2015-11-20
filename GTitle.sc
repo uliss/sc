@@ -1,24 +1,22 @@
 GTitle : CompositeView {
     var g_comp, g_title;
-    var labelFont, bRect;
+    var labelFont;
 
     *new {
-        arg parent, bounds = Rect(0, 0, 400, 70);
-        ^super.new(parent, bounds).init
+        arg parent, bounds = Rect(0, 0, 400, 70), composer, piece;
+        ^super.new(parent, bounds).init(composer, piece);
     }
 
     init {
-        bRect = super.bounds;
+        arg c, p;
+        var tRect, pRect;
+
         labelFont = Font("Helvetica", 30);
-    }
+        tRect = Rect(0, 0, 400, 35);
+        pRect = Rect(0, 35, 400, 35);
 
-    composer {
-        arg comp;
-        g_comp = StaticText.new(super, Rect(0, 0, bRect.width, bRect.height/2)).string_(comp).font_(labelFont);
-    }
 
-    piece {
-        arg t;
-        g_title = StaticText.new(super, Rect(0, bRect.height/2, bRect.width, bRect.height/2)).string_(t).font_(labelFont).stringColor_(Color.white);
+        g_comp = StaticText(super, tRect).string_(c).font_(labelFont);
+        g_title = StaticText(this, pRect).string_(p).font_(labelFont).stringColor_(Color.white);
     }
 }

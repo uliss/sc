@@ -6,7 +6,7 @@ GPlayerButtons : CompositeView {
     var osc_client, osc_path, osc_port;
 
     *new {
-        arg parent, bounds = Rect(0, 0, 400, 70), oscPath = "/gplayer", oscPort = 10000;
+        arg parent, bounds = Rect(0, 0, 400, 30), oscPath = "/gplayer", oscPort = 10000;
         ^super.new(parent, bounds).init(oscPath, oscPort);
     }
 

@@ -8,12 +8,15 @@ GLevelN : CompositeView {
 
     init {
         arg num;
+
         levels = Array.new(32);
 
         num.do( {
             arg i;
             levels.add(GLevel.new(this, title: "ch" ++ i));
             levels[i].moveTo(i * 25, 0);
+            levels[i].level.value = 0;
+            levels[i].level.peakLevel_(0);
         });
 
         super.resizeTo(num * 25, 160);
