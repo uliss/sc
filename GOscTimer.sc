@@ -11,7 +11,7 @@ GOscTimer : StaticText {
         labelFont = Font("Helvetica", 40);
         this.font_(labelFont);
         // this.stringColor_(Color.blue);
-        this.string_("00:00:00.000");
+        this.string_("00:00:00");
 
         osc_port = port;
         osc_client = OSCFunc({ |msg|
