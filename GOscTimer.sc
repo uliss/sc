@@ -27,3 +27,19 @@ GOscTimer : StaticText {
         }
     }
 }
+
+OscTimerClock : Task {
+    *new {
+        arg func = nil, oscNetAddr = NetAddr("127.0.0.1", 10001);
+
+        ^super.new({
+            var i = 0;
+            while(true, {
+                oscNetAddr.sendMsg('/gOscTimer', i.asTimeString[0..7]);
+                func.value;
+                 i = i + 1;
+                1.wait;
+            });
+        });
+    }
+}
