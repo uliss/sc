@@ -26,6 +26,10 @@ GOscTimer : StaticText {
             osc_client.free;
         }
     }
+
+    color_ { |color|
+        this.stringColor_(color);
+    }
 }
 
 OscTimerClock : Task {

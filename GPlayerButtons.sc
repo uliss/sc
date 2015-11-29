@@ -1,5 +1,5 @@
 GPlayerButtons : CompositeView {
-    var btn_play, btn_stop, btn_pause;
+    var <btn_play, <btn_stop, btn_pause;
     var b_rect, player_state = 0;
     var btn_play_action, btn_stop_action, btn_pause_action;
     const stop = 0, play = 1, pause = 2;

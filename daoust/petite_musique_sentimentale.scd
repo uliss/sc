@@ -103,5 +103,6 @@ w.onClose = {
     gui_levels_osc.free;
     gui_piano_osc.free;
     snd_buffer.free;
+    s.freeAll;
 };
 )
