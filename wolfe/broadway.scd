@@ -29,6 +29,7 @@ var gui_osc_port = 10001, gui_levels_osc, gui_piano_osc;
 var stop_trigger = 1;
 var g_timer;
 var buf_broadway = Buffer.read(s, "/Users/serj/work/music/sounds/Julia Wolfe East Broadway track.wav");
+var osc_levels;
 
 // NODE.JS VISUAL TIMER FOR IPAD
 var osc_node_timer = NetAddr.new("127.0.0.1", 3333);
@@ -53,9 +54,10 @@ g_timer = GOscTimer(w, oscPort: gui_osc_port);
 g_levels = GMixN(w, number: 2, init: 0.7);
 g_levels.title_(0, 'TRK');
 g_levels.title_(1, 'CLIK');
+g_levels.at(0).valueAction_(0.3);
 
 // get levels via OSC
-o = OSCFunc({ |msg|
+osc_levels = OSCFunc({ |msg|
     if(msg[1] == 0) { snd_player.set(\trackVol, msg[2])};
     if(msg[1] == 1) { snd_player.set(\clickVol, msg[2])};
     }, '/GMixN', nil, 10001);
@@ -124,6 +126,7 @@ w.onClose = {
     timer.stop;
     gui_levels_osc.free;
     gui_piano_osc.free;
+    osc_levels.free;
     buf_broadway.free;
 };
 )

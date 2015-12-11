@@ -1,4 +1,4 @@
-Server.default = s = Server.new("MBOX Output", NetAddr("127.0.0.1", 58009), ServerOptions.new.device_("Mbox Pro")).makeWindow.alwaysOnTop_(true);
+Server.default = s = Server.new("MBOX Output", NetAddr("127.0.0.1", 58009), ServerOptions.new.device_("Mbox Pro")).makeWindow;
 
 
 s.makeWindow.boot;
@@ -19,8 +19,8 @@ SynthDef("piano", {
 
 
 // AUDIO TRACK PLAYER
-SynthDef("playbuf", {
-    arg out = 0, buf, pos = 0, trigger = 1, mul = 1;
+SynthDef("playbuf2", {
+    arg out = 0, buf, pos = 0, trigger = 1, mul = 0.2;
     var asrc, t = 1, snd, imp, delimp;
     var r_level = 0, l_level = 0, aR, aL;
 
@@ -63,7 +63,7 @@ w_height = 340;
 w = Window.new("Robert Normandeau", Rect(200, 200, w_width, w_height)).alwaysOnTop_(true).background_(Color.gray).front;
 
 // SOUND
-snd_player = Synth.newPaused(\playbuf, [\buf, buf_normandeau]);
+snd_player = Synth.newPaused(\playbuf2, [\buf, buf_normandeau]);
 snd_piano = Synth.new(\piano, []);
 
 // TIMER
@@ -101,7 +101,7 @@ g_sections.action_({ |item|
 });
 
 // LEVELS
-g_levels = GMixN(w, number: 4, init: 0.6);
+g_levels = GMixN(w, number: 4, init: 0.1);
 g_levels.title_(0, 'IN');
 g_levels.title_(1, '');
 g_levels.title_(2, 'L');
@@ -179,7 +179,6 @@ g_btn_next = Button(w, Rect(0, 0, 60, 20)).states_([["Next"]]).action_({|btn|
         g_sections.valueAction_(g_sections.value + 1);
     }
 });
-
 
 // LAYOUT
 g_title.moveTo(20, 20);

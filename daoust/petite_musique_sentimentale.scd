@@ -1,6 +1,7 @@
-Server.default = s = Server.new("MBOX Output", NetAddr("127.0.0.1", 58009), ServerOptions.new.device_("Mbox Pro")).makeWindow.alwaysOnTop_(true);
+Server.default = s = Server.new("MBOX Output", NetAddr("127.0.0.1", 58009), ServerOptions.new.device_("Mbox Pro")).makeWindow;
 
-s.boot;
+s.makeWindow.boot;
+
 (
 var w, composer, g_title, g_levels, w_width, w_height, play_btns, timer;
 var snd_player, snd_piano;
@@ -9,6 +10,7 @@ var stop_trigger = 1;
 var g_timer;
 var snd_bus_player = Bus.control(s, 1);
 var snd_buffer = Buffer.read(s, "/Users/serj/work/music/sounds/Daoust_Petite_musique_sentimentale.aiff");
+var osc_levels;
 
 w_width = 450;
 w_height = 350;
@@ -49,7 +51,7 @@ g_levels.title_(0, 'L');
 g_levels.title_(1, 'R');
 
 // get levels via OSC
-o = OSCFunc({ |msg|
+osc_levels = OSCFunc({ |msg|
     if(msg[1] == 0) {
         {g_levels.at(1).valueAction_(msg[2])}.defer;
         snd_bus_player.set(msg[2]);
@@ -100,6 +102,7 @@ w.onClose = {
         snd_piano.free;
     };
     timer.stop;
+    osc_levels.free;
     gui_levels_osc.free;
     gui_piano_osc.free;
     snd_buffer.free;
