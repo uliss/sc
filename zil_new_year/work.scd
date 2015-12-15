@@ -39,6 +39,39 @@ s.waitForBoot({
 
     }).add;
 
+    // STOMP BASS
+    SynthDef(\bass, {
+        arg amp = 0.5, dur = 0.35, freq = 50.rand + 40;
+        var amp_env, phase_env, phase;
+
+        amp_env   = EnvGen.ar(Env.perc(1e-6,dur), doneAction:2);
+        phase_env = EnvGen.ar(Env.perc(1e-6,0.325));
+
+        phase = SinOsc.ar(20,0,pi) * phase_env;
+        Out.ar(0, SinOsc.ar([freq, 1.01*freq],phase) * amp_env * amp);
+    }).add;
+
+    SynthDef(\sample_beat, {
+        arg amp = 0.5, pos = 0, buf, startPos = 0, dur = [1.0625, 1.125, 1.25].choose;
+        var amp_env, out;
+        amp_env = EnvGen.ar(Env.perc(1e-6, dur), doneAction:2);
+
+        out = PlayBuf.ar(1, buf, startPos: startPos) * amp_env * amp;
+        Out.ar(0, Pan2.ar(out, pos));
+    }).add;
+
+    SynthDef(\xfader_synth, {
+        arg amp = 0.5, pan = 0, buf1, buf2;
+        var asig1, asig2, out;
+
+        // asig1 = PlayBuf.ar(2, buf1);
+        // asig1 = Pan2.ar(Crackle.ar(1.95, 0.5));
+        asig1 = Pan2.ar(CuspN.ar(120, 1.0, 1.99) * 0.3);
+        asig2 = PlayBuf.ar(2, buf2);
+        out = XFade2.ar(asig1, asig2, pan);
+        Out.ar(0, out);
+    }).add;
+
     ////////////////////////////////////
     //     INIT & LOAD SOUND LIBRARY
     ////////////////////////////////////
@@ -47,6 +80,13 @@ s.waitForBoot({
     l.load("paper1");
     l.load("paper2");
     l.load("paper3");
+    l.load("onion1");
+    l.load("onion2");
+    l.load("metal1");
+    l.load("metal2");
+    l.load("microwave1");
+    l.load("microwave2");
+    l.load("jingle4");
 
 
     "#################".postln;
@@ -54,7 +94,6 @@ s.waitForBoot({
     "#################".postln;
 });
 )
-
 
 
 (
@@ -68,6 +107,12 @@ scenes.scene0(
 
 scenes.scene_dvoinik(
     Synth.newPaused(\dvoinik, ["buffer", l.buffer("schubert"), "delay", 23]);
+);
+
+scenes.scene_xfader(
+    Synth.newPaused(\xfader_synth, [\buf1, l.buffer("schubert"),
+        \buf2, l.buffer("jingle4")]);
+
 );
 )
 
@@ -92,4 +137,72 @@ n.sendMsg("/dvoinik", \pos1, -1);
 n.sendMsg("/dvoinik", \pos1, 1);
 n.sendMsg("/dvoinik", \pos2, 1);
 n.sendMsg("/dvoinik", \pos2, -1);
+
+/////////////////////////////////
+/// FADER  MANUAL CONTROL
+/////////////////////////////////
+n.sendMsg("/xfader", \start);
+n.sendMsg("/xfader", \stop);
+n.sendMsg("/xfader", \pos, -1);
+n.sendMsg("/xfader", \pos, -0.9);
+n.sendMsg("/xfader", \pos, 0);
+n.sendMsg("/xfader", \pos, 0.7);
+
+(
+// Bjorklund(6, 11);
+// var bass = Pseq(Bjorklund(4, 11), inf).asStream;
+// var onion = Pseq(Bjorklund(4, 7), inf).asStream;
+// var metal1 = Pseq(Bjorklund(4, 9).shift(3), inf).asStream;
+// var metal2 = Pseq(Bjorklund(3, 13).shift(2), inf).asStream;
+var bass = Pseq(Bjorklund(3, 8), inf).asStream;
+var onion = Pseq(#[1, 0.1, 0.75, 0, 0.175, 0, 1, 0.5] * 1.3, inf).asStream;
+var metal1 = Pseq(#[1, 1, 0, 0.1, 0.5, 0, 0, 1, 0.2], inf).asStream;
+var metal2 = Pseq(#[1, 0.1, 0.1, 1, 0.25, 0.1, 0.75], inf).asStream;
+var microwave = Pseq(#[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] * 4, inf).asStream;
+
+var swing = 0.01; // swing amount
+var times = [1 + swing, 1 - swing, 1 + swing, 1 - swing]; // add swing
+r = Routine({
+    var i = 0;
+    var perc = 210; // 210, 50
+    loop({
+        var tm = times.wrapAt(i) * (0.1 + (0.1 * (perc/ 100.0)));
+
+        if(i > 78) {
+            Synth(\bass, [\amp, bass.next, \freq, 25.rand + 42, \dur, tm * 4]);
+        };
+
+        if(i > 46) {
+            Synth(\sample_beat, [\amp, onion.next, \buf, l.buffer("onion1"), \pos: 0.2, \dur, tm * 10, \startPos: 1000]);
+        };
+
+        if(i > 16) {
+            Synth(\sample_beat, [\amp, metal1.next, \buf, l.buffer("metal2"), \dur, tm * [2, 3, 1].choose, \pos: -0.25]);
+        };
+
+        if(i % 28 == 0) {
+            Synth(\sample_beat, [\amp, microwave.next, \buf, l.buffer("microwave1"), \dur, tm * 16, \pos: [-0.8, 0.8].choose, \startPos, 1000]);
+        };
+
+        if(i % 8 == 0) {
+            if(perc > 0) {
+                perc = perc - 10;
+            };
+        };
+
+
+
+        // Synth(\metal2, [\amp, metal2.next * 0.3]);
+        // Synth(\onion3, [\amp, onion3.next]);
+
+        tm.wait;
+        i = i + 1;
+    })
+}).play;
+)
+
+Synth(\sample_beat, [\amp, 1.3, \buf, l.buffer("onion1"), \pos, 2.0.rand - 1, startPos: 10000.rand, \dur, [0.5, 2, 1].choose]);
+Synth(\sample_beat, [\amp, 5, \buf, l.buffer("onion2"), \pos, 2.0.rand - 1, startPos: 5000.rand, \dur, 1]);
+
+
 

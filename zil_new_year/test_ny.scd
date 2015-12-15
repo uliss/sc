@@ -32,5 +32,9 @@ l.play("metal2");
 l.play("microwave2");
 l.play("microwave1");
 
+n = NetAddr("127.0.0.1", 7001);
+n.sendMsg("/p1/hand_r:tx");
+n.sendMsg("/p1/hand_l:tx");
+
 s.boot;
 s.quit;

@@ -7,6 +7,9 @@ Scenes {
     var oscScene_dvoinik;
     var dvoinik_synth;
 
+    var oscScene_xfader;
+    var xfader_synth;
+
     *new {
         arg sound_lib = nil;
         ^super.new.init(sound_lib);
@@ -42,6 +45,16 @@ Scenes {
                 \pos2, { dvoinik_synth.set(\pos2, msg[2]) },
                 { format("unknown message: '%'", msg).postln });
         }, "/dvoinik", nil, osc_port);
+
+        oscScene_xfader = OSCFunc({|msg|
+            msg.postln;
+            switch(msg[1],
+                \start, { xfader_synth.run(true) },
+                \stop,  { xfader_synth.run(false) },
+                \pos, { xfader_synth.set(\pan, msg[2]) },
+                { format("unknown message: '%'", msg).postln });
+
+        }, "/xfader", nil, osc_port);
     }
 
     scene0 {
@@ -53,5 +66,10 @@ Scenes {
     scene_dvoinik {
         arg synth;
         dvoinik_synth = synth;
+    }
+
+    scene_xfader {
+        arg synth;
+        xfader_synth = synth;
     }
 }
