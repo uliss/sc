@@ -1,4 +1,6 @@
 Kinect {
+    var personId;
+
     // head
     var <headX = 0, <headY = 0, <headZ = 0;
     var <accHeadX = 0, <accHeadY = 0, <accHeadZ = 0;
@@ -17,49 +19,82 @@ Kinect {
     var handr_tx, handr_ty, handr_tz;
     var dump_right_hand;
 
+    // left hand tip
+    var <leftHandTipX = 0, <leftHandTipY = 0, <leftHandTipZ = 0;
+    var <accLeftHandTipX = 0, <accLeftHandTipY = 0, <accLeftHandTipZ = 0;
+    var handtipl_tx, handtipl_ty, handtipl_tz;
+    var dump_left_hand_tip;
+
+
+    // right hand
+    var <rightHandTipX = 0, <rightHandTipY = 0, <rightHandTipZ = 0;
+    var <accRightHandX = 0, <accRightHandY = 0, <accRightHandZ = 0;
+    var handr_tx, handr_ty, handr_tz;
+    var dump_right_hand;
+
+     // right hand tip
+    var <rightHandTipX = 0, <rightHandTipY = 0, <rightHandTipZ = 0;
+    var <accRightHandTipX = 0, <accRightHandTipY = 0, <accRightHandTipZ = 0;
+    var handtipr_tx, handtipr_ty, handtipr_tz;
+    var dump_right_hand_tip;
+
 
     *new {
-        ^super.new.init
+        arg id;
+        ^super.new.init(person: id)
+    }
+
+    oscP {
+        arg name;
+        ^"/p" ++ personId ++ "/" ++ name;
     }
 
     init {
-        arg port = 10000;
+        arg port = 10000, person = 1;
+        personId = person;
 
         head_tx = OSCFunc({ |msg|
             var v = msg[1..].mean;
             accHeadX = v - headX;
             headX = v;
-        }, "/p1/head:tx", nil, port);
+        }, this.oscP("head:tx"), nil, port);
 
         head_ty = OSCFunc({ |msg|
             var v = msg[1..].mean;
             accHeadY = v - headY;
             headY = v;
-        }, "/p1/head:ty", nil, port);
+        }, this.oscP("head:ty"), nil, port);
 
         head_tz = OSCFunc({ |msg|
             var v = msg[1..].mean;
             accHeadZ = v - headZ;
             headZ = v;
-        }, "/p1/head:tz", nil, port);
+        }, this.oscP("head:tz"), nil, port);
 
         dump_head = Routine{
             inf.do{
-                format("HEAD: x=%,y=%,z=%, accX=%,accY=%,accZ=%", headX, headY, headZ, accHeadX, accHeadY, accHeadZ).postln;
+                format("PERSON" ++ personId + "HEAD: x=%,y=%,z=%, accX=%,accY=%,accZ=%", headX, headY, headZ, accHeadX, accHeadY, accHeadZ).postln;
                 0.2.wait;
             }
         };
 
         dump_left_hand = Routine{
             inf.do{
-                format("LEFT HAND: x=%,y=%,z=%, accX=%,accY=%,accZ=%", leftHandX, leftHandY, leftHandZ, accLeftHandX, accLeftHandY, accLeftHandZ).postln;
+                format("PERSON" ++ personId + "LEFT HAND: x=%,y=%,z=%, accX=%,accY=%,accZ=%", leftHandX, leftHandY, leftHandZ, accLeftHandX, accLeftHandY, accLeftHandZ).postln;
                 0.2.wait;
             }
         };
 
         dump_right_hand = Routine{
             inf.do{
-                format("RIGHT HAND: x=%,y=%,z=%, accX=%,accY=%,accZ=%", rightHandX, rightHandY, rightHandZ, accRightHandX, accRightHandY, accRightHandZ).postln;
+                format("PERSON" ++ personId + "RIGHT HAND: x=%,y=%,z=%, accX=%,accY=%,accZ=%", rightHandX, rightHandY, rightHandZ, accRightHandX, accRightHandY, accRightHandZ).postln;
+                0.2.wait;
+            }
+        };
+
+        dump_left_hand_tip = Routine{
+            inf.do{
+                format("PERSON" ++ personId + "LEFT HAND TIP: x=%,y=%,z=%, accX=%,accY=%,accZ=%", leftHandTipX, leftHandTipY, leftHandTipZ, accLeftHandTipX, accLeftHandTipY, accLeftHandTipZ).postln;
                 0.2.wait;
             }
         };
@@ -68,37 +103,71 @@ Kinect {
             var v = msg[1..].mean;
             accLeftHandX = v - leftHandX;
             leftHandX = v;
-        }, "/p1/hand_l:tx", nil, port);
+        }, this.oscP("hand_l:tx"), nil, port);
 
         handl_ty = OSCFunc({ |msg|
             var v = msg[1..].mean;
             accLeftHandY = v - leftHandY;
             leftHandY = v;
-        }, "/p1/hand_l:ty", nil, port);
+        }, this.oscP("hand_l:ty"), nil, port);
 
         handl_tz = OSCFunc({ |msg|
             var v = msg[1..].mean;
             accLeftHandZ = v - leftHandZ;
             leftHandZ = v;
-        }, "/p1/hand_l:tz", nil, port);
+        }, this.oscP("hand_l:tz"), nil, port);
+
+
+        handtipl_tx = OSCFunc({ |msg|
+            var v = msg[1..].mean;
+            accLeftHandTipX = v - leftHandTipX;
+            leftHandTipX = v;
+        }, this.oscP("handtip_l:tx"), nil, port);
+
+        handtipl_ty = OSCFunc({ |msg|
+            var v = msg[1..].mean;
+            accLeftHandTipY = v - leftHandTipY;
+            leftHandTipY = v;
+        }, this.oscP("handtip_l:ty"), nil, port);
+
 
         handr_tx = OSCFunc({ |msg|
             var v = msg[1..].mean;
             accRightHandX = v - rightHandX;
             rightHandX = v;
-        }, "/p1/hand_r:tx", nil, port);
+        }, this.oscP("hand_r:tx"), nil, port);
 
         handr_ty = OSCFunc({ |msg|
             var v = msg[1..].mean;
             accRightHandY = v - rightHandY;
             rightHandY = v;
-        }, "/p1/hand_r:ty", nil, port);
+        }, this.oscP("hand_r:ty"), nil, port);
 
         handr_tz = OSCFunc({ |msg|
             var v = msg[1..].mean;
             accRightHandZ = v - rightHandZ;
             rightHandZ = v;
-        }, "/p1/hand_r:tz", nil, port);
+        }, this.oscP("hand_r:tz"), nil, port);
+
+        handtipr_tx = OSCFunc({ |msg|
+            var v = msg[1..].mean;
+            accRightHandTipX = v - rightHandTipX;
+            rightHandTipX = v;
+        }, this.oscP("handtip_r:tx"), nil, port);
+
+        handtipr_ty = OSCFunc({ |msg|
+            var v = msg[1..].mean;
+            accRightHandTipY = v - rightHandTipY;
+            rightHandTipY = v;
+        }, this.oscP("handtip_r:ty"), nil, port);
+    }
+
+    accX {
+        ^[accHeadX, accLeftHandX, accRightHandX, accLeftHandTipX, accRightHandTipX].maxItem;
+    }
+
+    accY {
+        ^[accHeadY, accLeftHandY, accRightHandY, accLeftHandTipY, accRightHandTipY].maxItem;
     }
 
     dumpHead { |run = true|
@@ -107,6 +176,10 @@ Kinect {
 
     dumpLeftHand { |run = true|
         if(run, {dump_left_hand.reset; dump_left_hand.play}, {dump_left_hand.stop});
+    }
+
+    dumpLeftHandTip { |run = true|
+        if(run, {dump_left_hand_tip.reset; dump_left_hand_tip.play}, {dump_left_hand_tip.stop});
     }
 
     dumpRightHand { |run = true|

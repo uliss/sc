@@ -1,6 +1,7 @@
 // ENTRY POINT
 (
-BuiltIn.gui;
+// BuiltIn.gui;
+Saffire.gui;
 s = Server.default;
 s.waitForBoot({
     //////////////////////////
@@ -10,7 +11,9 @@ s.waitForBoot({
         arg bus = 0, buffer = nil, delay = 23, startPos = 0, pos1 = 0.5, pos2 = -0.5;
         var a1, a2, ao1, ao2;
         a1 = PlayBuf.ar(2, buffer, BufRateScale.kr(buffer), 1, startPos);
-        a2 = DelayN.ar(a1, 30, delay);
+        // a2 = DelayN.ar(a1, 30, delay);
+        a2 = Silent.ar(2);
+
         ao1 = Balance2.ar(a1[0], a1[1], pos1.lag(1), 0.65);
         ao2 = Balance2.ar(a2[0], a2[1], pos2.lag(1), 0.8);
         Out.ar(bus, Mix.new([ao1, ao2]));
@@ -86,6 +89,7 @@ s.waitForBoot({
     l.load("metal2");
     l.load("microwave1");
     l.load("microwave2");
+    l.load("rice1");
     l.load("jingle4");
 
 
@@ -99,10 +103,11 @@ s.waitForBoot({
 (
 var scenes;
 n = NetAddr("127.0.0.1", 7000);
+k = Kinect.new;
 scenes = Scenes.new(l);
 scenes.scene0(
-    Synth.newPaused(\paper, [\sndbuf, l.buffer("paper1"), \fr, 4, \bus, 0]),
-    Synth.newPaused(\paper, [\sndbuf, l.buffer("paper2"), \fr, 4, \bus, 1])
+    Synth.newPaused(\paper, [\amp, 0.3, \sndbuf, l.buffer("paper1"), \fr, 4, \bus, 0]),
+    Synth.newPaused(\paper, [\amp, 2, \sndbuf, l.buffer("rice1"), \fr, 4, \bus, 1])
 );
 
 scenes.scene_dvoinik(
@@ -127,7 +132,6 @@ n.sendMsg("/gadanie/0", 0);
 n.sendMsg("/gadanie/1", 1);
 n.sendMsg("/gadanie/1", 0);
 
-
 /////////////////////////////////
 /// DVOINIK  MANUAL CONTROL
 /////////////////////////////////
@@ -150,11 +154,11 @@ n.sendMsg("/xfader", \pos, 0.7);
 
 (
 // Bjorklund(6, 11);
-// var bass = Pseq(Bjorklund(4, 11), inf).asStream;
+var bass = Pseq(Bjorklund(4, 11), inf).asStream;
 // var onion = Pseq(Bjorklund(4, 7), inf).asStream;
 // var metal1 = Pseq(Bjorklund(4, 9).shift(3), inf).asStream;
 // var metal2 = Pseq(Bjorklund(3, 13).shift(2), inf).asStream;
-var bass = Pseq(Bjorklund(3, 8), inf).asStream;
+// var bass = Pseq(Bjorklund(3, 8), inf).asStream;
 var onion = Pseq(#[1, 0.1, 0.75, 0, 0.175, 0, 1, 0.5] * 1.3, inf).asStream;
 var metal1 = Pseq(#[1, 1, 0, 0.1, 0.5, 0, 0, 1, 0.2], inf).asStream;
 var metal2 = Pseq(#[1, 0.1, 0.1, 1, 0.25, 0.1, 0.75], inf).asStream;
@@ -168,27 +172,41 @@ r = Routine({
     loop({
         var tm = times.wrapAt(i) * (0.1 + (0.1 * (perc/ 100.0)));
 
-        if(i > 78) {
-            Synth(\bass, [\amp, bass.next, \freq, 25.rand + 42, \dur, tm * 4]);
-        };
+        // if((i < 64) || (i > 90)) {
 
-        if(i > 46) {
-            Synth(\sample_beat, [\amp, onion.next, \buf, l.buffer("onion1"), \pos: 0.2, \dur, tm * 10, \startPos: 1000]);
-        };
+            // if(i > 160) {
+            // Synth(\bass, [\amp, bass.next * 0.5, \freq, 25.rand + 42, \dur, tm * 4]);
+            // };
 
-        if(i > 16) {
-            Synth(\sample_beat, [\amp, metal1.next, \buf, l.buffer("metal2"), \dur, tm * [2, 3, 1].choose, \pos: -0.25]);
-        };
+            // if(i > 16) {
+            // Synth(\sample_beat, [\amp, onion.next, \buf, l.buffer("onion1"), \pos: 0.2, \dur, tm * 10, \startPos: 1000]);
+            // };
 
-        if(i % 28 == 0) {
-            Synth(\sample_beat, [\amp, microwave.next, \buf, l.buffer("microwave1"), \dur, tm * 16, \pos: [-0.8, 0.8].choose, \startPos, 1000]);
-        };
+            // if(i > 100) {
+                Synth(\sample_beat, [\amp, metal1.next, \buf, l.buffer("metal2"), \dur, tm * [2, 3, 1, 10].choose, \pos: -0.25]);
+            // };
 
-        if(i % 8 == 0) {
-            if(perc > 0) {
-                perc = perc - 10;
-            };
+            // if(i > 130) {
+            // Synth(\sample_beat, [\amp, metal2.next, \buf, l.buffer("metal1"), \dur, tm * [2, 3, 1].choose, \pos: -0.25]);
+        // };
+
+            // if(i % 28 == 0) {
+                // Synth(\sample_beat, [\amp, microwave.next, \buf, l.buffer("microwave1"), \dur, tm * 16, \pos: [-0.8, 0.8].choose, \startPos, 1000]);
+            // };
+
+        // };
+
+        // if((i > 64) && (i < 90)) {
+        // Synth(\sample_beat, [\amp, microwave.next, \buf, l.buffer("microwave1"), \dur, tm * 64, \pos: [-0.8, 0.8].choose, \startPos, 1000]);
+    // };
+
+        i.postln;
+
+        /*       if(i % 8 == 0) {
+        if(perc > 0) {
+        perc = perc - 10;
         };
+        };*/
 
 
 
@@ -201,6 +219,9 @@ r = Routine({
 }).play;
 )
 
+
+Synth(\sample_beat, [\amp, 1.3, \buf, l.buffer("metal1"), \pos, 2.0.rand - 1, startPos: 10000.rand, \dur, [0.5, 2, 1].choose]);
+Synth(\sample_beat, [\amp, 1.3, \buf, l.buffer("metal2"), \pos, 2.0.rand - 1, startPos: 10000.rand, \dur, [0.5, 2, 1].choose]);
 Synth(\sample_beat, [\amp, 1.3, \buf, l.buffer("onion1"), \pos, 2.0.rand - 1, startPos: 10000.rand, \dur, [0.5, 2, 1].choose]);
 Synth(\sample_beat, [\amp, 5, \buf, l.buffer("onion2"), \pos, 2.0.rand - 1, startPos: 5000.rand, \dur, 1]);
 

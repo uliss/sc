@@ -25,6 +25,7 @@ Scenes {
             switch(msg[1],
                 1, { scene0_synth_l.run(true)  },
                 0, { scene0_synth_l.run(false) },
+                \amp, {scene0_synth_r.set(\amp, msg[1])},
                 { format("unknown message format: '%'", msg).postln });
         }, "/gadanie/0", nil, osc_port);
 
@@ -33,6 +34,7 @@ Scenes {
             switch(msg[1],
                 1, { scene0_synth_r.run(true)  },
                 0, { scene0_synth_r.run(false) },
+                \amp, {scene0_synth_r.set(\amp, msg[1])},
                 { format("unknown message format: '%'", msg).postln });
         }, "/gadanie/1", nil, osc_port);
 
