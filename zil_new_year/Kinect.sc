@@ -162,6 +162,37 @@ Kinect {
         }, this.oscP("handtip_r:ty"), nil, port);
     }
 
+    // @returns true on every hand movement
+    // false otehrwise
+    noHands {
+        ^[accLeftHandX, accRightHandX, accLeftHandTipX, accRightHandTipX,
+            accLeftHandY, accRightHandY, accLeftHandTipY, accRightHandTipY,
+            accLeftHandZ, accRightHandZ, accLeftHandTipZ, accRightHandTipZ].every({
+            arg item;
+            item == 0;
+        });
+    }
+
+    handsAccX {
+        ^[accLeftHandX, accRightHandX, accLeftHandTipX, accRightHandTipX].abs.maxItem;
+    }
+
+    handsAccY {
+        ^[accLeftHandY, accRightHandY, accLeftHandTipY, accRightHandTipY].abs.maxItem;
+    }
+
+    handsAccZ {
+        ^[accLeftHandZ, accRightHandZ, accLeftHandTipZ, accRightHandTipZ].abs.maxItem;
+    }
+
+    handsAccAny {
+        max(this.handsAccX, this.handsAccY, this.handsAccZ);
+    }
+
+    headAccAny {
+        [^accHeadX, accHeadY, accHeadZs];
+    }
+
     accX {
         ^[accHeadX, accLeftHandX, accRightHandX, accLeftHandTipX, accRightHandTipX].maxItem;
     }
