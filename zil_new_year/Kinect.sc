@@ -43,6 +43,11 @@ Kinect {
     var <accRightKneeX = 0, <accRightKneeY = 0, <accRightKneeZ = 0;
     var knee_rx, knee_ry, knee_rz;
 
+    // left knee
+    var <leftKneeX = 0, <leftKneeY = 0, <leftKneeZ = 0;
+    var <accLeftKneeX = 0, <accLeftKneeY = 0, <accLeftKneeZ = 0;
+    var knee_lx, knee_ly, knee_lz;
+
 
     *new {
         arg id;
@@ -55,7 +60,7 @@ Kinect {
     }
 
     init {
-        arg port = 10000, person = 1;
+        arg port = 10000, person = 1, dump_timeout = 0.2;
         personId = person;
         dumps = Dictionary.new;
 
@@ -83,7 +88,7 @@ Kinect {
         dumps[\head] = Routine{
             inf.do{
                 format("PERSON" ++ personId + "HEAD: x=%,y=%,z=%, accX=%,accY=%,accZ=%", headX, headY, headZ, accHeadX, accHeadY, accHeadZ).postln;
-                0.2.wait;
+                dump_timeout.wait;
             }
         };
 
@@ -111,7 +116,7 @@ Kinect {
         dumps[\spine] = Routine{
             inf.do{
                 format("PERSON" ++ personId + "SPINE: x=%,y=%,z=%, accX=%,accY=%,accZ=%", spineX, spineY, spineZ, accSpineX, accSpineY, accSpineZ).postln;
-                0.2.wait;
+                dump_timeout.wait;
             }
         };
 
@@ -121,28 +126,28 @@ Kinect {
         dumps[\left_hand] = Routine{
             inf.do{
                 format("PERSON" ++ personId + "LEFT HAND: x=%,y=%,z=%, accX=%,accY=%,accZ=%", leftHandX, leftHandY, leftHandZ, accLeftHandX, accLeftHandY, accLeftHandZ).postln;
-                0.2.wait;
+                dump_timeout.wait;
             }
         };
 
         dumps[\right_hand] = Routine{
             inf.do{
                 format("PERSON" ++ personId + "RIGHT HAND: x=%,y=%,z=%, accX=%,accY=%,accZ=%", rightHandX, rightHandY, rightHandZ, accRightHandX, accRightHandY, accRightHandZ).postln;
-                0.2.wait;
+                dump_timeout.wait;
             }
         };
 
         dumps[\left_hand_tip] = Routine{
             inf.do{
                 format("PERSON" ++ personId + "LEFT HAND TIP: x=%,y=%,z=%, accX=%,accY=%,accZ=%", leftHandTipX, leftHandTipY, leftHandTipZ, accLeftHandTipX, accLeftHandTipY, accLeftHandTipZ).postln;
-                0.2.wait;
+                dump_timeout.wait;
             }
         };
 
         dumps[\right_hand_tip] = Routine{
             inf.do{
                 format("PERSON" ++ personId + "RIGHT HAND TIP: x=%,y=%,z=%, accX=%,accY=%,accZ=%", rightHandTipX, rightHandTipY, rightHandTipZ, accRightHandTipX, accRightHandTipY, accRightHandTipZ).postln;
-                0.2.wait;
+                dump_timeout.wait;
             }
         };
 
@@ -211,6 +216,8 @@ Kinect {
         //////////
         // KNEES
         //////////
+
+        // RIGHT KNEE
         knee_rx = OSCFunc({ |msg|
             var v = msg[1..].mean;
             accRightKneeX = v - rightKneeX;
@@ -228,6 +235,39 @@ Kinect {
             accRightKneeZ = v - rightKneeZ;
             rightKneeZ = v;
         }, this.oscP("knee_r:tz"), nil, port);
+
+        dumps[\right_knee] = Routine{
+            inf.do{
+                format("PERSON" ++ personId + "RIGHT KNEE: x=%,y=%,z=%, accX=%,accY=%,accZ=%", rightKneeX, rightKneeY, rightKneeZ, accRightKneeX, accRightKneeY, accRightKneeZ).postln;
+                dump_timeout.wait;
+            }
+        };
+
+        // LEFT KNEE
+        knee_lx = OSCFunc({ |msg|
+            var v = msg[1..].mean;
+            accLeftKneeX = v - leftKneeX;
+            leftKneeX = v;
+        }, this.oscP("knee_l:tx"), nil, port);
+
+        knee_ly = OSCFunc({ |msg|
+            var v = msg[1..].mean;
+            accLeftKneeY = v - leftKneeY;
+            leftKneeY = v;
+        }, this.oscP("knee_l:ty"), nil, port);
+
+        knee_lz = OSCFunc({ |msg|
+            var v = msg[1..].mean;
+            accLeftKneeZ = v - leftKneeZ;
+            leftKneeZ = v;
+        }, this.oscP("knee_l:tz"), nil, port);
+
+        dumps[\left_knee] = Routine{
+            inf.do{
+                format("PERSON" ++ personId + "LEFT KNEE: x=%,y=%,z=%, accX=%,accY=%,accZ=%", leftKneeX, leftKneeY, leftKneeZ, accLeftKneeX, accLeftKneeY, accLeftKneeZ).postln;
+                dump_timeout.wait;
+            }
+        };
     }
 
     // @returns true on every hand movement
@@ -259,6 +299,10 @@ Kinect {
 
     headAccAny {
         ^[accHeadX, accHeadY, accHeadZ].abs.maxItem;
+    }
+
+    kneesAccAny {
+        ^[accLeftKneeX, accLeftKneeY, accLeftKneeZ, accRightKneeX, accRightKneeY, accRightKneeZ];
     }
 
     spineAccAny {
