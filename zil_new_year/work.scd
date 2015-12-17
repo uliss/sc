@@ -137,6 +137,8 @@ scenes.scene0(
     Synth.newPaused(\paper, [\amp, 1, \sndbuf, l.buffer("rice1"), \fr, 10, \bus, 1])
 );
 
+// scene.fish();
+
 scenes.scene_dvoinik(
     Synth.newPaused(\dvoinik, ["buffer", l.buffer("schubert"), "delay", 23]);
 );
@@ -182,7 +184,7 @@ n.sendMsg("/xfader", \pos, 0.7);
 (
 b = l.buffer("drazhe").play;
 // b.free;
-b = Synth.new(\bubbles, [\sndbuf, l.buffer("drazhe"), \amp, 0.2]);
+b = Synth.new(\bubbles, [\sndbuf, l.buffer("drazhe"), \amp, 0.4]);
 // Synth.new(\paper, [\amp, 0.3, \sndbuf, l.buffer("paper1"), \fr, 4, \bus, 0]);
 
 )
@@ -211,31 +213,31 @@ r = Routine({
 
         // if((i < 64) || (i > 90)) {
 
-        // if(i > 160) {
-        // Synth(\bass, [\amp, bass.next * 0.5, \freq, 25.rand + 42, \dur, tm * 4]);
-        // };
+        if(i > 160) {
+            Synth(\bass, [\amp, bass.next * 0.5, \freq, 25.rand + 42, \dur, tm * 4]);
+            };
 
-        // if(i > 16) {
-        // Synth(\sample_beat, [\amp, onion.next, \buf, l.buffer("onion1"), \pos: 0.2, \dur, tm * 10, \startPos: 1000]);
-        // };
+        if(i > 16) {
+            Synth(\sample_beat, [\amp, onion.next, \buf, l.buffer("onion1"), \pos: 0.2, \dur, tm * 10, \startPos: 1000]);
+            };
 
-        // if(i > 100) {
+        if(i > 100) {
         Synth(\sample_beat, [\amp, metal1.next, \buf, l.buffer("metal2"), \dur, tm * [2, 3, 1, 10].choose, \pos: -0.25]);
+            };
+
+        if(i > 130) {
+            Synth(\sample_beat, [\amp, metal2.next, \buf, l.buffer("metal1"), \dur, tm * [2, 3, 1].choose, \pos: -0.25]);
+            };
+
+        if(i % 28 == 0) {
+            Synth(\sample_beat, [\amp, microwave.next, \buf, l.buffer("microwave1"), \dur, tm * 16, \pos: [-0.8, 0.8].choose, \startPos, 1000]);
+            };
+
         // };
 
-        // if(i > 130) {
-        // Synth(\sample_beat, [\amp, metal2.next, \buf, l.buffer("metal1"), \dur, tm * [2, 3, 1].choose, \pos: -0.25]);
-        // };
-
-        // if(i % 28 == 0) {
-        // Synth(\sample_beat, [\amp, microwave.next, \buf, l.buffer("microwave1"), \dur, tm * 16, \pos: [-0.8, 0.8].choose, \startPos, 1000]);
-        // };
-
-        // };
-
-        // if((i > 64) && (i < 90)) {
-        // Synth(\sample_beat, [\amp, microwave.next, \buf, l.buffer("microwave1"), \dur, tm * 64, \pos: [-0.8, 0.8].choose, \startPos, 1000]);
-        // };
+        if((i > 64) && (i < 90)) {
+            Synth(\sample_beat, [\amp, microwave.next, \buf, l.buffer("microwave1"), \dur, tm * 64, \pos: [-0.8, 0.8].choose, \startPos, 1000]);
+         };
 
         i.postln;
 

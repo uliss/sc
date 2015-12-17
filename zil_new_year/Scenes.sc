@@ -10,6 +10,8 @@ Scenes {
     var oscScene_xfader;
     var xfader_synth;
 
+    var oscSceneGlass;
+
     *new {
         arg sound_lib = nil;
         ^super.new.init(sound_lib);
@@ -57,6 +59,13 @@ Scenes {
                 { format("unknown message: '%'", msg).postln });
 
         }, "/xfader", nil, osc_port);
+
+        oscScene_glass = OSCFunc({|msg|
+            msg.postln;
+            switch(msg[1],
+                \ding, { xfader_synth.run(true) },
+                { format("unknown message: '%'", msg).postln });
+        }, "/glass", nil, osc_port);
     }
 
     scene0 {

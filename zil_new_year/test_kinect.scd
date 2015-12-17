@@ -81,7 +81,8 @@ r = Routine {
             format("P1 gadanie ON: %", p1_acc).postln;
         };
 
-        if((p1_acc < off_thres) && (p1_acc != 0)) {
+        if(p1_on && (p1_acc < off_thres)) {
+            p1_on = false;
             n.sendMsg("/gadanie/0", 0);
             format("P1 gadanie OFF: %", p1_acc).postln;
         };
@@ -92,7 +93,8 @@ r = Routine {
             format("P2 gadanie ON: %", p2_acc).postln;
         };
 
-        if((p2_acc < (off_thres * 0.9)))  {
+        if(p2_on && (p2_acc < (off_thres * 0.9)))  {
+            p2_on = false;
             n.sendMsg("/gadanie/1", 0);
             format("P2 gadanie OFF: %", p2_acc).postln;
         };
@@ -130,7 +132,7 @@ r = Routine {
     inf.do {
         var acc = ~k1.accLeftHandX;
 
-        var pos = ~k1.headX.linlin(-3, 3, -1, 1);
+        var pos = ~k1.headX.linlin(-2, 2, -1, 1);
         // k.headX.postln.lag(0.5);
 
         // ~k1.headX.postln;
@@ -138,11 +140,13 @@ r = Routine {
         if(acc > 0.01 && started.not) {
             "DVOINIK START".postln;
             n.sendMsg("/dvoinik", \start);
-            started = true;
+            started = t rue;
         };
 
         // поиск двойника
-        n.sendMsg("/dvoinik", \pos1, -1 * pos);
+        if(acc != 0) {
+            n.sendMsg("/dvoinik", \pos1, pos);
+        };
         // n.sendMsg("/dvoinik", \pos1, pos);
 
         0.3.wait;
@@ -213,10 +217,10 @@ r = Routine {
     var started = false;
 
     inf.do {
-        var acc = k.accX();
+        var acc = k.accAll;
         // k.headZ.postln.lag(0.5);
         // k.headZ.postln
-        if(acc > 0.05) {
+        if(acc > 0.07) {
             var ch = [1,2,3].choose;
 
             switch(ch,
@@ -241,4 +245,6 @@ r = Routine {
 
 r.play;
 )
+
+r.stop;
 
