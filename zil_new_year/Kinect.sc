@@ -349,22 +349,6 @@ Kinect {
         });
     }
 
-    handsAccX {
-        ^[accLeftHandX, accRightHandX, accLeftHandTipX, accRightHandTipX].abs.maxItem;
-    }
-
-    handsAccY {
-        ^[accLeftHandY, accRightHandY, accLeftHandTipY, accRightHandTipY].abs.maxItem;
-    }
-
-    handsAccZ {
-        ^[accLeftHandZ, accRightHandZ, accLeftHandTipZ, accRightHandTipZ].abs.maxItem;
-    }
-
-    handsAccAny {
-        max(this.handsAccX, this.handsAccY, this.handsAccZ);
-    }
-
     accHead {
         ^[accHeadX, accHeadY, accHeadZ].abs.maxItem;
     }
