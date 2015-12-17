@@ -365,31 +365,43 @@ Kinect {
         max(this.handsAccX, this.handsAccY, this.handsAccZ);
     }
 
-    headAccAny {
+    accHead {
         ^[accHeadX, accHeadY, accHeadZ].abs.maxItem;
     }
 
-    leftHandAccAny {
+    accLeftHand {
         ^[accLeftHandX, accLeftHandY, accLeftHandZ].abs.maxItem;
     }
 
-    rightHandAccAny {
+    accRightHand {
         ^[accRightHandX, accRightHandY, accRightHandZ].abs.maxItem;
     }
 
-    leftFootAccAny {
+    accHands {
+        max(this.accLeftHand, this.accRightHand);
+    }
+
+    accLeftFoot {
         ^[accLeftFootX, accLeftFootY, accLeftFootZ].abs.maxItem;
     }
 
-    rightFootAccAny {
+    accRightFoot {
         ^[accRightFootX, accRightFootY, accRightFootZ].abs.maxItem;
     }
 
-    kneesAccAny {
-        ^[accLeftKneeX, accLeftKneeY, accLeftKneeZ, accRightKneeX, accRightKneeY, accRightKneeZ].abs.maxItem;
+    accLeftKnee {
+        ^[accLeftKneeX, accLeftKneeY, accLeftKneeZ].abs.maxItem;
     }
 
-    spineAccAny {
+    accRightKnee {
+        ^[accRightKneeX, accRightKneeY, accRightKneeZ].abs.maxItem;
+    }
+
+    accKnees {
+        max(this.accLeftKnee, this.accRightKnee);
+    }
+
+    accSpine {
         ^[accSpineX, accSpineY, accSpineZ].abs.maxItem;
     }
 
