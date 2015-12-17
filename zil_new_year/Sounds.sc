@@ -27,6 +27,7 @@ SoundLib {
         this.add("jingle2", "/Users/serj/work/music/sounds/new year/jingle-2.wav");
         this.add("jingle3", "/Users/serj/work/music/sounds/new year/jingle-3.wav");
         this.add("jingle4", "/Users/serj/work/music/sounds/new year/jingle-crosby.wav");
+        this.add("drazhe", "/Users/serj/work/music/sounds/new year/fei-drazhe-mono.wav");
     }
 
     add {

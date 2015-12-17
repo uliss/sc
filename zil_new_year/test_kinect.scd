@@ -7,18 +7,29 @@
 ~k2.dump(\head, true);
 ~k2.dump(\head, false);
 
-k.dump(\left_hand, true);
-k.dump(\left_hand, false);
+~k1.dump(\left_hand, true);
+~k1.dump(\left_hand, false);
 
-k.dump(\right_hand, true);
-k.dump(\right_hand, false);
+~k1.dump(\right_hand, true);
+~k1.dump(\right_hand, false);
 
-k.dump(\left_hand_tip, true);
-k.dump(\left_hand_tip, false);
+~k1.dump(\left_hand_tip, true);
+~k1.dump(\left_hand_tip, false);
 
 /*r.stop;
 r.reset;
 r.play*/
+
+(
+r = Routine{
+  inf.do {
+        ~k1.headX.postln;
+        1.wait;
+    }
+};
+
+r.play
+)
 
 n.sendMsg("/gadanie/0", 1);
 n.sendMsg("/gadanie/0", 0);
@@ -26,60 +37,82 @@ n.sendMsg("/gadanie/0", 0);
 n.sendMsg("/gadanie/1", 1);
 n.sendMsg("/gadanie/1", 0);
 
+~k1.dump("hand_left", false);
+
 (
 ~k1 = Kinect.new(1);
 ~k2 = Kinect.new(2);
 
+
+
 n = NetAddr("127.0.0.1", 7000);
 r = Routine {
+    var p1_on = false;
+    var p2_on = false;
+
+    /*var on_thresh = 0.035;
+    var off_thres = 0.034;*/
+
+    var on_thresh = 0.07;
+    var off_thres = 0.041;
+
     inf.do {
-        var p1_lh_acc_x = ~k1.accLeftHandTipX.lag(0.1).abs;
-        var p1_lh_acc_y = ~k1.accLeftHandTipY.lag(0.1).abs;
-        var p1_rh_acc_x = ~k1.accRightHandX.lag(0.1).abs;
-        var p1_rh_acc_y = ~k1.accRightHandY.lag(0.1).abs;
-        var p1_head_x = ~k1.accHeadX.lag(0.1).abs;
-        var p1_head_y = ~k1.accHeadY.lag(0.1).abs;
-        var p1_acc_mean = [p1_lh_acc_x, p1_lh_acc_y, p1_rh_acc_x, p1_rh_acc_y, p1_head_x, p1_head_y].maxItem;
+        //  ~k1.accHead
 
-        var p2_lh_acc_x = ~k2.accLeftHandTipX.lag(0.1).abs;
-        var p2_lh_acc_y = ~k2.accLeftHandTipY.lag(0.1).abs;
-        var p2_rh_acc_x = ~k2.accRightHandX.lag(0.1).abs;
-        var p2_rh_acc_y = ~k2.accRightHandY.lag(0.1).abs;
-        var p2_head_x = ~k2.accHeadX.lag(0.1).abs;
-        var p2_head_y = ~k2.accHeadY.lag(0.1).abs;
-        var p2_acc_mean = [p2_lh_acc_x, p2_lh_acc_y, p1_rh_acc_x, p1_rh_acc_y, p2_head_x, p2_head_y].maxItem;
-        // var acc = k.accLeftHandX.lag(0.1);
-        // k.accLeftHandX.postln;
+        var p1_acc =  ~k1.accTop;
+        // var p1_acc = ~k1.accAll;
+        // var p1_acc = ~k1.accHands.lag(0.5); // 0.35-0.34
+        // var p1_acc = ~k1.accLeftHand;
+        //[~k1.accLeftHandTip, ~k1.accRightHandTip].maxItem; //~k1.accHands.lag(0.1);
+        // var p2_acc = 0;// ~k2.accHands.lag(0.1);
+        var p2_acc = ~k2.accTop;
+        // var p2_acc = ~k2.accHands;
+        // var p2_acc = ~k2.accRightHand;
 
-        // n.sendMsg("/gadanie/0", \amp, acc.linlin(-0.1, 0.1, 0, 1));
+        // p1_acc.postln;
+
+
+
         // 0.01 bad
         // 0.02, 0.007
-        if(p1_acc_mean > 0.02) {
+        if(p1_acc > on_thresh) {
+            p1_on = true;
             n.sendMsg("/gadanie/0", 1);
-            p1_acc_mean.postln;
+            p1_acc.postln;
             "P1 gadanie ON".postln;
         };
 
-        if(p1_acc_mean < 0.007) {
+        if((p1_acc < off_thres) && (p1_acc != 0)) {
             n.sendMsg("/gadanie/0", 0);
-            p1_acc_mean.postln;
-            // "P1 gadanie OFF".postln;
+            p1_acc.postln;
+            "P1 gadanie OFF".postln;
         };
 
-        if(p2_acc_mean > 0.02) {
+        if(p2_acc > on_thresh) {
+            p2_on = true;
             n.sendMsg("/gadanie/1", 1);
-            p2_acc_mean.postln;
+            // p2_acc.postln;
             "P2 gadanie ON".postln;
         };
 
-        if(p2_acc_mean < 0.007) {
+        if(p2_on && (p2_acc < off_thres) && (p1_acc != 0))  {
             n.sendMsg("/gadanie/1", 0);
-            p2_acc_mean.postln;
-            // "P2 gadanie OFF".postln;
+            // p2_acc.postln;
+            "P2 gadanie OFF".postln;
         };
 
+/*        if(~k1.noHands()) {
+            p1_on = false;
+            n.sendMsg("/gadanie/0", 0);
+        };
 
-        0.2.wait;
+        if(~k2.noHands()) {
+            p2_on = false;
+            n.sendMsg("/gadanie/1", 0);
+        };*/
+
+
+        0.15.wait;
     }
 };
 

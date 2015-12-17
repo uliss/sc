@@ -1,7 +1,7 @@
 // ENTRY POINT
 (
-BuiltIn.gui;
-//Saffire.gui;
+// BuiltIn.gui;
+Saffire.gui;
 s = Server.default;
 s.waitForBoot({
     //////////////////////////
@@ -28,7 +28,7 @@ s.waitForBoot({
         env = EnvGen.kr(
             Env([0, 1, 0], [1, 1] * 2, \sin, 1),
             gate,
-            levelScale: amp,
+            levelScale: amp.lag(0.5),
             doneAction: 2);
         // freq = MouseX.kr(0, 10);
         // freq = 0;
@@ -38,6 +38,28 @@ s.waitForBoot({
 
         Out.ar(bus,
             GrainBuf.ar(1, Impulse.kr(fr), 1, sndbuf, LFNoise1.kr.range(0.5, 2),
+                pos, 2, pan, envbuf) * env);
+
+    }).add;
+
+    SynthDef(\bubbles, {
+        arg bus = 0, gate = 1, amp = 1, sndbuf, envbuf = -1;
+        var b, osc, out, amp_env, dur, env, pan = 0, pos, freq, msg_prev, rate;
+        env = EnvGen.kr(
+            Env([0, 1, 0], [1, 1] * 2, \sin, 1),
+            gate,
+            levelScale: amp,
+            doneAction: 2);
+        freq = MouseX.kr(1, 10);
+        // freq = 0;
+        msg_prev = 0;
+        pos = LFNoise2.kr(0.1).range(0.01, 0.06);
+        dur = LFNoise1.kr(4.reciprocal).range(1, 2);
+        rate = LFNoise1.kr.range(1, 1.2);
+        // pos = 2;
+
+        Out.ar(bus,
+            GrainBuf.ar(1, Impulse.kr(freq), dur, sndbuf, rate,
                 pos, 2, pan, envbuf) * env);
 
     }).add;
@@ -91,6 +113,7 @@ s.waitForBoot({
     l.load("microwave2");
     l.load("rice1");
     l.load("jingle4");
+    l.load("drazhe");
 
 
     "#################".postln;
@@ -98,6 +121,8 @@ s.waitForBoot({
     "#################".postln;
 });
 )
+
+{SinOsc.ar([440, 330], 0, 0.1)}.play
 
 
 (
@@ -107,7 +132,7 @@ k = Kinect.new;
 scenes = Scenes.new(l);
 scenes.scene0(
     Synth.newPaused(\paper, [\amp, 0.3, \sndbuf, l.buffer("paper1"), \fr, 4, \bus, 0]),
-    Synth.newPaused(\paper, [\amp, 2, \sndbuf, l.buffer("rice1"), \fr, 4, \bus, 1])
+    Synth.newPaused(\paper, [\amp, 1, \sndbuf, l.buffer("rice1"), \fr, 10, \bus, 1])
 );
 
 scenes.scene_dvoinik(
@@ -153,6 +178,16 @@ n.sendMsg("/xfader", \pos, 0);
 n.sendMsg("/xfader", \pos, 0.7);
 
 (
+b = l.buffer("drazhe").play;
+// b.free;
+b = Synth.new(\bubbles, [\sndbuf, l.buffer("drazhe"), \amp, 0.2]);
+// Synth.new(\paper, [\amp, 0.3, \sndbuf, l.buffer("paper1"), \fr, 4, \bus, 0]);
+
+)
+
+b.free;
+
+(
 // Bjorklund(6, 11);
 var bass = Pseq(Bjorklund(4, 11), inf).asStream;
 // var onion = Pseq(Bjorklund(4, 7), inf).asStream;
@@ -174,31 +209,31 @@ r = Routine({
 
         // if((i < 64) || (i > 90)) {
 
-            // if(i > 160) {
-            // Synth(\bass, [\amp, bass.next * 0.5, \freq, 25.rand + 42, \dur, tm * 4]);
-            // };
-
-            // if(i > 16) {
-            // Synth(\sample_beat, [\amp, onion.next, \buf, l.buffer("onion1"), \pos: 0.2, \dur, tm * 10, \startPos: 1000]);
-            // };
-
-            // if(i > 100) {
-                Synth(\sample_beat, [\amp, metal1.next, \buf, l.buffer("metal2"), \dur, tm * [2, 3, 1, 10].choose, \pos: -0.25]);
-            // };
-
-            // if(i > 130) {
-            // Synth(\sample_beat, [\amp, metal2.next, \buf, l.buffer("metal1"), \dur, tm * [2, 3, 1].choose, \pos: -0.25]);
+        // if(i > 160) {
+        // Synth(\bass, [\amp, bass.next * 0.5, \freq, 25.rand + 42, \dur, tm * 4]);
         // };
 
-            // if(i % 28 == 0) {
-                // Synth(\sample_beat, [\amp, microwave.next, \buf, l.buffer("microwave1"), \dur, tm * 16, \pos: [-0.8, 0.8].choose, \startPos, 1000]);
-            // };
+        // if(i > 16) {
+        // Synth(\sample_beat, [\amp, onion.next, \buf, l.buffer("onion1"), \pos: 0.2, \dur, tm * 10, \startPos: 1000]);
+        // };
+
+        // if(i > 100) {
+        Synth(\sample_beat, [\amp, metal1.next, \buf, l.buffer("metal2"), \dur, tm * [2, 3, 1, 10].choose, \pos: -0.25]);
+        // };
+
+        // if(i > 130) {
+        // Synth(\sample_beat, [\amp, metal2.next, \buf, l.buffer("metal1"), \dur, tm * [2, 3, 1].choose, \pos: -0.25]);
+        // };
+
+        // if(i % 28 == 0) {
+        // Synth(\sample_beat, [\amp, microwave.next, \buf, l.buffer("microwave1"), \dur, tm * 16, \pos: [-0.8, 0.8].choose, \startPos, 1000]);
+        // };
 
         // };
 
         // if((i > 64) && (i < 90)) {
         // Synth(\sample_beat, [\amp, microwave.next, \buf, l.buffer("microwave1"), \dur, tm * 64, \pos: [-0.8, 0.8].choose, \startPos, 1000]);
-    // };
+        // };
 
         i.postln;
 

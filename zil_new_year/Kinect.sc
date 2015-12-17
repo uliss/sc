@@ -140,7 +140,7 @@ Kinect {
             }
         };
 
-        dumps[\right_hand] = Routine{
+        dumps["right_hand"] = Routine{
             inf.do{
                 format("PERSON" ++ personId + "RIGHT HAND: x=%,y=%,z=%, accX=%,accY=%,accZ=%", rightHandX, rightHandY, rightHandZ, accRightHandX, accRightHandY, accRightHandZ).postln;
                 dump_timeout.wait;
@@ -350,12 +350,17 @@ Kinect {
     }
 
     accAll {
-        max(this.accHead, this.accHands, this.accSpine, this.accKnees, this.accFoot);
+        ^[this.accHead, this.accHands, this.accSpine, this.accKnees, this.accFoot].maxItem;
     }
 
     // head
     accHead {
         ^[accHeadX, accHeadY, accHeadZ].abs.maxItem;
+    }
+
+    // acc Top
+    accTop {
+        ^[this.accHead, this.accHands, this.accSpine].maxItem;
     }
 
     // hands
@@ -367,12 +372,16 @@ Kinect {
         ^[accLeftHandTipX, accLeftHandTipY, accLeftHandTipZ].abs.maxItem;
     }
 
+    accRightHand {
+        ^[accRightHandX, accRightHandY, accRightHandZ].abs.maxItem;
+    }
+
     accRightHandTip {
         ^[accRightHandTipX, accRightHandTipY, accRightHandTipZ].abs.maxItem;
     }
 
     accHands {
-        max(this.accLeftHand, this.accRightHand, this.accLeftHandTip, this.accRightHandTip);
+        ^[this.accLeftHand, this.accRightHand, this.accLeftHandTip, this.accRightHandTip].maxItem;
     }
 
     // foots
@@ -385,7 +394,7 @@ Kinect {
     }
 
     accFoot {
-        max(this.accLeftFoot, this.accRightFoot);
+        ^[this.accLeftFoot, this.accRightFoot].maxItem;
     }
 
     // knees
@@ -398,7 +407,7 @@ Kinect {
     }
 
     accKnees {
-        max(this.accLeftKnee, this.accRightKnee);
+        ^[this.accLeftKnee, this.accRightKnee].maxItem;
     }
 
     // spine
