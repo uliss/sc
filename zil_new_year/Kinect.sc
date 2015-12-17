@@ -337,7 +337,7 @@ Kinect {
         ^[accHeadX, accHeadY, accHeadZ].abs.maxItem;
     }
 
-    leftFootAny {
+    leftFootAccAny {
         ^[accLeftFootX, accLeftFootY, accLeftFootZ].abs.maxItem;
     }
 
