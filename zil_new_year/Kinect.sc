@@ -53,6 +53,11 @@ Kinect {
     var <accLeftFootX = 0, <accLeftFootY = 0, <accLeftFootZ = 0;
     var foot_lx, foot_ly, foot_lz;
 
+    // right foot
+    var <rightFootX = 0, <rightFootY = 0, <rightFootZ = 0;
+    var <accRightFootX = 0, <accRightFootY = 0, <accRightFootZ = 0;
+    var foot_rx, foot_ry, foot_rz;
+
 
     *new {
         arg id;
@@ -304,6 +309,33 @@ Kinect {
             }
         };
 
+        // RIGHT FOOT
+        // LEFT FOOT
+        foot_rx = OSCFunc({ |msg|
+            var v = msg[1..].mean;
+            accRightFootX = v - rightFootX;
+            rightFootX = v;
+        }, this.oscP("foot_r:tx"), nil, port);
+
+        foot_ry = OSCFunc({ |msg|
+            var v = msg[1..].mean;
+            accRightFootY = v - rightFootY;
+            rightFootY = v;
+        }, this.oscP("foot_r:ty"), nil, port);
+
+        foot_rz = OSCFunc({ |msg|
+            var v = msg[1..].mean;
+            accRightFootZ = v - rightFootZ;
+            rightFootZ = v;
+        }, this.oscP("foot_r:tz"), nil, port);
+
+        dumps[\right_foot] = Routine{
+            inf.do{
+                format("PERSON" ++ personId + "RIGHT FOOT: x=%,y=%,z=%, accX=%,accY=%,accZ=%", rightFootX, rightFootY, rightFootZ, accRightFootX, accRightFootY, accRightFootZ).postln;
+                dump_timeout.wait;
+            }
+        };
+
     }
 
     // @returns true on every hand movement
@@ -337,8 +369,13 @@ Kinect {
         ^[accHeadX, accHeadY, accHeadZ].abs.maxItem;
     }
 
+
     leftFootAccAny {
         ^[accLeftFootX, accLeftFootY, accLeftFootZ].abs.maxItem;
+    }
+
+    rightFootAccAny {
+        ^[accRightFootX, accRightFootY, accRightFootZ].abs.maxItem;
     }
 
     kneesAccAny {
