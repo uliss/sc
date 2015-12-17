@@ -38,6 +38,11 @@ Kinect {
     var <accSpineX = 0, <accSpineY = 0, <accSpineZ = 0;
     var spine_tx, spine_ty, spine_tz;
 
+    // right knee
+    var <rightKneeX = 0, <rightKneeY = 0, <rightKneeZ = 0;
+    var <accRightKneeX = 0, <accRightKneeY = 0, <accRightKneeZ = 0;
+    var knee_rx, knee_ry, knee_rz;
+
 
     *new {
         arg id;
@@ -202,6 +207,27 @@ Kinect {
             accRightHandTipY = v - rightHandTipY;
             rightHandTipY = v;
         }, this.oscP("handtip_r:ty"), nil, port);
+
+        //////////
+        // KNEES
+        //////////
+        knee_rx = OSCFunc({ |msg|
+            var v = msg[1..].mean;
+            accRightKneeX = v - rightKneeX;
+            rightKneeX = v;
+        }, this.oscP("knee_r:tx"), nil, port);
+
+        knee_ry = OSCFunc({ |msg|
+            var v = msg[1..].mean;
+            accRightKneeY = v - rightKneeY;
+            rightKneeY = v;
+        }, this.oscP("knee_r:ty"), nil, port);
+
+        knee_rz = OSCFunc({ |msg|
+            var v = msg[1..].mean;
+            accRightKneeZ = v - rightKneeZ;
+            rightKneeZ = v;
+        }, this.oscP("knee_r:tz"), nil, port);
     }
 
     // @returns true on every hand movement
