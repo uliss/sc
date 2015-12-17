@@ -59,13 +59,13 @@ r = Routine {
     inf.do {
         //  ~k1.accHead
 
-        var p1_acc =  ~k1.accTop;
+        var p1_acc =  ~k1.accTop.lag(0.2);
         // var p1_acc = ~k1.accAll;
         // var p1_acc = ~k1.accHands.lag(0.5); // 0.35-0.34
         // var p1_acc = ~k1.accLeftHand;
         //[~k1.accLeftHandTip, ~k1.accRightHandTip].maxItem; //~k1.accHands.lag(0.1);
         // var p2_acc = 0;// ~k2.accHands.lag(0.1);
-        var p2_acc = ~k2.accTop;
+        var p2_acc = ~k2.accTop.lag(0.2);
         // var p2_acc = ~k2.accHands;
         // var p2_acc = ~k2.accRightHand;
 
@@ -78,27 +78,23 @@ r = Routine {
         if(p1_acc > on_thresh) {
             p1_on = true;
             n.sendMsg("/gadanie/0", 1);
-            p1_acc.postln;
-            "P1 gadanie ON".postln;
+            format("P1 gadanie ON: %", p1_acc).postln;
         };
 
         if((p1_acc < off_thres) && (p1_acc != 0)) {
             n.sendMsg("/gadanie/0", 0);
-            p1_acc.postln;
-            "P1 gadanie OFF".postln;
+            format("P1 gadanie OFF: %", p1_acc).postln;
         };
 
         if(p2_acc > on_thresh) {
             p2_on = true;
             n.sendMsg("/gadanie/1", 1);
-            // p2_acc.postln;
-            "P2 gadanie ON".postln;
+            format("P2 gadanie ON: %", p2_acc).postln;
         };
 
-        if(p2_on && (p2_acc < off_thres) && (p1_acc != 0))  {
+        if((p2_acc < (off_thres * 0.9)))  {
             n.sendMsg("/gadanie/1", 0);
-            // p2_acc.postln;
-            "P2 gadanie OFF".postln;
+            format("P2 gadanie OFF: %", p2_acc).postln;
         };
 
 /*        if(~k1.noHands()) {
@@ -112,7 +108,7 @@ r = Routine {
         };*/
 
 
-        0.15.wait;
+        0.05.wait;
     }
 };
 

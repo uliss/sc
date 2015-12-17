@@ -31,6 +31,8 @@ s.waitForBoot({
             levelScale: amp.lag(0.5),
             doneAction: 2);
         // freq = MouseX.kr(0, 10);
+
+
         // freq = 0;
         msg_prev = 0;
         // pos = LFNoise2.kr(0.1).range(0, 10);
