@@ -4,17 +4,17 @@
 ~k2 = Kinect.new(2);
 )
 
-~k2.dumpHead(true);
-~k2.dumpHead(false);
+~k2.dump(\head, true);
+~k2.dump(\head, false);
 
-k.dumpLeftHand(true);
-k.dumpLeftHand(false);
+k.dump(\left_hand, true);
+k.dump(\left_hand, false);
 
-k.dumpRightHand(true);
-k.dumpRightHand(false);
+k.dump(\right_hand, true);
+k.dump(\right_hand, false);
 
-k.dumpLeftHandTip(true);
-k.dumpLeftHandTip(false);
+k.dump(\left_hand_tip, true);
+k.dump(\left_hand_tip, false);
 
 /*r.stop;
 r.reset;

@@ -1,42 +1,42 @@
 Kinect {
     var personId;
+    var dumps;
+
 
     // head
     var <headX = 0, <headY = 0, <headZ = 0;
     var <accHeadX = 0, <accHeadY = 0, <accHeadZ = 0;
     var head_tx, head_ty, head_tz;
-    var dump_head;
 
     // left hand
     var <leftHandX = 0, <leftHandY = 0, <leftHandZ = 0;
     var <accLeftHandX = 0, <accLeftHandY = 0, <accLeftHandZ = 0;
     var handl_tx, handl_ty, handl_tz;
-    var dump_left_hand;
 
     // right hand
     var <rightHandX = 0, <rightHandY = 0, <rightHandZ = 0;
     var <accRightHandX = 0, <accRightHandY = 0, <accRightHandZ = 0;
     var handr_tx, handr_ty, handr_tz;
-    var dump_right_hand;
 
     // left hand tip
     var <leftHandTipX = 0, <leftHandTipY = 0, <leftHandTipZ = 0;
     var <accLeftHandTipX = 0, <accLeftHandTipY = 0, <accLeftHandTipZ = 0;
     var handtipl_tx, handtipl_ty, handtipl_tz;
-    var dump_left_hand_tip;
-
 
     // right hand
     var <rightHandTipX = 0, <rightHandTipY = 0, <rightHandTipZ = 0;
     var <accRightHandX = 0, <accRightHandY = 0, <accRightHandZ = 0;
     var handr_tx, handr_ty, handr_tz;
-    var dump_right_hand;
 
-     // right hand tip
+    // right hand tip
     var <rightHandTipX = 0, <rightHandTipY = 0, <rightHandTipZ = 0;
     var <accRightHandTipX = 0, <accRightHandTipY = 0, <accRightHandTipZ = 0;
     var handtipr_tx, handtipr_ty, handtipr_tz;
-    var dump_right_hand_tip;
+
+    // spine
+    var <spineX = 0, <spineY = 0, <spineZ = 0;
+    var <accSpineX = 0, <accSpineY = 0, <accSpineZ = 0;
+    var spine_tx, spine_ty, spine_tz;
 
 
     *new {
@@ -52,7 +52,11 @@ Kinect {
     init {
         arg port = 10000, person = 1;
         personId = person;
+        dumps = Dictionary.new;
 
+        /////////
+        // HEAD
+        /////////
         head_tx = OSCFunc({ |msg|
             var v = msg[1..].mean;
             accHeadX = v - headX;
@@ -71,30 +75,68 @@ Kinect {
             headZ = v;
         }, this.oscP("head:tz"), nil, port);
 
-        dump_head = Routine{
+        dumps[\head] = Routine{
             inf.do{
                 format("PERSON" ++ personId + "HEAD: x=%,y=%,z=%, accX=%,accY=%,accZ=%", headX, headY, headZ, accHeadX, accHeadY, accHeadZ).postln;
                 0.2.wait;
             }
         };
 
-        dump_left_hand = Routine{
+        //////////
+        // SPINE
+        //////////
+        spine_tx = OSCFunc({ |msg|
+            var v = msg[1..].mean;
+            accSpineX = v - spineX;
+            spineX = v;
+        }, this.oscP("spine:tx"), nil, port);
+
+        spine_ty = OSCFunc({ |msg|
+            var v = msg[1..].mean;
+            accSpineY = v - spineY;
+            spineY = v;
+        }, this.oscP("spine:ty"), nil, port);
+
+        spine_tz = OSCFunc({ |msg|
+            var v = msg[1..].mean;
+            accSpineZ = v - spineZ;
+            spineZ = v;
+        }, this.oscP("spine:tz"), nil, port);
+
+        dumps[\spine] = Routine{
+            inf.do{
+                format("PERSON" ++ personId + "SPINE: x=%,y=%,z=%, accX=%,accY=%,accZ=%", spineX, spineY, spineZ, accSpineX, accSpineY, accSpineZ).postln;
+                0.2.wait;
+            }
+        };
+
+        //////////
+        // HANDS
+        //////////
+        dumps[\left_hand] = Routine{
             inf.do{
                 format("PERSON" ++ personId + "LEFT HAND: x=%,y=%,z=%, accX=%,accY=%,accZ=%", leftHandX, leftHandY, leftHandZ, accLeftHandX, accLeftHandY, accLeftHandZ).postln;
                 0.2.wait;
             }
         };
 
-        dump_right_hand = Routine{
+        dumps[\right_hand] = Routine{
             inf.do{
                 format("PERSON" ++ personId + "RIGHT HAND: x=%,y=%,z=%, accX=%,accY=%,accZ=%", rightHandX, rightHandY, rightHandZ, accRightHandX, accRightHandY, accRightHandZ).postln;
                 0.2.wait;
             }
         };
 
-        dump_left_hand_tip = Routine{
+        dumps[\left_hand_tip] = Routine{
             inf.do{
                 format("PERSON" ++ personId + "LEFT HAND TIP: x=%,y=%,z=%, accX=%,accY=%,accZ=%", leftHandTipX, leftHandTipY, leftHandTipZ, accLeftHandTipX, accLeftHandTipY, accLeftHandTipZ).postln;
+                0.2.wait;
+            }
+        };
+
+        dumps[\right_hand_tip] = Routine{
+            inf.do{
+                format("PERSON" ++ personId + "RIGHT HAND TIP: x=%,y=%,z=%, accX=%,accY=%,accZ=%", rightHandTipX, rightHandTipY, rightHandTipZ, accRightHandTipX, accRightHandTipY, accRightHandTipZ).postln;
                 0.2.wait;
             }
         };
@@ -190,7 +232,11 @@ Kinect {
     }
 
     headAccAny {
-        [^accHeadX, accHeadY, accHeadZs];
+        ^[accHeadX, accHeadY, accHeadZ].abs.maxItem;
+    }
+
+    spineAccAny {
+        ^[accSpineX, accSpineY, accSpineZ].abs.maxItem;
     }
 
     accX {
@@ -201,19 +247,13 @@ Kinect {
         ^[accHeadY, accLeftHandY, accRightHandY, accLeftHandTipY, accRightHandTipY].maxItem;
     }
 
-    dumpHead { |run = true|
-        if(run, {dump_head.reset; dump_head.play}, {dump_head.stop});
-    }
-
-    dumpLeftHand { |run = true|
-        if(run, {dump_left_hand.reset; dump_left_hand.play}, {dump_left_hand.stop});
-    }
-
-    dumpLeftHandTip { |run = true|
-        if(run, {dump_left_hand_tip.reset; dump_left_hand_tip.play}, {dump_left_hand_tip.stop});
-    }
-
-    dumpRightHand { |run = true|
-        if(run, {dump_right_hand.reset; dump_right_hand.play}, {dump_right_hand.stop});
+    dump {
+        arg name, run = true;
+        if(run, {
+            dumps[name].reset;
+            dumps[name].play;
+        }, {
+            dumps[name].stop;
+        });
     }
 }
