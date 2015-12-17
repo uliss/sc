@@ -369,6 +369,13 @@ Kinect {
         ^[accHeadX, accHeadY, accHeadZ].abs.maxItem;
     }
 
+    leftHandAccAny {
+        ^[accLeftHandX, accLeftHandY, accLeftHandZ].abs.maxItem;
+    }
+
+    rightHandAccAny {
+        ^[accRightHandX, accRightHandY, accRightHandZ].abs.maxItem;
+    }
 
     leftFootAccAny {
         ^[accLeftFootX, accLeftFootY, accLeftFootZ].abs.maxItem;
