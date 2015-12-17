@@ -349,10 +349,16 @@ Kinect {
         });
     }
 
+    accAll {
+        max(this.accHead, this.accHands, this.accSpine, this.accKnees, this.accFoot);
+    }
+
+    // head
     accHead {
         ^[accHeadX, accHeadY, accHeadZ].abs.maxItem;
     }
 
+    // hands
     accLeftHand {
         ^[accLeftHandX, accLeftHandY, accLeftHandZ].abs.maxItem;
     }
@@ -369,6 +375,7 @@ Kinect {
         max(this.accLeftHand, this.accRightHand, this.accLeftHandTip, this.accRightHandTip);
     }
 
+    // foots
     accLeftFoot {
         ^[accLeftFootX, accLeftFootY, accLeftFootZ].abs.maxItem;
     }
@@ -377,6 +384,11 @@ Kinect {
         ^[accRightFootX, accRightFootY, accRightFootZ].abs.maxItem;
     }
 
+    accFoot {
+        max(this.accLeftFoot, this.accRightFoot);
+    }
+
+    // knees
     accLeftKnee {
         ^[accLeftKneeX, accLeftKneeY, accLeftKneeZ].abs.maxItem;
     }
@@ -389,16 +401,9 @@ Kinect {
         max(this.accLeftKnee, this.accRightKnee);
     }
 
+    // spine
     accSpine {
         ^[accSpineX, accSpineY, accSpineZ].abs.maxItem;
-    }
-
-    accX {
-        ^[accHeadX, accLeftHandX, accRightHandX, accLeftHandTipX, accRightHandTipX].maxItem;
-    }
-
-    accY {
-        ^[accHeadY, accLeftHandY, accRightHandY, accLeftHandTipY, accRightHandTipY].maxItem;
     }
 
     dump {
