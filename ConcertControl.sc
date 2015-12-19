@@ -39,17 +39,23 @@ ConcertControl {
     }
 
     add {
-        arg composer, title, id, synth, oscFunc = nil;
+        arg composer, title, id, f_synth, oscFunc = nil;
         var entry, osc_f;
+        var synth_n;
 
         if(oscFunc.isNil, {
             osc_f = OSCFunc({
                 arg msg;
                 msg.postln;
                 switch(msg[1],
-                    \start, {synth.run(true)},
-                    \stop, {synth.free},
-                    \pause, {synth.run(false)},
+                    \start, {
+                        synth_n = f_synth.value;
+                        synth_n.run(true)
+                    },
+                    \stop, {
+                        synth_n.free;
+                    },
+                    \pause, {synth_n.run(false)},
                     { format("[ConcertControl] unknown action: '%'").postln; }
                 );
 
@@ -62,7 +68,8 @@ ConcertControl {
         entry = Dictionary.new;
         entry.put(\composer, composer);
         entry.put(\title, title);
-        entry.put(\synth, synth);
+        entry.put(\f_synth, f_synth);
+        entry.put(\synth, synth_n);
         entry.put(\osc, osc_f);
         entry.put(\id, id);
 
@@ -77,7 +84,7 @@ ConcertControl {
 
         parts.do { |entry|
             if(entry[\id] == id) {
-                entry[\synth].run(true);
+                entry[\synth] = entry[\f_synth].value;
             };
         }
     }
