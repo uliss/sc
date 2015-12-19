@@ -10,7 +10,7 @@ Scenes {
     var oscScene_xfader;
     var xfader_synth;
 
-    var oscSceneGlass;
+    var oscScene_glass;
 
     *new {
         arg sound_lib = nil;
