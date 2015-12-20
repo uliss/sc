@@ -211,6 +211,7 @@ r.play;
 )
 
 (
+k =
 k = Kinect.new(1);
 n = NetAddr("127.0.0.1", 7000);
 r = Routine {
@@ -221,7 +222,7 @@ r = Routine {
         // k.headZ.postln.lag(0.5);
         // k.headZ.postln
         if(acc > 0.07) {
-            var ch = [1,2,3].choose;
+            var ch = [1,2,3,4].choose;
 
             switch(ch,
                 1, {
@@ -232,7 +233,10 @@ r = Routine {
                 },
                 3, {
                     Synth(\sample_beat, [\amp, 5, \buf, l.buffer("onion2"), \pos, 2.0.rand - 1, startPos: 5000.rand, \dur, 1]);
-                }
+                },
+                4, {
+                     Synth(\sample_beat, [\amp, 1.3, \buf, l.buffer("metal4"), \pos, 2.0.rand - 1, startPos: 10000.rand, \dur, [0.5, 2, 1].choose]);
+                },
             );
         };
 

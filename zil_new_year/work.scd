@@ -1,7 +1,7 @@
 // ENTRY POINT
 (
-// BuiltIn.gui;
-Saffire.gui;
+BuiltIn.gui;
+// Saffire.gui;
 s = Server.default;
 s.waitForBoot({
     //////////////////////////
@@ -11,8 +11,8 @@ s.waitForBoot({
         arg bus = 0, buffer = nil, delay = 23, startPos = 0, pos1 = 0.5, pos2 = -0.5;
         var a1, a2, ao1, ao2;
         a1 = PlayBuf.ar(2, buffer, BufRateScale.kr(buffer), 1, startPos);
-        // a2 = DelayN.ar(a1, 30, delay);
-        a2 = Silent.ar(2);
+        a2 = DelayN.ar(a1, 30, delay);
+        // a2 = Silent.ar(2);
 
         ao1 = Balance2.ar(a1[0], a1[1], pos1.lag(1), 0.65);
         ao2 = Balance2.ar(a2[0], a2[1], pos2.lag(1), 0.8);
@@ -45,24 +45,32 @@ s.waitForBoot({
     }).add;
 
     SynthDef(\bubbles, {
-        arg bus = 0, gate = 1, amp = 1, sndbuf, envbuf = -1;
-        var b, osc, out, amp_env, dur, env, pan = 0, pos, freq, msg_prev, rate;
+        arg bus = 0, gate = 1, amp = 1, sndbuf, envbuf = -1, dur = 1, rate = 1, freq = 1, stop = 0, run = 1;
+        var b, osc, out, amp_env, env, pan = 0, pos, pos2 = 0, msg_prev;
         env = EnvGen.kr(
             Env([0, 1, 0], [1, 1] * 2, \sin, 1),
             gate,
             levelScale: amp,
             doneAction: 2);
-        freq = MouseX.kr(1, 10);
+        // freq = 10; //
+        // Line
+        pos = Sweep.ar(1, 1/BufDur.kr(sndbuf) * run);
+
+        // pos = Select.ar(stop, [Line.ar(0, 1, BufDur.kr(sndbuf)), K2A.ar(pos2)]);
+        pos2 = pos;
+        // pos = Phasor.ar(0, BufRateScale.kr(sndbuf), 0, 1);
+        // pos = MouseX.kr(0, 1);
         // freq = 0;
         msg_prev = 0;
-        pos = LFNoise2.kr(0.1).range(0.01, 0.06);
-        dur = LFNoise1.kr(4.reciprocal).range(1, 2);
-        rate = LFNoise1.kr.range(1, 1.2);
+        // pos = pos + LFNoise2.kr(0.1).range(0.01, 0.06);
+        // dur = LFNoise1.kr(4.reciprocal).range(1, 2);
+        // dur = 1;
+        // rate = LFNoise1.kr.range(1, 1.2);
         // pos = 2;
 
         Out.ar(bus,
             GrainBuf.ar(1, Impulse.kr(freq), dur, sndbuf, rate,
-                pos, 2, pan, envbuf) * env);
+                pos, 2) * env);
 
     }).add;
 
@@ -102,20 +110,20 @@ s.waitForBoot({
     ////////////////////////////////////
     //     INIT & LOAD SOUND LIBRARY
     ////////////////////////////////////
-    l = SoundLib.new;
-    l.load("schubert");
-    l.load("paper1");
-    l.load("paper2");
-    l.load("paper3");
-    l.load("onion1");
-    l.load("onion2");
-    l.load("metal1");
-    l.load("metal2");
-    l.load("microwave1");
-    l.load("microwave2");
-    l.load("rice1");
-    l.load("jingle4");
-    l.load("drazhe");
+    ~l = SoundLib.new;
+    ~l.load("schubert");
+    ~l.load("paper1");
+    ~l.load("paper2");
+    ~l.load("paper3");
+    ~l.load("onion1");
+    ~l.load("onion2");
+    ~l.load("metal1");
+    ~l.load("metal2");
+    ~l.load("microwave1");
+    ~l.load("microwave2");
+    ~l.load("rice1");
+    ~l.load("jingle4");
+    ~l.load("drazhe");
 
 
     "#################".postln;
@@ -127,26 +135,33 @@ s.waitForBoot({
 {SinOsc.ar([440, 330], 0, 0.1)}.play
 
 
+~l.buffer("drazhe").play;
+~l.buffer();
+
 (
 var scenes;
 n = NetAddr("127.0.0.1", 7000);
 k = Kinect.new;
-scenes = Scenes.new(l);
+scenes = Scenes.new(~l);
 scenes.scene0(
-    Synth.newPaused(\paper, [\amp, 0.3, \sndbuf, l.buffer("paper1"), \fr, 4, \bus, 0]),
-    Synth.newPaused(\paper, [\amp, 1, \sndbuf, l.buffer("rice1"), \fr, 10, \bus, 1])
+    Synth.newPaused(\paper, [\amp, 0.3, \sndbuf, ~l.buffer("paper1"), \fr, 4, \bus, 0]),
+    Synth.newPaused(\paper, [\amp, 1, \sndbuf, ~l.buffer("rice1"), \fr, 10, \bus, 1])
 );
 
 // scene.fish();
 
 scenes.scene_dvoinik(
-    Synth.newPaused(\dvoinik, ["buffer", l.buffer("schubert"), "delay", 23]);
+    Synth.newPaused(\dvoinik, ["buffer", ~l.buffer("schubert"), "delay", 23]);
 );
 
 scenes.scene_xfader(
-    Synth.newPaused(\xfader_synth, [\buf1, l.buffer("schubert"),
-        \buf2, l.buffer("jingle4")]);
+    Synth.newPaused(\xfader_synth, [\buf1, ~l.buffer("schubert"),
+        \buf2, ~l.buffer("jingle4")]);
 
+);
+
+scenes.scene_drazhe(
+    Synth.newPaused(\bubbles, [\sndbuf, ~l.buffer("drazhe"), \amp, 0.4, \freq, 20, \dur, 0.1]);
 );
 )
 
@@ -181,82 +196,175 @@ n.sendMsg("/xfader", \pos, -0.9);
 n.sendMsg("/xfader", \pos, 0);
 n.sendMsg("/xfader", \pos, 0.7);
 
+n.sendMsg("/drazhe", \start);
+n.sendMsg("/drazhe", \stop);
+
+
 (
-b = l.buffer("drazhe").play;
+
+
+
+// b = l.buffer("drazhe").play;
 // b.free;
-b = Synth.new(\bubbles, [\sndbuf, l.buffer("drazhe"), \amp, 0.4]);
+var k1 = Kinect.new(1);
+b = Synth.new(\bubbles, [\sndbuf, ~l.buffer("drazhe"), \amp, 0.4]);
+b.set(\freq, 10);
+// b.set(\dur, 0.1);
+b.set(\stop, 1);
+b.set(\run, 1);
+b.set(\stop, 0);
+// b.set(\rate, 4);
+
+r = Routine {
+    inf.do {
+        |i|
+        var acc1 = k1.accAll;
+        acc1.postln;
+
+        if((acc1 > 0.07 || k1.noHands), {
+            b.set(\freq, 20);
+            b.set(\dur, 0.1);
+            b.set(\run, 1);
+
+        }, {
+           "drazhe".postln;
+           b.set(\freq, 10);
+           b.set(\dur, 0.04);
+           b.set(\run, 0);
+        });
+        0.2.wait;
+    }
+}.play;
 // Synth.new(\paper, [\amp, 0.3, \sndbuf, l.buffer("paper1"), \fr, 4, \bus, 0]);
 
 )
 
+r.play;
+r.stop;
+
 b.free;
 
 (
+var k1 = Kinect.new(1);
+var k2 = Kinect.new(2);
 // Bjorklund(6, 11);
+// 4, 11
 var bass = Pseq(Bjorklund(4, 11), inf).asStream;
-// var onion = Pseq(Bjorklund(4, 7), inf).asStream;
+// var onion4= Pseq(Bjorklund(7, 13), inf).asStream;
 // var metal1 = Pseq(Bjorklund(4, 9).shift(3), inf).asStream;
 // var metal2 = Pseq(Bjorklund(3, 13).shift(2), inf).asStream;
 // var bass = Pseq(Bjorklund(3, 8), inf).asStream;
-var onion = Pseq(#[1, 0.1, 0.75, 0, 0.175, 0, 1, 0.5] * 1.3, inf).asStream;
+var onion = Pseq(#[1, 0.2, 0.75, 0, 0.175, 0, 1, 0.5] * 1.3, inf).asStream;
 var metal1 = Pseq(#[1, 1, 0, 0.1, 0.5, 0, 0, 1, 0.2], inf).asStream;
 var metal2 = Pseq(#[1, 0.1, 0.1, 1, 0.25, 0.1, 0.75], inf).asStream;
 var microwave = Pseq(#[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] * 4, inf).asStream;
 
 var swing = 0.01; // swing amount
 var times = [1 + swing, 1 - swing, 1 + swing, 1 - swing]; // add swing
-r = Routine({
+
+~r1 = Routine {
+    var started = false;
+
+    inf.do {
+        var acc1 = k1.accAll;
+        var acc2 = k2.accAll;
+        // k.headZ.postln.lag(0.5);
+        // k.headZ.postln
+        if([acc1, acc2].any({|v| v > 0.07})) {
+            var ch = [1,2,3,4].choose;
+
+            switch(ch,
+                1, {
+                    Synth(\sample_beat, [\amp, 1.3, \buf, l.buffer("metal1"), \pos, 2.0.rand - 1, startPos: 10000.rand, \dur, [0.5, 2, 1].choose]);
+                },
+                2, {
+                    Synth(\sample_beat, [\amp, 1.3, \buf, l.buffer("onion1"), \pos, 2.0.rand - 1, startPos: 10000.rand, \dur, [0.5, 2, 1].choose]);
+                },
+                3, {
+                    Synth(\sample_beat, [\amp, 5, \buf, l.buffer("onion2"), \pos, 2.0.rand - 1, startPos: 5000.rand, \dur, 1]);
+                },
+                4, {
+                    Synth(\sample_beat, [\amp, 1.3, \buf, l.buffer("metal2"), \pos, 2.0.rand - 1, startPos: 10000.rand, \dur, [0.5, 2, 1].choose]);
+                },
+            );
+        };
+
+
+
+        // n.sendMsg("/xfader", \pos, pos.lag(0.5));
+        0.3.wait;
+    }
+};
+
+~r2 = Routine {
     var i = 0;
-    var perc = 210; // 210, 50
+    var perc = 200; // 210, 50
+    loop({
+        var tm = times.wrapAt(i) * (0.1 + (0.1 * (perc/ 100.0)));
+        Synth(\bass, [\amp, bass.next * 0.5, \freq, 25.rand + 42, \dur, tm * 4]);
+        // i.postln;
+        tm.wait;
+        i = i + 1;
+    })
+};
+
+
+~r3 = Routine {
+    var i = 0;
+    var perc = 200; // 210, 50
     loop({
         var tm = times.wrapAt(i) * (0.1 + (0.1 * (perc/ 100.0)));
 
         // if((i < 64) || (i > 90)) {
 
-        if(i > 160) {
-            Synth(\bass, [\amp, bass.next * 0.5, \freq, 25.rand + 42, \dur, tm * 4]);
-            };
+        // if(i > 160 && (i < 220) || (i > 280)) {
+        // Synth(\bass, [\amp, bass.next * 0.5, \freq, 25.rand + 42, \dur, tm * 4]);
+        // };
 
         if(i > 16) {
             Synth(\sample_beat, [\amp, onion.next, \buf, l.buffer("onion1"), \pos: 0.2, \dur, tm * 10, \startPos: 1000]);
-            };
+        };
 
-        if(i > 100) {
-        Synth(\sample_beat, [\amp, metal1.next, \buf, l.buffer("metal2"), \dur, tm * [2, 3, 1, 10].choose, \pos: -0.25]);
-            };
+        if(i > 100 && (i < 220) || (i > 260)) {
+            Synth(\sample_beat, [\amp, metal1.next, \buf, l.buffer("metal2"), \dur, tm * [2, 3, 1, 10].choose, \pos: -0.25]);
+        };
 
         if(i > 130) {
             Synth(\sample_beat, [\amp, metal2.next, \buf, l.buffer("metal1"), \dur, tm * [2, 3, 1].choose, \pos: -0.25]);
-            };
+        };
 
         if(i % 28 == 0) {
             Synth(\sample_beat, [\amp, microwave.next, \buf, l.buffer("microwave1"), \dur, tm * 16, \pos: [-0.8, 0.8].choose, \startPos, 1000]);
-            };
+        };
 
-        // };
-
-        if((i > 64) && (i < 90)) {
-            Synth(\sample_beat, [\amp, microwave.next, \buf, l.buffer("microwave1"), \dur, tm * 64, \pos: [-0.8, 0.8].choose, \startPos, 1000]);
-         };
 
         i.postln;
 
-        /*       if(i % 8 == 0) {
-        if(perc > 0) {
-        perc = perc - 10;
-        };
-        };*/
-
-
-
-        // Synth(\metal2, [\amp, metal2.next * 0.3]);
-        // Synth(\onion3, [\amp, onion3.next]);
 
         tm.wait;
         i = i + 1;
     })
-}).play;
+};
 )
+
+~r1.play;
+~r1.stop;
+
+~r2.play;
+
+(
+~r1.stop;
+// ~r2.stop;
+~r3.play;
+)
+
+(
+k = SeledkaScene.new;
+// k.part1.play;
+// k.part2.play;
+)
+
+k.play3
 
 
 Synth(\sample_beat, [\amp, 1.3, \buf, l.buffer("metal1"), \pos, 2.0.rand - 1, startPos: 10000.rand, \dur, [0.5, 2, 1].choose]);

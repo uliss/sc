@@ -4,9 +4,10 @@ Saffire.gui;
 s = Server.default;
 s.waitForBoot({
     SynthDef(\roai, {
-        arg bufT, bufM, ampT = 1, ampM = 2;
-        var sigT = PlayBuf.ar(2, bufT) * ampT * EnvGate.new;
-        var sigM = PlayBuf.ar(1, bufM) * ampM * EnvGate.new;
+        arg bufT, bufM, ampT = 1, ampM = 2, pos;
+        var sample_pos = pos * 44100;
+        var sigT = PlayBuf.ar(2, bufT, startPos: sample_pos) * ampT * EnvGate.new;
+        var sigM = PlayBuf.ar(1, bufM, startPos: sample_pos) * ampM * EnvGate.new;
         Out.ar(0, sigT);
         Out.ar(4, sigM);
     }).add;
@@ -16,7 +17,8 @@ s.waitForBoot({
         var sig = PlayBuf.ar(2, buf, BufRateScale.kr(buf) * rate) * EnvGate.new * amp;
         // to phones
         // Out.ar(0, sig);
-        Out.ar(2, sig);
+        Out.ar(2, sig[1]);
+        Out.ar(3, sig[0]);
     }).add;
 
     SynthDef(\daoust, {
@@ -36,8 +38,9 @@ var daoust = DaoustPetite.new;
 
 c = ConcertControl.new("Yamaha", Date.new(2015, 12, 19, 0, 0, 0, 0));
 
+// pos 2 - 145
 c.add("Minas Borbudakis", "ROAI III", \roai,
-    {Synth.new(\roai, [\bufT, roai.bufferT, \bufM, roai.bufferM, \amp, 5])});
+    {Synth.new(\roai, [\bufT, roai.bufferT, \bufM, roai.bufferM, \ampT, 1, \ampM, 3, \pos, 0])});
 
 
 c.add("Julia Wulfe", "East Broadway", \broadway,
