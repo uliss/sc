@@ -9,14 +9,17 @@ s.waitForBoot({
     //////////////////////////
     SynthDef(\dvoinik, {
         arg bus = 0, amp = 1, buffer = nil, delay = 23, startPos = 0, pos1 = 0.5, pos2 = -0.5;
-        var a1, a2, ao1, ao2;
+        var a1, a2, ao1, ao2, ares, amix;
         a1 = PlayBuf.ar(2, buffer, BufRateScale.kr(buffer), 1, startPos);
         a2 = DelayN.ar(a1, 30, delay);
         // a2 = Silent.ar(2);
 
         ao1 = Balance2.ar(a1[0], a1[1], pos1.lag(1), 0.65);
         ao2 = Balance2.ar(a2[0], a2[1], pos2.lag(1), 0.8);
-        Out.ar(bus, Mix.new([ao1, ao2]) * EnvGate.new * amp);
+        amix = Mix.new([ao1, ao2]);
+        ares = Compander.ar(amix, amix, 0.5, slopeBelow: 0.8, slopeAbove: 0.7);
+
+        Out.ar(bus, ares * EnvGate.new * amp);
     }).add;
 
     //////////////////////////
@@ -144,7 +147,9 @@ s.waitForBoot({
     "#################".postln;
 });
 
-AppClock.sched(2.0,{
+n = NetAddr("127.0.0.1", 7000);
+
+/*AppClock.sched(2.0,{
     ~scenes = Scenes.new(~l);
     ~scenes.scene0(
         Synth.newPaused(\paper, [\amp, 0.3, \sndbuf, ~l.buffer("paper1"), \fr, 4, \bus, 0]),
@@ -167,7 +172,7 @@ AppClock.sched(2.0,{
     "\nSCENE INITIALISED".postln;
 
     nil;
-});
+});*/
 
 nil;
 )

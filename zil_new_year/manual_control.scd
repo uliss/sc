@@ -14,15 +14,13 @@ n.sendMsg("/gadanie/1", 0);
 /////////////////////////////////
 /// DVOINIK  MANUAL CONTROL
 /////////////////////////////////
-~scenes.init;
+d = DvoinikScene.new([\delay, 2]);
 n.sendMsg("/dvoinik", \start);
+n.sendMsg("/dvoinik", \pause);
+n.sendMsg("/dvoinik", \resume);
 n.sendMsg("/dvoinik", \stop);
-n.sendMsg("/dvoinik", \pos1, -1);
-n.sendMsg("/dvoinik", \pos1, 1);
-n.sendMsg("/dvoinik", \pos2, 1);
-n.sendMsg("/dvoinik", \pos2, -1);
+n.sendMsg("/dvoinik", \release, 2);
 n.sendMsg("/dvoinik", \amp, 2);
-
 
 ///
 // DRAZHE MANUAL CONTROL
