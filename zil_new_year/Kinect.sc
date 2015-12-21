@@ -349,6 +349,10 @@ Kinect {
         });
     }
 
+    handsUp {
+        [leftHandTipY, rightHandTipY].every({|v| v > headY });
+    }
+
     accAll {
         ^[this.accHead, this.accHands, this.accSpine, this.accKnees, this.accFoot].maxItem;
     }

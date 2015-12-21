@@ -28,6 +28,8 @@ SoundLib {
         this.add("jingle3", "/Users/serj/work/music/sounds/new year/jingle-3.wav");
         this.add("jingle4", "/Users/serj/work/music/sounds/new year/jingle-crosby.wav");
         this.add("drazhe", "/Users/serj/work/music/sounds/new year/fei-drazhe-mono.wav");
+        this.add("kuranty1", "/Users/serj/work/music/sounds/new year/kuranty-1.wav");
+        this.add("kuranty2", "/Users/serj/work/music/sounds/new year/kuranty-2.wav");
     }
 
     add {

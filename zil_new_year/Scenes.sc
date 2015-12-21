@@ -10,7 +10,7 @@ Scenes {
     var dvoinik_synth;
 
     var oscScene_xfader;
-    var xfader_synth;
+    var synth_xfader, synth_xfader_param;
 
     var oscScene_glass;
 
@@ -19,6 +19,13 @@ Scenes {
     var oscScene_drazhe;
     var drazhe_synth, drazhe_control;
     var <>drazheParam;
+
+
+    var oscScene_kuranty;
+    var synth_kuranty, synth_kuranty_param;
+
+    var oscScene_wind;
+    var synth_wind, synth_wind_param;
 
     *new {
         arg sound_lib = nil;
@@ -63,19 +70,21 @@ Scenes {
         oscScene_xfader = OSCFunc({|msg|
             msg.postln;
             switch(msg[1],
-                \start, { xfader_synth.run(true) },
-                \stop,  { xfader_synth.run(false) },
-                \pos, { xfader_synth.set(\pan, msg[2]) },
+                \start, { synth_xfader = Synth.new(\xfader_synth,
+                    [\buf1, ~l.buffer("drazhe"), \buf2, ~l.buffer("jingle4")] ++ synth_xfader_param); },
+                \pause, { synth_xfader.run(false) },
+                \stop,  { synth_xfader.free },
+                \release, { synth_xfader.release(msg[2]) },
+                \xfade, { synth_xfader.set(\pan, msg[2]) },
                 { format("unknown message: '%'", msg).postln });
-
         }, "/xfader", nil, osc_port);
 
-        oscScene_glass = OSCFunc({|msg|
+/*        oscScene_glass = OSCFunc({|msg|
             msg.postln;
             switch(msg[1],
                 \ding, { xfader_synth.run(true) },
                 { format("unknown message: '%'", msg).postln });
-        }, "/glass", nil, osc_port);
+        }, "/glass", nil, osc_port);*/
 
         oscScene_drazhe = OSCFunc({|msg|
             msg.postln;
@@ -88,6 +97,9 @@ Scenes {
                 \stop,  {
                     drazhe_control.stop;
                     drazhe_synth.run(false);
+                },
+                \freeze, {
+                    drazhe_synth.set(\run, msg[2]);
                 },
                 { format("unknown message: '%'", msg).postln });
         }, "/drazhe", nil, osc_port);
@@ -114,6 +126,28 @@ Scenes {
                 drazheParam[\timeout].wait;
             };
         };
+
+        oscScene_kuranty = OSCFunc({|msg|
+            msg.postln;
+            switch(msg[1],
+                \start, { synth_kuranty = Synth.new(\mono_player,
+                    [\buf, ~l.buffer("kuranty1")] ++ synth_kuranty_param) },
+                \pause, { synth_kuranty.run(false) },
+                \stop,  { synth_kuranty.free },
+                \release, { synth_kuranty.release(msg[2]) },
+                { format("unknown message: '%'", msg).postln });
+        }, "/kuranty", nil, osc_port);
+
+
+        oscScene_wind = OSCFunc({|msg|
+            msg.postln;
+            switch(msg[1],
+                \start, { synth_wind = Synth.new(\wind1, synth_wind_param) },
+                \pause, { synth_wind.run(false) },
+                \stop,  { synth_wind.free },
+                \release, { synth_wind.release(msg[2]) },
+                { format("unknown message: '%'", msg).postln });
+        }, "/wind", nil, osc_port);
     }
 
     scene0 {
@@ -127,11 +161,6 @@ Scenes {
         dvoinik_synth = synth;
     }
 
-    scene_xfader {
-        arg synth;
-        xfader_synth = synth;
-    }
-
     scene_seledka {
         arg synth_move, synth_bass, synth_beat;
 
@@ -140,6 +169,33 @@ Scenes {
     scene_drazhe {
         arg synth;
         drazhe_synth = synth;
+    }
+
+    set_xfader {
+        arg ... args;
+        synth_xfader_param = args.asList;
+        synth_xfader_param.postln;
+        if(synth_xfader.notNil) {
+            synth_xfader.set(*args);
+        };
+    }
+
+    set_kuranty {
+        arg ... args;
+        synth_kuranty_param = args.asList;
+        synth_kuranty_param.postln;
+        if(synth_kuranty.notNil) {
+            synth_kuranty.set(*args);
+        };
+    }
+
+    set_wind {
+        arg ... args;
+        synth_wind_param = args.asList;
+        synth_wind_param.postln;
+        if(synth_wind.notNil) {
+            synth_wind.set(*args);
+        };
     }
 }
 

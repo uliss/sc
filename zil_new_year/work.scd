@@ -44,34 +44,17 @@ s.waitForBoot({
 
     }).add;
 
-    SynthDef(\bubbles, {
-        arg bus = 0, gate = 1, amp = 1, sndbuf, envbuf = -1, dur = 1, rate = 1, freq = 1, stop = 0, run = 1;
-        var b, osc, out, amp_env, env, pan = 0, pos, pos2 = 0, msg_prev;
+    SynthDef(\grains, {
+        arg bus = 0, gate = 1, amp = 1, sndbuf, dur = 1, rate = 1, freq = 1, run = 1;
+        var out, env, pos;
         env = EnvGen.kr(
             Env([0, 1, 0], [1, 1] * 2, \sin, 1),
             gate,
             levelScale: amp,
             doneAction: 2);
-        // freq = 10; //
-        // Line
         pos = Sweep.ar(1, 1/BufDur.kr(sndbuf) * run);
-
-        // pos = Select.ar(stop, [Line.ar(0, 1, BufDur.kr(sndbuf)), K2A.ar(pos2)]);
-        pos2 = pos;
-        // pos = Phasor.ar(0, BufRateScale.kr(sndbuf), 0, 1);
-        // pos = MouseX.kr(0, 1);
-        // freq = 0;
-        msg_prev = 0;
-        // pos = pos + LFNoise2.kr(0.1).range(0.01, 0.06);
-        // dur = LFNoise1.kr(4.reciprocal).range(1, 2);
-        // dur = 1;
-        // rate = LFNoise1.kr.range(1, 1.2);
-        // pos = 2;
-
-        Out.ar(bus,
-            GrainBuf.ar(1, Impulse.kr(freq), dur, sndbuf, rate,
-                pos, 2) * env);
-
+        out = GrainBuf.ar(1, Impulse.kr(freq), dur, sndbuf, rate, pos, 2) * env;
+        Out.ar(bus, Pan2.ar(out));
     }).add;
 
     // STOMP BASS
@@ -99,12 +82,32 @@ s.waitForBoot({
         arg amp = 0.5, pan = 0, buf1, buf2;
         var asig1, asig2, out;
 
-        // asig1 = PlayBuf.ar(2, buf1);
-        // asig1 = Pan2.ar(Crackle.ar(1.95, 0.5));
-        asig1 = Pan2.ar(CuspN.ar(120, 1.0, 1.99) * 0.3);
+        asig1 = PlayBuf.ar(2, buf1);
         asig2 = PlayBuf.ar(2, buf2);
-        out = XFade2.ar(asig1, asig2, pan);
+        out = XFade2.ar(asig1, asig2, pan) * EnvGate.new * amp;
         Out.ar(0, out);
+    }).add;
+
+    SynthDef(\wind1, {
+        arg amp = 0.5, pan = 0;
+        var out, freq, res, out2;
+        freq = LFNoise1.kr(3.9.reciprocal).linexp(0, 1, 300, 3000);
+        res = LFNoise1.kr(1.1).linlin(0, 1, 0.7, 1);
+        out = DFM1.ar(PinkNoise.ar(mul: 0.5), freq, res) * EnvGate.new * amp;
+        Out.ar(0, Pan2.ar(out, pan));
+
+    }).add;
+
+    SynthDef(\mono_player, {
+        arg amp = 0.5, pan = 0, buf = -1;
+        var out = PlayBuf.ar(1, buf) * EnvGate.new * amp;
+        Out.ar(0, Pan2.ar(out, pan));
+    }).add;
+
+    SynthDef(\glasses, {
+        arg amp = 0.5, pan = 0, buf = -1;
+        var out = PlayBuf.ar(1, buf) * EnvGate.new * amp;
+        Out.ar(0, Pan2.ar(out, pan));
     }).add;
 
     ////////////////////////////////////
@@ -124,90 +127,53 @@ s.waitForBoot({
     ~l.load("rice1");
     ~l.load("jingle4");
     ~l.load("drazhe");
+    ~l.load("kuranty1");
+    ~l.load("kuranty2");
 
 
     "#################".postln;
     "##    LOADED     ".postln;
+    ~l.listAll;
     "#################".postln;
 });
+
+AppClock.sched(2.0,{
+    ~scenes = Scenes.new(~l);
+    ~scenes.scene0(
+        Synth.newPaused(\paper, [\amp, 0.3, \sndbuf, ~l.buffer("paper1"), \fr, 4, \bus, 0]),
+        Synth.newPaused(\paper, [\amp, 1, \sndbuf, ~l.buffer("rice1"), \fr, 10, \bus, 1])
+    );
+
+    ~scenes.scene_dvoinik(
+        Synth.newPaused(\dvoinik, ["buffer", ~l.buffer("schubert"), "delay", 23]);
+    );
+
+    ~scenes.set_xfader(\amp, 0.4, \pan, -1);
+
+    ~scenes.scene_drazhe(
+        Synth.newPaused(\grains, [\sndbuf, ~l.buffer("drazhe"), \amp, 0.4, \freq, 20, \dur, 0.1]);
+    );
+
+    ~scenes.set_kuranty(\amp, 0.5);
+    ~scenes.set_wind(\amp, 1);
+
+    // osc control address
+    n = NetAddr("127.0.0.1", 7000);
+
+    "\nSCENE INITIALISED".postln;
+
+    nil;
+});
+
+nil;
 )
-
-{SinOsc.ar([440, 330], 0, 0.1)}.play
-
-
-~l.buffer("drazhe").play;
-~l.buffer();
-
-(
-var scenes;
-n = NetAddr("127.0.0.1", 7000);
-k = Kinect.new;
-scenes = Scenes.new(~l);
-scenes.scene0(
-    Synth.newPaused(\paper, [\amp, 0.3, \sndbuf, ~l.buffer("paper1"), \fr, 4, \bus, 0]),
-    Synth.newPaused(\paper, [\amp, 1, \sndbuf, ~l.buffer("rice1"), \fr, 10, \bus, 1])
-);
-
-// scene.fish();
-
-scenes.scene_dvoinik(
-    Synth.newPaused(\dvoinik, ["buffer", ~l.buffer("schubert"), "delay", 23]);
-);
-
-scenes.scene_xfader(
-    Synth.newPaused(\xfader_synth, [\buf1, ~l.buffer("schubert"),
-        \buf2, ~l.buffer("jingle4")]);
-
-);
-
-scenes.scene_drazhe(
-    Synth.newPaused(\bubbles, [\sndbuf, ~l.buffer("drazhe"), \amp, 0.4, \freq, 20, \dur, 0.1]);
-);
-)
-
-/////////////////////////////////
-/// GADANIE  MANUAL CONTROL
-/////////////////////////////////
-
-// PERSON 1
-n.sendMsg("/gadanie/0", 1);
-n.sendMsg("/gadanie/0", 0);
-// PERSON 2
-n.sendMsg("/gadanie/1", 1);
-n.sendMsg("/gadanie/1", 0);
-
-/////////////////////////////////
-/// DVOINIK  MANUAL CONTROL
-/////////////////////////////////
-n.sendMsg("/dvoinik", \start);
-n.sendMsg("/dvoinik", \stop);
-n.sendMsg("/dvoinik", \pos1, -1);
-n.sendMsg("/dvoinik", \pos1, 1);
-n.sendMsg("/dvoinik", \pos2, 1);
-n.sendMsg("/dvoinik", \pos2, -1);
-
-/////////////////////////////////
-/// FADER  MANUAL CONTROL
-/////////////////////////////////
-n.sendMsg("/xfader", \start);
-n.sendMsg("/xfader", \stop);
-n.sendMsg("/xfader", \pos, -1);
-n.sendMsg("/xfader", \pos, -0.9);
-n.sendMsg("/xfader", \pos, 0);
-n.sendMsg("/xfader", \pos, 0.7);
-
-n.sendMsg("/drazhe", \start);
-n.sendMsg("/drazhe", \stop);
-
-
-(
 
 
 
 // b = l.buffer("drazhe").play;
 // b.free;
 var k1 = Kinect.new(1);
-b = Synth.new(\bubbles, [\sndbuf, ~l.buffer("drazhe"), \amp, 0.4]);
+b = Synth.new(\bubbles, [\sndbuf, ~l.buffer("jingle4"), \amp, 0.4]);
 b.set(\freq, 10);
 // b.set(\dur, 0.1);
 b.set(\stop, 1);
@@ -227,10 +193,10 @@ r = Routine {
             b.set(\run, 1);
 
         }, {
-           "drazhe".postln;
-           b.set(\freq, 10);
-           b.set(\dur, 0.04);
-           b.set(\run, 0);
+            "drazhe".postln;
+            b.set(\freq, 10);
+            b.set(\dur, 0.04);
+            b.set(\run, 0);
         });
         0.2.wait;
     }
