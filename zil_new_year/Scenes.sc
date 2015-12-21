@@ -5,9 +5,8 @@ Scenes {
     var oscScene0_l, oscScene0_r;
     var scene0_synth_l, scene0_synth_r;
 
-    var oscScene1, oscScene2, oscScene3, oscScene4, oscScene5;
     var oscScene_dvoinik;
-    var dvoinik_synth;
+    var synth_dvoinik, synth_dvoinik_param;
 
     var oscScene_xfader;
     var synth_xfader, synth_xfader_param;
@@ -61,10 +60,12 @@ Scenes {
         oscScene_dvoinik = OSCFunc({|msg|
             msg.postln;
             switch(msg[1],
-                \start, { dvoinik_synth.run(true) },
-                \stop,  { dvoinik_synth.run(false) },
-                \pos1, { dvoinik_synth.set(\pos1, msg[2]) },
-                \pos2, { dvoinik_synth.set(\pos2, msg[2]) },
+                \start, { synth_dvoinik = Synth.new(\dvoinik,
+                    ["buffer", ~l.buffer("schubert"), "delay", 23] ++ synth_dvoinik_param); },
+                \stop,  { synth_dvoinik.run(false) },
+                \pos1, { synth_dvoinik.set(\pos1, msg[2]) },
+                \pos2, { synth_dvoinik.set(\pos2, msg[2]) },
+                \release, { synth_dvoinik.release(msg[2]) },
                 { format("unknown message: '%'", msg).postln });
         }, "/dvoinik", nil, osc_port);
 
@@ -170,11 +171,6 @@ Scenes {
         scene0_synth_r = synth2;
     }
 
-    scene_dvoinik {
-        arg synth;
-        dvoinik_synth = synth;
-    }
-
     scene_seledka_init {
         arg tm1 = 0.3, swing = 0.01;
         var bass = Pseq(Bjorklund(4, 11), inf).asStream;
@@ -267,6 +263,15 @@ Scenes {
     scene_drazhe {
         arg synth;
         drazhe_synth = synth;
+    }
+
+    set_dvoinik {
+        arg ... args;
+        synth_dvoinik_param = args.asList;
+        synth_dvoinik_param.postln;
+        if(synth_dvoinik.notNil) {
+            synth_dvoinik.set(*args);
+        };
     }
 
     set_xfader {

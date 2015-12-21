@@ -144,16 +144,12 @@ AppClock.sched(2.0,{
         Synth.newPaused(\paper, [\amp, 1, \sndbuf, ~l.buffer("rice1"), \fr, 10, \bus, 1])
     );
 
-    ~scenes.scene_dvoinik(
-        Synth.newPaused(\dvoinik, ["buffer", ~l.buffer("schubert"), "delay", 23]);
-    );
-
-    ~scenes.set_xfader(\amp, 0.4, \pan, -1);
-
     ~scenes.scene_drazhe(
         Synth.newPaused(\grains, [\sndbuf, ~l.buffer("drazhe"), \amp, 0.4, \freq, 20, \dur, 0.1]);
     );
 
+    ~scenes.set_dvoinik(\amp, 1);
+    ~scenes.set_xfader(\amp, 0.4, \pan, -1);
     ~scenes.set_kuranty(\amp, 0.5);
     ~scenes.set_wind(\amp, 1);
     ~scenes.scene_seledka_init;
