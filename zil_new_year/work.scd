@@ -156,6 +156,7 @@ AppClock.sched(2.0,{
 
     ~scenes.set_kuranty(\amp, 0.5);
     ~scenes.set_wind(\amp, 1);
+    ~scenes.scene_seledka_init;
 
     // osc control address
     n = NetAddr("127.0.0.1", 7000);
@@ -208,129 +209,7 @@ r = Routine {
 r.play;
 r.stop;
 
-b.free;
 
-(
-var k1 = Kinect.new(1);
-var k2 = Kinect.new(2);
-// Bjorklund(6, 11);
-// 4, 11
-var bass = Pseq(Bjorklund(4, 11), inf).asStream;
-// var onion4= Pseq(Bjorklund(7, 13), inf).asStream;
-// var metal1 = Pseq(Bjorklund(4, 9).shift(3), inf).asStream;
-// var metal2 = Pseq(Bjorklund(3, 13).shift(2), inf).asStream;
-// var bass = Pseq(Bjorklund(3, 8), inf).asStream;
-var onion = Pseq(#[1, 0.2, 0.75, 0, 0.175, 0, 1, 0.5] * 1.3, inf).asStream;
-var metal1 = Pseq(#[1, 1, 0, 0.1, 0.5, 0, 0, 1, 0.2], inf).asStream;
-var metal2 = Pseq(#[1, 0.1, 0.1, 1, 0.25, 0.1, 0.75], inf).asStream;
-var microwave = Pseq(#[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] * 4, inf).asStream;
-
-var swing = 0.01; // swing amount
-var times = [1 + swing, 1 - swing, 1 + swing, 1 - swing]; // add swing
-
-~r1 = Routine {
-    var started = false;
-
-    inf.do {
-        var acc1 = k1.accAll;
-        var acc2 = k2.accAll;
-        // k.headZ.postln.lag(0.5);
-        // k.headZ.postln
-        if([acc1, acc2].any({|v| v > 0.07})) {
-            var ch = [1,2,3,4].choose;
-
-            switch(ch,
-                1, {
-                    Synth(\sample_beat, [\amp, 1.3, \buf, l.buffer("metal1"), \pos, 2.0.rand - 1, startPos: 10000.rand, \dur, [0.5, 2, 1].choose]);
-                },
-                2, {
-                    Synth(\sample_beat, [\amp, 1.3, \buf, l.buffer("onion1"), \pos, 2.0.rand - 1, startPos: 10000.rand, \dur, [0.5, 2, 1].choose]);
-                },
-                3, {
-                    Synth(\sample_beat, [\amp, 5, \buf, l.buffer("onion2"), \pos, 2.0.rand - 1, startPos: 5000.rand, \dur, 1]);
-                },
-                4, {
-                    Synth(\sample_beat, [\amp, 1.3, \buf, l.buffer("metal2"), \pos, 2.0.rand - 1, startPos: 10000.rand, \dur, [0.5, 2, 1].choose]);
-                },
-            );
-        };
-
-
-
-        // n.sendMsg("/xfader", \pos, pos.lag(0.5));
-        0.3.wait;
-    }
-};
-
-~r2 = Routine {
-    var i = 0;
-    var perc = 200; // 210, 50
-    loop({
-        var tm = times.wrapAt(i) * (0.1 + (0.1 * (perc/ 100.0)));
-        Synth(\bass, [\amp, bass.next * 0.5, \freq, 25.rand + 42, \dur, tm * 4]);
-        // i.postln;
-        tm.wait;
-        i = i + 1;
-    })
-};
-
-
-~r3 = Routine {
-    var i = 0;
-    var perc = 200; // 210, 50
-    loop({
-        var tm = times.wrapAt(i) * (0.1 + (0.1 * (perc/ 100.0)));
-
-        // if((i < 64) || (i > 90)) {
-
-        // if(i > 160 && (i < 220) || (i > 280)) {
-        // Synth(\bass, [\amp, bass.next * 0.5, \freq, 25.rand + 42, \dur, tm * 4]);
-        // };
-
-        if(i > 16) {
-            Synth(\sample_beat, [\amp, onion.next, \buf, l.buffer("onion1"), \pos: 0.2, \dur, tm * 10, \startPos: 1000]);
-        };
-
-        if(i > 100 && (i < 220) || (i > 260)) {
-            Synth(\sample_beat, [\amp, metal1.next, \buf, l.buffer("metal2"), \dur, tm * [2, 3, 1, 10].choose, \pos: -0.25]);
-        };
-
-        if(i > 130) {
-            Synth(\sample_beat, [\amp, metal2.next, \buf, l.buffer("metal1"), \dur, tm * [2, 3, 1].choose, \pos: -0.25]);
-        };
-
-        if(i % 28 == 0) {
-            Synth(\sample_beat, [\amp, microwave.next, \buf, l.buffer("microwave1"), \dur, tm * 16, \pos: [-0.8, 0.8].choose, \startPos, 1000]);
-        };
-
-
-        i.postln;
-
-
-        tm.wait;
-        i = i + 1;
-    })
-};
-)
-
-~r1.play;
-~r1.stop;
-
-~r2.play;
-
-(
-~r1.stop;
-// ~r2.stop;
-~r3.play;
-)
-
-(
-k = SeledkaScene.new;
-// k.part1.play;
-// k.part2.play;
-)
-
-k.play3
 
 
 Synth(\sample_beat, [\amp, 1.3, \buf, l.buffer("metal1"), \pos, 2.0.rand - 1, startPos: 10000.rand, \dur, [0.5, 2, 1].choose]);

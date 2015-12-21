@@ -42,6 +42,13 @@ n.sendMsg("/wind", \release, 1);
 ~scenes.set_wind(\amp, 1);
 
 
+/// SELEDKA
+n.sendMsg("/seledka", \start);
+n.sendMsg("/seledka", \part1);
+n.sendMsg("/seledka", \part2);
+n.sendMsg("/seledka", \part3);
+n.sendMsg("/seledka", \stop);
+
 /////////////////////////////////
 /// FADER  MANUAL CONTROL
 /////////////////////////////////
