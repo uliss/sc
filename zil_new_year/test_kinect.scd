@@ -162,55 +162,6 @@ r.stop;
 
 
 (
-k = Kinect.new(1);
-n = NetAddr("127.0.0.1", 7000);
-r = Routine {
-    var started = false;
-
-    inf.do {
-        var pos = k.headZ.linlin(1.5, 4, -1, 1);
-        // k.headZ.postln.lag(0.5);
-        // k.headZ.postln
-
-
-        n.sendMsg("/xfader", \pos, pos.lag(0.5));
-        0.1.wait;
-    }
-};
-
-r.play;
-)
-
-
-
-
-n.sendMsg("/xfader", \start);
-n.sendMsg("/xfader", \stop);
-r.reset;
-r.stop;
-
-
-(
-k = Kinect.new(1);
-n = NetAddr("127.0.0.1", 7000);
-r = Routine {
-    var started = false;
-
-    inf.do {
-        var pos = k.headZ.linlin(1.5, 4, -1, 1);
-        // k.headZ.postln.lag(0.5);
-        pos.postln
-
-
-        n.sendMsg("/xfader", \xfade, pos.lag(0.5));
-        0.1.wait;
-    }
-};
-
-r.play;
-)
-
-(
 k =
 k = Kinect.new(1);
 n = NetAddr("127.0.0.1", 7000);

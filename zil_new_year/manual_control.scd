@@ -14,12 +14,14 @@ n.sendMsg("/gadanie/1", 0);
 /////////////////////////////////
 /// DVOINIK  MANUAL CONTROL
 /////////////////////////////////
+~scenes.init;
 n.sendMsg("/dvoinik", \start);
 n.sendMsg("/dvoinik", \stop);
 n.sendMsg("/dvoinik", \pos1, -1);
 n.sendMsg("/dvoinik", \pos1, 1);
 n.sendMsg("/dvoinik", \pos2, 1);
 n.sendMsg("/dvoinik", \pos2, -1);
+n.sendMsg("/dvoinik", \amp, 2);
 
 
 ///
@@ -40,10 +42,14 @@ n.sendMsg("/kuranty", \stop);
 n.sendMsg("/kuranty", \release, 2);
 
 /// WIND
+~scenes.init;
 n.sendMsg("/wind", \start);
 n.sendMsg("/wind", \stop);
 n.sendMsg("/wind", \release, 1);
-~scenes.set_wind(\amp, 0.4);
+n.sendMsg("/wind", \amp, 0.4);
+n.sendMsg("/wind", "set", "amp", 1.01);
+n.sendMsg("/wind", "set", "rate1", 2);
+n.sendMsg("/wind", "set", "rate2", 1.1);
 
 
 /// SELEDKA

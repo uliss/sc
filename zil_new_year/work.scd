@@ -1,14 +1,14 @@
 // ENTRY POINT
 (
-// BuiltIn.gui;
-Saffire.gui;
+BuiltIn.gui;
+// Saffire.gui;
 s = Server.default;
 s.waitForBoot({
     //////////////////////////
     //  SCHUBERT SYNTH
     //////////////////////////
     SynthDef(\dvoinik, {
-        arg bus = 0, buffer = nil, delay = 23, startPos = 0, pos1 = 0.5, pos2 = -0.5;
+        arg bus = 0, amp = 1, buffer = nil, delay = 23, startPos = 0, pos1 = 0.5, pos2 = -0.5;
         var a1, a2, ao1, ao2;
         a1 = PlayBuf.ar(2, buffer, BufRateScale.kr(buffer), 1, startPos);
         a2 = DelayN.ar(a1, 30, delay);
@@ -16,7 +16,7 @@ s.waitForBoot({
 
         ao1 = Balance2.ar(a1[0], a1[1], pos1.lag(1), 0.65);
         ao2 = Balance2.ar(a2[0], a2[1], pos2.lag(1), 0.8);
-        Out.ar(bus, Mix.new([ao1, ao2]));
+        Out.ar(bus, Mix.new([ao1, ao2]) * EnvGate.new * amp);
     }).add;
 
     //////////////////////////
@@ -89,10 +89,10 @@ s.waitForBoot({
     }).add;
 
     SynthDef(\wind1, {
-        arg amp = 0.5, pan = 0;
+        arg amp = 0.5, pan = 0, rate1 = 3.9, min1 = 300, max1 = 3000, rate2 = 1.1, min2 = 0.7, max2 = 1;
         var out, freq, res, out2;
-        freq = LFNoise1.kr(3.9.reciprocal).linexp(0, 1, 300, 3000);
-        res = LFNoise1.kr(1.1).linlin(0, 1, 0.7, 1);
+        freq = LFNoise1.kr(rate1.reciprocal).linexp(0, 1, min1, max1);
+        res = LFNoise1.kr(rate2).linlin(0, 1, min2, max2);
         out = DFM1.ar(PinkNoise.ar(mul: 0.5), freq, res) * EnvGate.new * amp;
         Out.ar(0, Pan2.ar(out, pan));
 

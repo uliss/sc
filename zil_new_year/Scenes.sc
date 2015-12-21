@@ -6,7 +6,7 @@ Scenes {
     var scene0_synth_l, scene0_synth_r;
 
     var oscScene_dvoinik;
-    var synth_dvoinik, synth_dvoinik_param;
+    var synth_dvoinik, synth_dvoinik_param, dvoinik_routine;
 
     var oscScene_xfader;
     var synth_xfader, synth_xfader_param, xfader_routine;
@@ -44,7 +44,7 @@ Scenes {
             switch(msg[1],
                 1, { scene0_synth_l.run(true)  },
                 0, { scene0_synth_l.run(false) },
-                \amp, {scene0_synth_r.set(\amp, msg[1])},
+                \amp, {scene0_synth_r.set(\amp, msg[2])},
                 { format("unknown message format: '%'", msg).postln });
         }, "/gadanie/0", nil, osc_port);
 
@@ -53,21 +53,34 @@ Scenes {
             switch(msg[1],
                 1, { scene0_synth_r.run(true)  },
                 0, { scene0_synth_r.run(false) },
-                \amp, {scene0_synth_r.set(\amp, msg[1])},
+                \amp, {scene0_synth_r.set(\amp, msg[2])},
                 { format("unknown message format: '%'", msg).postln });
         }, "/gadanie/1", nil, osc_port);
 
         oscScene_dvoinik = OSCFunc({|msg|
             msg.postln;
             switch(msg[1],
-                \start, { synth_dvoinik = Synth.new(\dvoinik,
-                    ["buffer", ~l.buffer("schubert"), "delay", 23] ++ synth_dvoinik_param); },
-                \stop,  { synth_dvoinik.run(false) },
+                \start, {
+                    synth_dvoinik = Synth.new(\dvoinik,
+                    ["buffer", ~l.buffer("schubert"), "delay", 23] ++ synth_dvoinik_param);
+                    dvoinik_routine.reset;
+                    dvoinik_routine.play;
+                },
+                \stop,  {
+                    synth_dvoinik.run(false);
+                    dvoinik_routine.stop;
+                },
                 \pos1, { synth_dvoinik.set(\pos1, msg[2]) },
                 \pos2, { synth_dvoinik.set(\pos2, msg[2]) },
-                \release, { synth_dvoinik.release(msg[2]) },
+                \amp,  { synth_dvoinik.set(\amp, msg[2].asFloat) },
+                \release, {
+                    synth_dvoinik.release(msg[2]);
+                    dvoinik_routine.stop;
+                },
                 { format("unknown message: '%'", msg).postln });
         }, "/dvoinik", nil, osc_port);
+
+        this.init_dvoinik;
 
         oscScene_xfader = OSCFunc({|msg|
             msg.postln;
@@ -87,8 +100,9 @@ Scenes {
                     xfader_routine.stop;
                     synth_xfader.release(msg[2]);
                 },
-                \amp, { synth_xfader.set(\amp, msg[2].asFloat) },
+                \amp,   { synth_xfader.set(\amp, msg[2].asFloat) },
                 \xfade, { synth_xfader.set(\pan, msg[2]) },
+                \set,   { synth_xfader.set(msg[2].asString, msg[3].asFloat) },
                 { format("unknown message: '%'", msg).postln });
         }, "/xfader", nil, osc_port);
 
@@ -167,7 +181,9 @@ Scenes {
                 \start, { synth_wind = Synth.new(\wind1, synth_wind_param) },
                 \pause, { synth_wind.run(false) },
                 \stop,  { synth_wind.free },
+                \amp,   { synth_wind.set(\amp, msg[2].asFloat) },
                 \release, { synth_wind.release(msg[2]) },
+                \set,   { synth_wind.set(msg[2].asString, msg[3].asFloat) },
                 { format("unknown message: '%'", msg).postln });
         }, "/wind", nil, osc_port);
 
@@ -203,6 +219,15 @@ Scenes {
                 0.1.wait;
             }
         };
+    }
+
+    init_dvoinik {
+        dvoinik_routine = Routine {
+            inf.do { |i|
+                format("DVOINIK: %", i.asTimeString[0..7]).postln;
+                1.wait;
+            };
+        }
     }
 
     scene_seledka_init {
