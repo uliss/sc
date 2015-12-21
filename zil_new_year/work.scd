@@ -1,7 +1,7 @@
 // ENTRY POINT
 (
-BuiltIn.gui;
-// Saffire.gui;
+// BuiltIn.gui;
+Saffire.gui;
 s = Server.default;
 s.waitForBoot({
     //////////////////////////
@@ -165,6 +165,7 @@ AppClock.sched(2.0,{
 nil;
 )
 
+{SinOsc.ar([330, 440])}.play
 
 
 // b = l.buffer("drazhe").play;

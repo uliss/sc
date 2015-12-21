@@ -29,6 +29,10 @@ n.sendMsg("/drazhe", \stop);
 n.sendMsg("/drazhe", \freeze, 1);
 n.sendMsg("/drazhe", \freeze, 0);
 
+~scenes.drazheParam[\timeout] = 0.15;
+~scenes.drazheParam[\acc_threshold_up] = 0.21; // 0.11
+~scenes.drazheParam[\acc_threshold_down] = 0.1; // 0.7
+
 
 /// KURANTY
 n.sendMsg("/kuranty", \start);
@@ -39,7 +43,7 @@ n.sendMsg("/kuranty", \release, 2);
 n.sendMsg("/wind", \start);
 n.sendMsg("/wind", \stop);
 n.sendMsg("/wind", \release, 1);
-~scenes.set_wind(\amp, 1);
+~scenes.set_wind(\amp, 0.4);
 
 
 /// SELEDKA
@@ -52,6 +56,7 @@ n.sendMsg("/seledka", \stop);
 /////////////////////////////////
 /// FADER  MANUAL CONTROL
 /////////////////////////////////
+~scenes.init;
 n.sendMsg("/xfader", \start);
 n.sendMsg("/xfader", \stop);
 n.sendMsg("/xfader", \release, 2);
@@ -59,4 +64,5 @@ n.sendMsg("/xfader", \xfade, -1);
 n.sendMsg("/xfader", \xfade, -0.9);
 n.sendMsg("/xfader", \xfade, 0);
 n.sendMsg("/xfader", \xfade, 0.7);
-~scenes.set_xfader(\amp, 1);
+n.sendMsg("/xfader", \amp, 0.1);
+n.sendMsg("/xfader", \amp, 1);

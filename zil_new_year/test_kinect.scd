@@ -123,24 +123,24 @@ r.stop;
 
 (
 // k = Kinect.new;
-~k1 = Kinect.new(1);
+var k1 = Kinect.new(1);
 // ~k2 = Kinect.new(2);
 n = NetAddr("127.0.0.1", 7000);
 r = Routine {
     var started = false;
 
     inf.do {
-        var acc = ~k1.accLeftHandX;
+        var acc = k1.accLeftHandX;
 
-        var pos = ~k1.headX.linlin(-2, 2, -1, 1);
-        // k.headX.postln.lag(0.5);
+        var pos = k1.headX.linlin(-2, 2, -1, 1);
+        k1.headX.postln.lag(0.5);
 
         // ~k1.headX.postln;
 
-        if(acc > 0.01 && started.not) {
+        if(acc > 0.015 && started.not) {
             "DVOINIK START".postln;
             n.sendMsg("/dvoinik", \start);
-            started = t rue;
+            started = true;
         };
 
         // поиск двойника
@@ -199,10 +199,10 @@ r = Routine {
     inf.do {
         var pos = k.headZ.linlin(1.5, 4, -1, 1);
         // k.headZ.postln.lag(0.5);
-        // k.headZ.postln
+        pos.postln
 
 
-        n.sendMsg("/xfader", \pos, pos.lag(0.5));
+        n.sendMsg("/xfader", \xfade, pos.lag(0.5));
         0.1.wait;
     }
 };

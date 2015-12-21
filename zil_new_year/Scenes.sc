@@ -1,6 +1,6 @@
 Scenes {
     var soundLib;
-    var person1, person2;
+    var <person1, <person2;
 
     var oscScene0_l, oscScene0_r;
     var scene0_synth_l, scene0_synth_r;
@@ -9,7 +9,7 @@ Scenes {
     var synth_dvoinik, synth_dvoinik_param;
 
     var oscScene_xfader;
-    var synth_xfader, synth_xfader_param;
+    var synth_xfader, synth_xfader_param, xfader_routine;
 
     var oscScene_glass;
 
@@ -72,14 +72,27 @@ Scenes {
         oscScene_xfader = OSCFunc({|msg|
             msg.postln;
             switch(msg[1],
-                \start, { synth_xfader = Synth.new(\xfader_synth,
-                    [\buf1, ~l.buffer("drazhe"), \buf2, ~l.buffer("jingle4")] ++ synth_xfader_param); },
+                \start, {
+                    synth_xfader = Synth.new(\xfader_synth,
+                        [\buf1, ~l.buffer("kuranty1"), \buf2, ~l.buffer("jingle4")] ++ synth_xfader_param);
+                    xfader_routine.reset;
+                    xfader_routine.play;
+                },
                 \pause, { synth_xfader.run(false) },
-                \stop,  { synth_xfader.free },
-                \release, { synth_xfader.release(msg[2]) },
+                \stop,  {
+                    synth_xfader.free;
+                    xfader_routine.stop;
+                },
+                \release, {
+                    xfader_routine.stop;
+                    synth_xfader.release(msg[2]);
+                },
+                \amp, { synth_xfader.set(\amp, msg[2].asFloat) },
                 \xfade, { synth_xfader.set(\pan, msg[2]) },
                 { format("unknown message: '%'", msg).postln });
         }, "/xfader", nil, osc_port);
+
+        this.scene_xfader_init;
 
         /*        oscScene_glass = OSCFunc({|msg|
         msg.postln;
@@ -108,23 +121,30 @@ Scenes {
 
         drazheParam = Dictionary.new;
         drazheParam[\timeout] = 0.2;
-        drazheParam[\acc_threshold] = 0.07;
+        drazheParam[\acc_threshold_up] = 0.07;// 02
+        drazheParam[\acc_threshold_down] = 0.07;// 02
 
         drazhe_control = Routine {
+            var n = NetAddr("10.1.1.96", 10000);
             inf.do {
                 var acc1 = person1.accAll;
                 acc1.postln;
 
-                if((acc1 > drazheParam[\acc_threshold] || person1.noHands), {
+                if((acc1 > drazheParam[\acc_threshold_up] || person1.noHands), {
                     drazhe_synth.set(\freq, 20);
                     drazhe_synth.set(\dur, 0.1);
                     drazhe_synth.set(\run, 1);
-
+                    n.sendMsg("/freeze", 0);
                 }, {
-                    drazhe_synth.set(\freq, 10);
-                    drazhe_synth.set(\dur, 0.04);
-                    drazhe_synth.set(\run, 0);
-                });
+                    if(acc1 < drazheParam[\acc_threshold_down]) {
+                        drazhe_synth.set(\freq, 10);
+                        drazhe_synth.set(\dur, 0.04);
+                        drazhe_synth.set(\run, 0);
+                        n.sendMsg("/freeze", 1);
+                    };
+                }
+                );
+
                 drazheParam[\timeout].wait;
             };
         };
@@ -171,6 +191,20 @@ Scenes {
         scene0_synth_r = synth2;
     }
 
+    scene_xfader_init {
+        xfader_routine = Routine {
+            inf.do {
+                var head_z = person1.headZ;
+                if(head_z != 0) {
+                    var pos = head_z.linlin(1.5, 4, -1, 1);
+                    // pos.postln
+                    synth_xfader.set(\pan, pos.lag(0.5));
+                };
+                0.1.wait;
+            }
+        };
+    }
+
     scene_seledka_init {
         arg tm1 = 0.3, swing = 0.01;
         var bass = Pseq(Bjorklund(4, 11), inf).asStream;
@@ -179,7 +213,7 @@ Scenes {
         var metal1 = Pseq(#[1, 1, 0, 0.1, 0.5, 0, 0, 1, 0.2], inf).asStream;
         var metal2 = Pseq(#[1, 0.1, 0.1, 1, 0.25, 0.1, 0.75], inf).asStream;
         var microwave = Pseq(#[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] * 4, inf).asStream;
-        var osc_addr = NetAddr("serge-android", 10000);
+        var osc_addr = NetAddr("10.1.1.96", 10000);
 
         // PART 1
         seledka_part1 = Routine {
