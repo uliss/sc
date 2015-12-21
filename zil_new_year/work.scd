@@ -44,6 +44,13 @@ s.waitForBoot({
 
     }).add;
 
+    SynthDef(\bubbles, {
+        arg out = 0, freq = 400, amp = 0.1, gate = 1, detune = 0;
+        var env = EnvGen.ar(Env.perc(Rand(0.001, 0.01), LinRand(0.2, 0.4), amp, Rand(-9, -1)), doneAction: 2);
+        var snd = Mix(SinOsc.ar(freq + [0, detune * 0.1], env * 2pi));
+        Out.ar(out, Pan2.ar(snd * env, Rand(-1, 1)));
+    }).add;
+
     SynthDef(\grains, {
         arg bus = 0, gate = 1, amp = 1, sndbuf, dur = 1, rate = 1, freq = 1, run = 1;
         var out, env, pos;
