@@ -77,8 +77,6 @@ Scenes {
                 { format("unknown message: '%'", msg).postln });
         }, "/dvoinik", nil, osc_port);
 
-        this.init_dvoinik;
-
         oscScene_xfader = OSCFunc({|msg|
             msg.postln;
             switch(msg[1],
