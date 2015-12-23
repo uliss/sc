@@ -100,10 +100,10 @@ SynthScene : AbstractScene {
 
     start {
         arg ... args;
-        if(debug) { this.dbg("start") };
-        Server.default.sendBundle(nil, synth.newMsg(nil, synthParam.asKeyValuePairs));
+        if(debug) { this.dbg(format("start: %", args.flatten)) };
+        Server.default.sendBundle(nil, synth.newMsg(nil, synthParam.asKeyValuePairs ++ args.asList.flatten));
         // synth.run(true);
-        synth.set(*args);
+        // synth.set(*args);
     }
 
     stop {

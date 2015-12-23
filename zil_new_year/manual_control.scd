@@ -1,3 +1,6 @@
+// OSC control addr
+n = NetAddr("127.0.0.1", 7000);
+
 /////////////////////////////////
 /// GADANIE  MANUAL CONTROL
 /////////////////////////////////
@@ -49,16 +52,32 @@ n.sendMsg("/kuranty", \release, 2);
 
 /// WIND
 ~scenes.init;
-n.sendMsg("/wind", \start);
+w = WindScene.new([\amp, 0.1]);
+w.debug = true;
+w.start
+w.start(\amp, 2);
+w.stop
+w.pause
+w.resume
+w.reset
+w.amp(2)
+w.amp(1)
+w.release(3)
+w.synthSet(\amp, 2);
+
+
+n.sendMsg("/wind", \start, \amp, 1);
+n.sendMsg("/wind", \start, \amp, 2);
 n.sendMsg("/wind", \stop);
-n.sendMsg("/wind", \release, 1);
+n.sendMsg("/wind", \release, 4);
 n.sendMsg("/wind", \amp, 0.4);
-n.sendMsg("/wind", "set", "amp", 1.01);
-n.sendMsg("/wind", "set", "rate1", 2);
-n.sendMsg("/wind", "set", "rate2", 1.1);
+n.sendMsg("/wind", "param", "amp", 1.01);
+n.sendMsg("/wind", "param", "rate1", 2);
+n.sendMsg("/wind", "param", "rate2", 1.1);
 
 
 /// SELEDKA
+~scenes.init;
 t = SeledkaScene.new(kinectPerson1: ~scenes.person1, kinectPerson2: ~scenes.person2);
 t.play1;
 t.play2;
@@ -70,8 +89,7 @@ t.beat_microwave;
 t.beat_bass;
 t.play3;
 t.stop;
-
-
+// SELEDKA OSC
 n.sendMsg("/seledka", \start);
 n.sendMsg("/seledka", \start, 1);
 n.sendMsg("/seledka", \start, 2);

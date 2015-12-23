@@ -13,9 +13,6 @@ Scenes {
 
     var oscScene_glass;
 
-    var oscScene_seledka;
-    var seledka_part1, seledka_part2, seledka_part3;
-
     var oscScene_drazhe;
     var drazhe_synth, drazhe_control;
     var <>drazheParam;
@@ -186,19 +183,6 @@ Scenes {
                 \set,   { synth_wind.set(msg[2].asString, msg[3].asFloat) },
                 { format("unknown message: '%'", msg).postln });
         }, "/wind", nil, osc_port);
-
-        oscScene_seledka = OSCFunc({|msg|
-            msg.postln;
-            switch(msg[1],
-                \start, { seledka_part1.play },
-                \part1, { seledka_part1.play },
-                \part2, { seledka_part2.play },
-                \part3, { seledka_part1.stop; seledka_part3.play },
-                \stop,  { seledka_part1.stop; seledka_part2.stop; seledka_part3.stop },
-                { format("unknown message: '%'", msg).postln });
-        }, "/seledka", nil, osc_port);
-
-        this.scene_seledka_init;
     }
 
     scene0 {
@@ -218,104 +202,6 @@ Scenes {
                 };
                 0.1.wait;
             }
-        };
-    }
-
-    init_dvoinik {
-        dvoinik_routine = Routine {
-            inf.do { |i|
-                format("DVOINIK: %", i.asTimeString[0..7]).postln;
-                1.wait;
-            };
-        }
-    }
-
-    scene_seledka_init {
-        arg tm1 = 0.3, swing = 0.01;
-        var bass = Pseq(Bjorklund(4, 11), inf).asStream;
-        var times = [1 + swing, 1 - swing, 1 + swing, 1 - swing]; // add swing
-        var onion = Pseq(#[1, 0.2, 0.75, 0, 0.175, 0, 1, 0.5] * 1.3, inf).asStream;
-        var metal1 = Pseq(#[1, 1, 0, 0.1, 0.5, 0, 0, 1, 0.2], inf).asStream;
-        var metal2 = Pseq(#[1, 0.1, 0.1, 1, 0.25, 0.1, 0.75], inf).asStream;
-        var microwave = Pseq(#[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] * 4, inf).asStream;
-        var osc_addr = NetAddr("10.1.1.96", 10000);
-
-        // PART 1
-        seledka_part1 = Routine {
-            inf.do {
-                var acc1 = person1.accAll;
-                var acc2 = person2.accAll;
-                // k.headZ.postln.lag(0.5);
-                // k.headZ.postln
-
-                if([acc1, acc2].any({|v| v > 0.07})) {
-                    var ch = [1,2,3,4].choose;
-                    switch(ch,
-                        1, {
-                            Synth(\sample_beat, [\amp, 1.3, \buf, ~l.buffer("metal1"), \pos, 2.0.rand - 1, startPos: 10000.rand, \dur, [0.5, 2, 1].choose]);
-                        },
-                        2, {
-                            Synth(\sample_beat, [\amp, 1.3, \buf, ~l.buffer("onion1"), \pos, 2.0.rand - 1, startPos: 10000.rand, \dur, [0.5, 2, 1].choose]);
-                        },
-                        3, {
-                            Synth(\sample_beat, [\amp, 5, \buf, ~l.buffer("onion2"), \pos, 2.0.rand - 1, startPos: 5000.rand, \dur, 1]);
-                        },
-                        4, {
-                            Synth(\sample_beat, [\amp, 1.3, \buf, ~l.buffer("metal2"), \pos, 2.0.rand - 1, startPos: 10000.rand, \dur, [0.5, 2, 1].choose]);
-                        },
-                    );
-                };
-
-                tm1.wait;
-            }
-        };
-
-        seledka_part2 = Routine {
-            var i = 0;
-            var perc = 200; // 210, 50
-            loop({
-                var tm2 = times.wrapAt(i) * (0.1 + (0.1 * (perc/ 100.0)));
-                Synth(\bass, [\amp, bass.next * 0.5, \freq, 25.rand + 42, \dur, tm2 * 4]);
-                osc_addr.sendMsg("/beat1");
-                tm2.wait;
-                i = i + 1;
-            });
-        };
-
-        seledka_part3 = Routine {
-            var i = 0;
-            var perc = 200; // 210, 50
-            loop({
-                var tm3 = times.wrapAt(i) * (0.1 + (0.1 * (perc/ 100.0)));
-
-                if(i > 16) {
-                    Synth(\sample_beat, [\amp, onion.next, \buf, ~l.buffer("onion1"), \pos: 0.2, \dur, tm3 * 10, \startPos: 1000]);
-                    osc_addr.sendMsg("/beat2");
-                };
-
-                if(i > 100 && (i < 220) || (i > 260)) {
-                    Synth(\sample_beat, [\amp, metal1.next, \buf, ~l.buffer("metal2"), \dur, tm3 * [2, 3, 1, 10].choose, \pos: -0.25]);
-                    osc_addr.sendMsg("/beat3");
-                };
-
-                if(i > 130) {
-                    Synth(\sample_beat, [\amp, metal2.next, \buf, ~l.buffer("metal1"), \dur, tm3 * [2, 3, 1].choose, \pos: -0.25]);
-                    osc_addr.sendMsg("/beat4");
-                };
-
-                if(i % 28 == 0) {
-                    Synth(\sample_beat, [\amp, microwave.next, \buf, ~l.buffer("microwave1"), \dur, tm3 * 16, \pos: [-0.8, 0.8].choose, \startPos, 1000]);
-                    osc_addr.sendMsg("/beat5");
-                };
-
-
-                i.postln;
-
-
-                tm3.wait;
-                i = i + 1;
-            });
-
         };
     }
 
