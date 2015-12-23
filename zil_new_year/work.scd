@@ -148,6 +148,8 @@ s.waitForBoot({
 });
 
 n = NetAddr("127.0.0.1", 7000);
+~scenes = Scenes.new(~l);
+
 
 /*AppClock.sched(2.0,{
     ~scenes = Scenes.new(~l);

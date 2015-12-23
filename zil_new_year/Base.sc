@@ -39,6 +39,8 @@ AbstractScene {
                 { format("[%] unknown message: '%'", this.class.name, msg).postln }
             );
         }, oscPath, nil, oscPort);
+
+        oscFunction.permanent = true;
     }
 
     dbg { |msg|

@@ -15,12 +15,20 @@ n.sendMsg("/gadanie/1", 0);
 /// DVOINIK  MANUAL CONTROL
 /////////////////////////////////
 d = DvoinikScene.new([\delay, 2]);
+d.start;
+d.pause;
+d.resume;
+d.stop;
+d.release(4);
+d.amp(2);
+// osc
 n.sendMsg("/dvoinik", \start);
 n.sendMsg("/dvoinik", \pause);
 n.sendMsg("/dvoinik", \resume);
 n.sendMsg("/dvoinik", \stop);
 n.sendMsg("/dvoinik", \release, 2);
 n.sendMsg("/dvoinik", \amp, 2);
+
 
 ///
 // DRAZHE MANUAL CONTROL
@@ -51,10 +59,23 @@ n.sendMsg("/wind", "set", "rate2", 1.1);
 
 
 /// SELEDKA
+t = SeledkaScene.new(kinectPerson1: ~scenes.person1, kinectPerson2: ~scenes.person2);
+t.play1;
+t.play2;
+t.beat_metal1;
+t.beat_metal2;
+t.beat_onion1;
+t.beat_onion2;
+t.beat_microwave;
+t.beat_bass;
+t.play3;
+t.stop;
+
+
 n.sendMsg("/seledka", \start);
-n.sendMsg("/seledka", \part1);
-n.sendMsg("/seledka", \part2);
-n.sendMsg("/seledka", \part3);
+n.sendMsg("/seledka", \start, 1);
+n.sendMsg("/seledka", \start, 2);
+n.sendMsg("/seledka", \start, 3);
 n.sendMsg("/seledka", \stop);
 
 /////////////////////////////////
