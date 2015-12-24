@@ -13,9 +13,22 @@ NYSketches {
     var <mixer;
     var <kuranty;
 
+    var dump_routine;
+
     *new {
         arg outOsc = NetAddr("localhost", 10001);
         ^super.new.initScenes(outOsc);
+    }
+
+    dumpKinect {
+        arg run = true;
+        if(run) {
+            dump_routine.reset;
+            dump_routine.play;
+        }
+        {
+            dump_routine.stop;
+        };
     }
 
     initScenes {
@@ -45,9 +58,20 @@ NYSketches {
         drazhe = DrazheScene.new(person1, person2,  outOsc);
         // drazhe?.out = outOsc;
 
-        metel = WindScene.new([\amp, 0.1], person1, person2);
+        metel = WindScene.new([\amp, 0.4], person1, person2);
 
         mixer = MixerScene.new(person1, person2);
+
+        this.init_dump_routine;
+    }
+
+    init_dump_routine {
+        dump_routine = Routine {
+            inf.do {
+                format("P1: head:x=% P2: head:x:%", person1.headX, person2.headX).postln;
+                0.1.wait;
+            }
+        };
     }
 
 

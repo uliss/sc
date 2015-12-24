@@ -1,6 +1,5 @@
 MixerScene : SynthScene {
     var <person1, <person2;
-    var wind_synth;
 
     *new {
         arg p1, p2;
@@ -14,16 +13,17 @@ MixerScene : SynthScene {
         person1 = p1;
         person2 = p2;
 
-        wind_synth = Synth.newPaused(\wind1, [\amp, 0.5]);
-
         routine = Routine {
             inf.do {
-                var pos1 = p1.headZ.linlin(1, 4, 1, 0, clip: \max);
-                var pos2 = p2.headZ.linlin(1, 4, 1, 0, clip: \max);
+                var pos1 = p1.headZ.linlin(1, 4, 1, 0);
+                var pos2 = p2.headZ.linlin(1, 4, 1, 0,);
+                if(p1.headZ == 0) { pos1 = 0 };
+                if(p2.headZ == 0) { pos2 = 0 };
+
 
                 format("% - %", pos1, pos2).postln;
 
-                this.synthSet(\amp1, pos1, \amp2, pos2);
+                this.synthSet(\amp1, pos1, \amp2, pos1);
 
                 0.1.wait;
             }
@@ -34,12 +34,10 @@ MixerScene : SynthScene {
         routine.stop;
         this.synthSet(\amp1, 0, \amp2, 1);
         this.start;
-        wind_synth.run(true);
     }
 
     release {
         arg time = 6;
-        wind_synth.release(time);
         super.release(time);
         {routine.stop;}.defer(time);
     }
@@ -52,7 +50,6 @@ MixerScene : SynthScene {
     stop {
         routine.stop;
         super.stop;
-        wind_synth.run(false);
     }
 
 

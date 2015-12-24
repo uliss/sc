@@ -31,6 +31,7 @@ SoundLib {
         this.add("kuranty1", "/Users/serj/work/music/sounds/new year/kuranty-1.wav");
         this.add("kuranty2", "/Users/serj/work/music/sounds/new year/kuranty-2.wav");
         this.add("step-snow1", "/Users/serj/work/music/sounds/new year/step-snow.wav");
+        this.add("glass1", "/Users/serj/work/music/sounds/new year/glasses-2.wav");
     }
 
     add {

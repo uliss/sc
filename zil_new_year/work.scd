@@ -115,10 +115,16 @@ s.waitForBoot({
         arg amp1 = 0.5, amp2 = 0.5, pan = 0, buf1, buf2;
         var asig1, asig2, out;
 
-        asig1 = Pan2.ar(PlayBuf.ar(1, buf1), -0.3) * amp1;
+        asig1 = Pan2.ar(PlayBuf.ar(1, buf1, loop: 1), -0.3) * amp1;
         asig2 = PlayBuf.ar(2, buf2) * amp2;
         out = Mix.ar([asig1, asig2]) * EnvGate.new;
         Out.ar(0, out);
+    }).add;
+
+    SynthDef(\glass, {
+        arg bus = 0, amp = 1, pan = 0, sndbuf, rate = 1;
+        var asig = Pan2.ar(PlayBuf.ar(1, sndbuf, rate) * EnvGate.new * amp, pan);
+        Out.ar(bus, asig);
     }).add;
 
     SynthDef(\wind1, {
@@ -163,6 +169,7 @@ s.waitForBoot({
     ~l.load("kuranty1");
     ~l.load("kuranty2");
     ~l.load("step-snow1");
+    ~l.load("glass1");
 
 
     "#################".postln;
@@ -172,42 +179,12 @@ s.waitForBoot({
 });
 
 n = NetAddr("127.0.0.1", 7000);
-~scenes = Scenes.new(~l);
-
-
-/*AppClock.sched(2.0,{
-    ~scenes = Scenes.new(~l);
-    ~scenes.scene0(
-        Synth.newPaused(\paper, [\amp, 0.3, \sndbuf, ~l.buffer("paper1"), \fr, 4, \bus, 0]),
-        Synth.newPaused(\paper, [\amp, 1, \sndbuf, ~l.buffer("rice1"), \fr, 10, \bus, 1])
-    );
-
-    ~scenes.scene_drazhe(
-        Synth.newPaused(\grains, [\sndbuf, ~l.buffer("drazhe"), \amp, 0.4, \freq, 20, \dur, 0.1]);
-    );
-
-    ~scenes.set_dvoinik(\amp, 1);
-    ~scenes.set_xfader(\amp, 0.4, \pan, -1);
-    ~scenes.set_kuranty(\amp, 0.5);
-    ~scenes.set_wind(\amp, 1);
-    ~scenes.scene_seledka_init;
-
-    // osc control address
-    n = NetAddr("127.0.0.1", 7000);
-
-    "\nSCENE INITIALISED".postln;
-
-    nil;
-});*/
 
 nil;
 )
 
-{SinOsc.ar([330, 440])}.play
 
-
-// b = l.buffer("drazhe").play;
-// b.free;
+(
 var k1 = Kinect.new(1);
 b = Synth.new(\bubbles, [\sndbuf, ~l.buffer("jingle4"), \amp, 0.4]);
 b.set(\freq, 10);
@@ -237,7 +214,6 @@ r = Routine {
         0.2.wait;
     }
 }.play;
-// Synth.new(\paper, [\amp, 0.3, \sndbuf, l.buffer("paper1"), \fr, 4, \bus, 0]);
 
 )
 
@@ -247,10 +223,10 @@ r.stop;
 
 
 
-Synth(\sample_beat, [\amp, 1.3, \buf, l.buffer("metal1"), \pos, 2.0.rand - 1, startPos: 10000.rand, \dur, [0.5, 2, 1].choose]);
-Synth(\sample_beat, [\amp, 1.3, \buf, l.buffer("metal2"), \pos, 2.0.rand - 1, startPos: 10000.rand, \dur, [0.5, 2, 1].choose]);
-Synth(\sample_beat, [\amp, 1.3, \buf, l.buffer("onion1"), \pos, 2.0.rand - 1, startPos: 10000.rand, \dur, [0.5, 2, 1].choose]);
-Synth(\sample_beat, [\amp, 5, \buf, l.buffer("onion2"), \pos, 2.0.rand - 1, startPos: 5000.rand, \dur, 1]);
+Synth(\sample_beat, [\amp, 1.3, \buf, ~l.buffer("metal1"), \pos, 2.0.rand - 1, startPos: 10000.rand, \dur, [0.5, 2, 1].choose]);
+Synth(\sample_beat, [\amp, 1.3, \buf, ~l.buffer("metal2"), \pos, 2.0.rand - 1, startPos: 10000.rand, \dur, [0.5, 2, 1].choose]);
+Synth(\sample_beat, [\amp, 1.3, \buf, ~l.buffer("onion1"), \pos, 2.0.rand - 1, startPos: 10000.rand, \dur, [0.5, 2, 1].choose]);
+Synth(\sample_beat, [\amp, 5, \buf, ~l.buffer("onion2"), \pos, 2.0.rand - 1, startPos: 5000.rand, \dur, 1]);
 
 
 

@@ -1,6 +1,7 @@
 DrazheScene : SynthScene {
     var <person1, <person2;
     var <>osc;
+    var thresholdStart, thresholdStop;
 
     *new {
         arg person1, person2, osc;
@@ -13,6 +14,8 @@ DrazheScene : SynthScene {
         person1 = kinectPerson1;
         person2 = kinectPerson2;
         osc = oscOut;
+        thresholdStart = 0.09;
+        thresholdStop = 0.07;
 
         super.initSynth(\grains, [
             \sndbuf, ~l.buffer("drazhe"),

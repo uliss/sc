@@ -65,8 +65,25 @@ BubblesScene : AbstractScene {
     }
 
     release {
+        var r;
         Ndef.clear(fadeOut);
         routine.stop;
+
+        r = Routine{
+            var tm = 4;
+            2.wait;
+            3.do { |i|
+                Synth(\glass, [
+                    \amp, 0.4 * rrand(0.7, 1),
+                    \pan, rrand(-0.2, 0.2),
+                    \rate, 1,
+                    \sndbuf, ~l.buffer("glass1")]);
+
+                if(tm == 2) {tm = tm + 1};
+
+                tm.wait;
+            };
+        }.play;
     }
 
     stop {
