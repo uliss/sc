@@ -3,7 +3,7 @@ NYSketches {
     var out_osc;
     var <gadanie;
     var <bubbles;
-    var <stol_in;
+    var <stol;
     var <seledka;
     var <stol_out;
     var <dvoinik;
@@ -26,6 +26,8 @@ NYSketches {
         gadanie = GadanieScene.new(person1, person2);
 
         bubbles = BubblesScene.new;
+
+        stol = StolInOutScene.new;
 
         seledka = SeledkaScene.new(outOsc: out_osc,
             kinectPerson1: person1,

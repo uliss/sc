@@ -53,6 +53,13 @@ s.waitForBoot({
         Out.ar(bus, out);
     }).add;
 
+
+    SynthDef(\snowstep2, {
+        arg bus = 0, amp = 1, pan = 0.5, sndbuf;
+        var out = PlayBuf.ar(1, sndbuf, doneAction: 2) * EnvGate.new * amp;
+        Out.ar(bus, Pan2.ar(out, pan));
+    }).add;
+
     SynthDef(\bubbles, {
         arg out = 0, freq = 400, amp = 0.1, gate = 1, detune = 0;
         var env = EnvGen.ar(Env.perc(Rand(0.001, 0.01), LinRand(0.2, 0.4), amp, Rand(-9, -1)), doneAction: 2);

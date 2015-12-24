@@ -1,32 +1,6 @@
 // OSC control addr
 n = NetAddr("127.0.0.1", 7000);
 
-/////////////////////////////////
-/// GADANIE  MANUAL CONTROL
-/////////////////////////////////
-
-y = Routine {
-    inf.do { |i|
-        i.postln;
-        1.wait;
-    }
-}.play;
-
-
-y.stop
-
-y.reset;
-y.play;
-
-
-
-// PERSON 1
-n.sendMsg("/gadanie/0", 1);
-n.sendMsg("/gadanie/0", 0);
-// PERSON 2
-n.sendMsg("/gadanie/1", 1);
-n.sendMsg("/gadanie/1", 0);
-
 k = NYSketches.new;
 k.gadanie.debug = true;
 k.gadanie.debug = false;
@@ -44,6 +18,10 @@ k.bubbles.start
 k.bubbles.change_bass
 k.bubbles.release
 k.bubbles.stop
+
+k.stol.start_in
+k.stol.stop
+k.stol.start_out
 
 
 /////////////////////////////////
