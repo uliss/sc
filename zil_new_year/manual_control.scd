@@ -7,6 +7,8 @@ n = NetAddr("127.0.0.1", 7000);
 k = NYSketches.new(NetAddr("alex", 10000));
 k.gadanie.debug = true;
 k.gadanie.debug = false;
+
+//  гаснет свет
 k.gadanie.start;
 k.gadanie.stop;
 k.gadanie.play_synth1;
@@ -17,10 +19,12 @@ k.gadanie.calibrate;
 k.gadanie.person1.dump(\head);
 k.gadanie.reload; // NB!
 
+// появляется синяя заливка
 k.bubbles.start
 k.bubbles.change_bass
 k.bubbles.release
 k.bubbles.stop
+// сделать дзинь!!! 3 раза
 
 k.stol.start_in
 k.stol.stop
@@ -31,9 +35,15 @@ k.seledka.play1;
 k.seledka.play2;
 k.seledka.stop;
 k.seledka.play3;
+
+
+// уносим стол
 k.seledka.stop;
 
+// я включаю
 k.dvoinik.start;
+// включтьб фонарь в 1:15
+// выключить фонарь когда вынесли елку
 k.dvoinik.pause;
 k.dvoinik.resume;
 k.dvoinik.stop;
@@ -50,25 +60,13 @@ k.metel.start(4)
 k.metel.release(4);
 k.metel.stop;
 
+k.mixer.start;
+k.mixer.play1;
+k.mixer.play2;
+k.mixer.stop;
+k.mixer.release(0.3);
+
 k.kuranty.start
 k.kuranty.release(7)
 k.kuranty.stop;
 
-n.sendMsg("/wind", "param", "amp", 1.01);
-n.sendMsg("/wind", "param", "rate1", 2);
-n.sendMsg("/wind", "param", "rate2", 1.1);
-
-
-/////////////////////////////////
-/// FADER  MANUAL CONTROL
-/////////////////////////////////
-~scenes.init;
-n.sendMsg("/xfader", \start);
-n.sendMsg("/xfader", \stop);
-n.sendMsg("/xfader", \release, 2);
-n.sendMsg("/xfader", \xfade, -1);
-n.sendMsg("/xfader", \xfade, -0.9);
-n.sendMsg("/xfader", \xfade, 0);
-n.sendMsg("/xfader", \xfade, 0.7);
-n.sendMsg("/xfader", \amp, 0.1);
-n.sendMsg("/xfader", \amp, 1);

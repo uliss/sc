@@ -7,10 +7,6 @@ Scenes {
 
     var oscScene_glass;
 
-    var oscScene_drazhe;
-    var drazhe_synth, drazhe_control;
-    var <>drazheParam;
-
     var oscScene_wind;
     var synth_wind, synth_wind_param;
 
@@ -59,55 +55,6 @@ Scenes {
         { format("unknown message: '%'", msg).postln });
         }, "/glass", nil, osc_port);*/
 
-        oscScene_drazhe = OSCFunc({|msg|
-            msg.postln;
-            switch(msg[1],
-                \start, {
-                    drazhe_control.reset;
-                    drazhe_control.play;
-                    drazhe_synth.run(true);
-                },
-                \stop,  {
-                    drazhe_control.stop;
-                    drazhe_synth.run(false);
-                },
-                \freeze, {
-                    drazhe_synth.set(\run, msg[2]);
-                },
-                { format("unknown message: '%'", msg).postln });
-        }, "/drazhe", nil, osc_port);
-
-        drazheParam = Dictionary.new;
-        drazheParam[\timeout] = 0.2;
-        drazheParam[\acc_threshold_up] = 0.07;// 02
-        drazheParam[\acc_threshold_down] = 0.07;// 02
-
-        drazhe_control = Routine {
-            var n = NetAddr("10.1.1.96", 10000);
-            inf.do {
-                var acc1 = person1.accAll;
-                acc1.postln;
-
-                if((acc1 > drazheParam[\acc_threshold_up] || person1.noHands), {
-                    drazhe_synth.set(\freq, 20);
-                    drazhe_synth.set(\dur, 0.1);
-                    drazhe_synth.set(\run, 1);
-                    n.sendMsg("/freeze", 0);
-                }, {
-                    if(acc1 < drazheParam[\acc_threshold_down]) {
-                        drazhe_synth.set(\freq, 10);
-                        drazhe_synth.set(\dur, 0.04);
-                        drazhe_synth.set(\run, 0);
-                        n.sendMsg("/freeze", 1);
-                    };
-                }
-                );
-
-                drazheParam[\timeout].wait;
-            };
-        };
-
-
         oscScene_wind = OSCFunc({|msg|
             msg.postln;
             switch(msg[1],
@@ -124,10 +71,11 @@ Scenes {
     scene_xfader_init {
         xfader_routine = Routine {
             inf.do {
-                var head_z = person1.headZ;
-                if(head_z != 0) {
-                    var pos = head_z.linlin(1.5, 4, -1, 1);
-                    // pos.postln
+                var head_z1 = person1.headZ;
+                var head_z2 = person2.headZ;
+                if(head_z1 != 0) {
+                    var pos = head_z1.linlin(1.5, 4, -1, 1);
+                    pos.postln;
                     synth_xfader.set(\pan, pos.lag(0.5));
                 };
                 0.1.wait;

@@ -10,6 +10,7 @@ NYSketches {
     var <metel;
     var <drazhe;
     var <final;
+    var <mixer;
     var <kuranty;
 
     *new {
@@ -44,7 +45,9 @@ NYSketches {
         drazhe = DrazheScene.new(person1, person2,  outOsc);
         // drazhe?.out = outOsc;
 
-        metel = WindScene.new([\amp, 0.1], ~scenes.person1, ~scenes.person2);
+        metel = WindScene.new([\amp, 0.1], person1, person2);
+
+        mixer = MixerScene.new(person1, person2);
     }
 
 

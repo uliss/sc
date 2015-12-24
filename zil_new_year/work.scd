@@ -105,9 +105,19 @@ s.waitForBoot({
         arg amp = 0.5, pan = 0, buf1, buf2;
         var asig1, asig2, out;
 
-        asig1 = PlayBuf.ar(2, buf1);
-        asig2 = PlayBuf.ar(2, buf2);
+        asig1 = Pan2.ar(PlayBuf.ar(1, buf1), -0.3);
+        asig2 = PlayBuf.ar(1, buf2);
         out = XFade2.ar(asig1, asig2, pan) * EnvGate.new * amp;
+        Out.ar(0, out);
+    }).add;
+
+    SynthDef(\mixer_synth, {
+        arg amp1 = 0.5, amp2 = 0.5, pan = 0, buf1, buf2;
+        var asig1, asig2, out;
+
+        asig1 = Pan2.ar(PlayBuf.ar(1, buf1), -0.3) * amp1;
+        asig2 = PlayBuf.ar(2, buf2) * amp2;
+        out = Mix.ar([asig1, asig2]) * EnvGate.new;
         Out.ar(0, out);
     }).add;
 
