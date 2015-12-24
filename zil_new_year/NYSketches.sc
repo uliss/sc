@@ -37,7 +37,7 @@ NYSketches {
 
         seledka.outOsc = outOsc;
 
-        dvoinik = DvoinikScene.new([\delay, 2], kinectPerson1: person1, kinectPerson2: person2);
+        dvoinik = DvoinikScene.new([\delay, 2, \amp, 1.2], kinectPerson1: person1, kinectPerson2: person2);
 
         kuranty = KurantyScene.new;
 

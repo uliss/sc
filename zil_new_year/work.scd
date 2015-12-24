@@ -17,7 +17,7 @@ s.waitForBoot({
         ao1 = Balance2.ar(a1[0], a1[1], pos1.lag(1), 0.65);
         ao2 = Balance2.ar(a2[0], a2[1], pos2.lag(1), 0.8);
         amix = Mix.new([ao1, ao2]);
-        ares = Compander.ar(amix, amix, 0.5, slopeBelow: 0.8, slopeAbove: 0.7);
+        ares = Compander.ar(amix, amix, 0.5, slopeBelow: 0.8, slopeAbove: 0.6);
 
         Out.ar(bus, ares * EnvGate.new * amp);
     }).add;

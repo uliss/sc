@@ -49,15 +49,6 @@ k.kuranty.release(7)
 k.kuranty.stop;
 
 
-
-/////////////////////////////////
-// DRAZHE MANUAL CONTROL
-/////////////////////////////////
-n.sendMsg("/drazhe", \start);
-n.sendMsg("/drazhe", \stop);
-n.sendMsg("/drazhe", \freeze, 1);
-n.sendMsg("/drazhe", \freeze, 0);
-
 ~scenes.drazheParam[\timeout] = 0.15;
 ~scenes.drazheParam[\acc_threshold_up] = 0.21; // 0.11
 ~scenes.drazheParam[\acc_threshold_down] = 0.1; // 0.7

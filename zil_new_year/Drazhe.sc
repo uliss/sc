@@ -13,7 +13,7 @@ DrazheScene : SynthScene {
 
         super.initSynth(\grains, [
             \sndbuf, ~l.buffer("drazhe"),
-            \amp, 0.4,
+            \amp, 0.6,
             \freq, 20,
             \dur, 0.1
         ]);
@@ -27,7 +27,7 @@ DrazheScene : SynthScene {
                 var acc1 = person1.accAll;
                 acc1.postln;
 
-                if(acc1 > thr_up || person1.noHands) {
+                if(acc1 > thr_up || (acc1 == 0)) {
                     // "FREEZE OGFF".postln;
                     // synth.set(\freq, 20);
                     // synth.set(\dur, 0.1);

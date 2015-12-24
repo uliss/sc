@@ -53,7 +53,7 @@ SeledkaScene : AbstractScene {
             \instrument, \bass,
             \dur,     0.5,
             \midinote, Prand((28..33), inf),
-            \amp,      Pseq(bass, inf),
+            \amp,      Pseq(bass * 0.7, inf),
         ));
 
         pattern3 = Pdef(\stomp, Ppar([
@@ -124,7 +124,7 @@ SeledkaScene : AbstractScene {
                 \midinote, Prand((28..33), inf),
                 \amp,      Pseq([
                     Pseq([Rest], (136 + 16 + 36) * 4),
-                    Pseq(bass , inf),
+                    Pseq(bass, inf),
                 ], inf),
             ),
 
