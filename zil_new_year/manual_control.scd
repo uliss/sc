@@ -36,6 +36,11 @@ k.dvoinik.pause;
 k.dvoinik.resume;
 k.dvoinik.stop;
 
+k.drazhe.start;
+k.drazhe.freeze(true)
+k.drazhe.freeze(false)
+k.drazhe.stop;
+
 k.kuranty.start
 k.kuranty.release(7)
 k.kuranty.stop;

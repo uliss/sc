@@ -40,6 +40,8 @@ NYSketches {
         dvoinik = DvoinikScene.new([\delay, 2], kinectPerson1: person1, kinectPerson2: person2);
 
         kuranty = KurantyScene.new;
+
+        drazhe = DrazheScene.new(person1, person2);
     }
 
 
