@@ -45,6 +45,7 @@ k.drazhe.release(5);
 k.drazhe.stop;
 
 
+k.metel.amp(0.5);
 k.metel.start(4)
 k.metel.release(4);
 k.metel.stop;
@@ -53,29 +54,6 @@ k.kuranty.start
 k.kuranty.release(7)
 k.kuranty.stop;
 
-
-
-/// WIND
-~scenes.init;
-w = WindScene.new([\amp, 0.1], ~scenes.person1, ~scenes.person2);
-w.debug = true;
-w.start
-w.start(\amp, 2);
-w.stop
-w.pause
-w.resume
-w.reset
-w.amp(2)
-w.amp(1)
-w.release(3)
-w.synthSet(\amp, 2);
-
-
-n.sendMsg("/wind", \start, \amp, 1);
-n.sendMsg("/wind", \start, \amp, 2);
-n.sendMsg("/wind", \stop);
-n.sendMsg("/wind", \release, 4);
-n.sendMsg("/wind", \amp, 0.4);
 n.sendMsg("/wind", "param", "amp", 1.01);
 n.sendMsg("/wind", "param", "rate1", 2);
 n.sendMsg("/wind", "param", "rate2", 1.1);
