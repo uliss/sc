@@ -16,7 +16,7 @@ BubblesScene : AbstractScene {
         fadeOut = fade_out;
         bus = Bus.control(Server.default, 1);
         vol1 = 0.2;
-        vol2 = 0.35;
+        vol2 = 0.4;
 
         routine = Routine{
             var cnt = 1;
@@ -31,7 +31,8 @@ BubblesScene : AbstractScene {
                 syn = {
                     var del = DelayN.ar(InFeedback.ar(0, 2) + (InFeedback.ar(100, 2)), 1, 1);
                     var freq = cnt * bus.kr + [0,2];
-                    SinOsc.ar(freq, del[1..0])/4;
+                    var amp = (freq.linlin(30, 1000, 1, 0.3)) * vol2;
+                    SinOsc.ar(freq, del[1..0], amp)/4;
                 }.play(outbus: 64);
                 { syn.release(16) }.defer(9 - cnt);
 
@@ -48,14 +49,14 @@ BubblesScene : AbstractScene {
         Ndef(\bubbles, Pspawn(
             Pbind(\method, \par, \delta, 1/8, \pattern, {
                 Pbind(\instrument, \bubbles,
-                    \amp, 0.1,
+                    \amp, 0.1 * vol1,
                     \dur, a,
                     \sustain, 1/8/a,
                     \degree, a,
-                    \detune, a)}))).play(vol: vol1);
+                    \detune, a)}))).play;
         Ndef(\bubbles).fadeTime = fadeIn;
 
-        Ndef(\drones).play(vol: vol2);
+        Ndef(\drones).play;
         Ndef(\drones).fadeTime = fadeIn * 4;
         Ndef(\drones, { InFeedback.ar(64, 2)} );
 

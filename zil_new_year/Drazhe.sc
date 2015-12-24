@@ -64,6 +64,12 @@ DrazheScene : SynthScene {
         routine.stop;
     }
 
+    release {
+        arg time;
+        super.release(time);
+        {routine.stop}.defer(time);
+    }
+
     freeze {
         arg v = true;
         var run;

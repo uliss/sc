@@ -1,6 +1,8 @@
 // OSC control addr
 n = NetAddr("127.0.0.1", 7000);
 
+// {SinOsc.ar([440, 460])}.play
+
 k = NYSketches.new(NetAddr("localhost", 10001));
 k = NYSketches.new(NetAddr("alex", 10000));
 k.gadanie.debug = true;
@@ -39,6 +41,7 @@ k.dvoinik.stop;
 k.drazhe.start;
 k.drazhe.freeze(true)
 k.drazhe.freeze(false)
+k.drazhe.release(5);
 k.drazhe.stop;
 
 k.kuranty.start

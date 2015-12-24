@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Pro40Snapshot version="2" name="zil">
-    <timestamp tval="1450881353">Wed Dec 23 17:35:53 2015</timestamp>
+    <timestamp tval="1450949525">Thu Dec 24 12:32:05 2015</timestamp>
     <Pro40System version="1">
         <FS sync="12">44100</FS>
         <OptMode>adat</OptMode>
@@ -74,7 +74,7 @@
     <Pro40Monitor version="3">
         <hwc>1</hwc>
         <monset>1 1 1 1 1 1 0 0 0 0 </monset>
-        <gain pad="0">-64.000000</gain>
+        <gain pad="0">-16.000000</gain>
     </Pro40Monitor>
     <Pro40Mixer version="3" nummixes="16" numchans="18">
         <globals chanms="196608" busms="255">
