@@ -128,11 +128,12 @@ s.waitForBoot({
     }).add;
 
     SynthDef(\wind1, {
-        arg amp = 0.5, pan = 0, rate1 = 3.9, min1 = 300, max1 = 3000, rate2 = 1.1, min2 = 0.7, max2 = 1;
+        arg amp = 0.5, pan = 0, rate1 = 3.9, min1 = 300, max1 = 3000, rate2 = 1.7, min2 = 0.7, max2 = 1, fadeIn = 0;
         var out, freq, res, out2;
-        freq = LFNoise1.kr(rate1.reciprocal).linexp(0, 1, min1, max1);
-        res = LFNoise1.kr(rate2).linlin(0, 1, min2, max2);
+        freq = LFNoise1.kr(rate1.reciprocal).linlin(0, 1, min1, max1);
+        res = LFNoise1.kr(rate2).linexp(0, 1, min2, max2);
         out = DFM1.ar(PinkNoise.ar(mul: 0.5), freq, res) * EnvGate.new * amp;
+        out = out *  Line.ar(0, 1, fadeIn);
         Out.ar(0, Pan2.ar(out, pan));
 
     }).add;

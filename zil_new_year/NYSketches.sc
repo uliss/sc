@@ -58,7 +58,7 @@ NYSketches {
         drazhe = DrazheScene.new(person1, person2,  outOsc);
         // drazhe?.out = outOsc;
 
-        metel = WindScene.new([\amp, 0.4], person1, person2);
+        metel = WindScene.new([\amp, 0.4, \fadeIn, 10], person1, person2);
 
         mixer = MixerScene.new(person1, person2);
 

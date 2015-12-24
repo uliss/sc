@@ -61,10 +61,7 @@ k.drazhe.release(5);
 k.drazhe.stop;
 
 
-// сделать фейдин
-k.metel.amp(0.5);
-k.metel.start(4)
-
+k.metel.start
 
 k.mixer.play1;
 k.mixer.play2;
