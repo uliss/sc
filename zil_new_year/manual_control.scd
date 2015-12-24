@@ -1,7 +1,8 @@
 // OSC control addr
 n = NetAddr("127.0.0.1", 7000);
 
-k = NYSketches.new;
+k = NYSketches.new(NetAddr("localhost", 10001));
+k = NYSketches.new(NetAddr("alex", 10000));
 k.gadanie.debug = true;
 k.gadanie.debug = false;
 k.gadanie.start;
@@ -12,7 +13,7 @@ k.gadanie.play_synth2;
 k.gadanie.stop_synth2;
 k.gadanie.calibrate;
 k.gadanie.person1.dump(\head);
-k.gadanie.reload;
+k.gadanie.reload; // NB!
 
 k.bubbles.start
 k.bubbles.change_bass
@@ -23,24 +24,22 @@ k.stol.start_in
 k.stol.stop
 k.stol.start_out
 
+k.seledka.reload; //NB!
+k.seledka.play1;
+k.seledka.play2;
+k.seledka.stop;
+k.seledka.play3;
+k.seledka.stop;
 
-/////////////////////////////////
-/// DVOINIK  MANUAL CONTROL
-/////////////////////////////////
-d = DvoinikScene.new([\delay, 2]);
-d.start;
-d.pause;
-d.resume;
-d.stop;
-d.release(4);
-d.amp(2);
-// osc
-n.sendMsg("/dvoinik", \start);
-n.sendMsg("/dvoinik", \pause);
-n.sendMsg("/dvoinik", \resume);
-n.sendMsg("/dvoinik", \stop);
-n.sendMsg("/dvoinik", \release, 2);
-n.sendMsg("/dvoinik", \amp, 2);
+k.dvoinik.start;
+k.dvoinik.pause;
+k.dvoinik.resume;
+k.dvoinik.stop;
+
+k.kuranty.start
+k.kuranty.release(7)
+k.kuranty.stop;
+
 
 
 /////////////////////////////////
@@ -86,27 +85,6 @@ n.sendMsg("/wind", "param", "amp", 1.01);
 n.sendMsg("/wind", "param", "rate1", 2);
 n.sendMsg("/wind", "param", "rate2", 1.1);
 
-//////////////////////////////////
-////  SELEDKA MANUAL CONTROL  ////
-//////////////////////////////////
-~scenes.init;
-t = SeledkaScene.new(kinectPerson1: ~scenes.person1, kinectPerson2: ~scenes.person2);
-t.play1;
-t.play2;
-t.beat_metal1;
-t.beat_metal2;
-t.beat_onion1;
-t.beat_onion2;
-t.beat_microwave;
-t.beat_bass;
-t.play3;
-t.stop;
-// SELEDKA OSC
-n.sendMsg("/seledka", \start);
-n.sendMsg("/seledka", \start, 1);
-n.sendMsg("/seledka", \start, 2);
-n.sendMsg("/seledka", \start, 3);
-n.sendMsg("/seledka", \stop);
 
 /////////////////////////////////
 /// FADER  MANUAL CONTROL

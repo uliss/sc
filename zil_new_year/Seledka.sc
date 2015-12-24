@@ -1,13 +1,13 @@
 SeledkaScene : AbstractScene {
     var <kinectPerson1, <kinectPerson2;
-    var threshold1, timeout1;
+    var <>threshold1, <>timeout1;
     var <>tempo;
     var routine1, pattern2, pattern3;
     var <>outOsc;
     var pattern_clock;
 
     *new {
-        arg oscPort = 7000, outOsc = NetAddr("localhost", 10000), kinectPerson1, kinectPerson2, threshold1 = 0.07, timeout1 = 0.3, tempo = 120; //NetAddr("10.1.1.96", 10000)
+        arg oscPort = 7000, outOsc, kinectPerson1, kinectPerson2, threshold1 = 0.07, timeout1 = 0.3, tempo = 120; //NetAddr("10.1.1.96", 10000)
         ^super.new("Seledka", "/seledka", oscPort).initSeledka(outOsc, kinectPerson1, kinectPerson2, threshold1, timeout1, tempo);
     }
 
@@ -37,12 +37,12 @@ SeledkaScene : AbstractScene {
                 if(debug) { this.dbg([acc1, acc2]) };
 
                 if([acc1, acc2].any({|v| v > threshold1})) {
-                    var func = [this.beat_metal1,
-                        this.beat_metal2,
-                        this.beat_onion1,
-                        this.beat_onion2].choose;
-
-                    func.value;
+                    switch((0..3).choose,
+                        0, {this.beat_metal1},
+                        1, {this.beat_metal2},
+                        2, {this.beat_onion1},
+                        3, {this.beat_onion2}
+                    );
                 };
 
                 timeout1.wait;
@@ -188,7 +188,7 @@ SeledkaScene : AbstractScene {
     }
 
     start {
-        arg msg;
+        arg msg = [];
         var part = 1;
         if(msg.isEmpty.not) {
             switch(msg[0],
@@ -209,16 +209,20 @@ SeledkaScene : AbstractScene {
 
     play2 {
         this.stop;
+        this.play1;
         pattern_clock.play;
-        if(pattern2.isPlaying.not) {
-            pattern2.play(pattern_clock);
-        }
+        pattern2.play(pattern_clock);
     }
 
     play3 {
         this.stop;
         pattern_clock.play;
         pattern3.play(pattern_clock);
+    }
+
+    reload {
+        kinectPerson1.enable;
+        kinectPerson2.enable;
     }
 }
 

@@ -35,24 +35,6 @@ Scenes {
         person1 = Kinect.new(1);
         person2 = Kinect.new(2);
 
-        oscScene0_l = OSCFunc({|msg|
-            msg.postln;
-            switch(msg[1],
-                1, { scene0_synth_l.run(true)  },
-                0, { scene0_synth_l.run(false) },
-                \amp, {scene0_synth_r.set(\amp, msg[2])},
-                { format("unknown message format: '%'", msg).postln });
-        }, "/gadanie/0", nil, osc_port);
-
-        oscScene0_l = OSCFunc({|msg|
-            msg.postln;
-            switch(msg[1],
-                1, { scene0_synth_r.run(true)  },
-                0, { scene0_synth_r.run(false) },
-                \amp, {scene0_synth_r.set(\amp, msg[2])},
-                { format("unknown message format: '%'", msg).postln });
-        }, "/gadanie/1", nil, osc_port);
-
         oscScene_xfader = OSCFunc({|msg|
             msg.postln;
             switch(msg[1],
@@ -159,12 +141,6 @@ Scenes {
         }, "/wind", nil, osc_port);
     }
 
-    scene0 {
-        arg synth1, synth2;
-        scene0_synth_l = synth1;
-        scene0_synth_r = synth2;
-    }
-
     scene_xfader_init {
         xfader_routine = Routine {
             inf.do {
@@ -176,47 +152,6 @@ Scenes {
                 };
                 0.1.wait;
             }
-        };
-    }
-
-    scene_drazhe {
-        arg synth;
-        drazhe_synth = synth;
-    }
-
-    set_dvoinik {
-        arg ... args;
-        synth_dvoinik_param = args.asList;
-        synth_dvoinik_param.postln;
-        if(synth_dvoinik.notNil) {
-            synth_dvoinik.set(*args);
-        };
-    }
-
-    set_xfader {
-        arg ... args;
-        synth_xfader_param = args.asList;
-        synth_xfader_param.postln;
-        if(synth_xfader.notNil) {
-            synth_xfader.set(*args);
-        };
-    }
-
-    set_kuranty {
-        arg ... args;
-        synth_kuranty_param = args.asList;
-        synth_kuranty_param.postln;
-        if(synth_kuranty.notNil) {
-            synth_kuranty.set(*args);
-        };
-    }
-
-    set_wind {
-        arg ... args;
-        synth_wind_param = args.asList;
-        synth_wind_param.postln;
-        if(synth_wind.notNil) {
-            synth_wind.set(*args);
         };
     }
 }

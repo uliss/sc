@@ -1,6 +1,6 @@
 NYSketches {
     var person1, person2;
-    var out_osc;
+    var <outOsc;
     var <gadanie;
     var <bubbles;
     var <stol;
@@ -10,16 +10,17 @@ NYSketches {
     var <metel;
     var <drazhe;
     var <final;
+    var <kuranty;
 
     *new {
-        arg outOsc = NetAddr("localhost", 10000);
+        arg outOsc = NetAddr("localhost", 10001);
         ^super.new.initScenes(outOsc);
     }
 
     initScenes {
-        arg outOsc;
+        arg out_osc;
 
-        out_osc = outOsc;
+        outOsc = out_osc;
         person1 = Kinect.new(1);
         person2 = Kinect.new(2);
 
@@ -29,12 +30,16 @@ NYSketches {
 
         stol = StolInOutScene.new;
 
-        seledka = SeledkaScene.new(outOsc: out_osc,
+        seledka = SeledkaScene.new(outOsc: outOsc,
             kinectPerson1: person1,
             kinectPerson2: person2,
             tempo: 120);
 
-        dvoinik = DvoinikScene.new([], kinectPerson1: person1, kinectPerson2: person2);
+        seledka.outOsc = outOsc;
+
+        dvoinik = DvoinikScene.new([\delay, 2], kinectPerson1: person1, kinectPerson2: person2);
+
+        kuranty = KurantyScene.new;
     }
 
 
