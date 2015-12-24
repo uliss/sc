@@ -192,49 +192,10 @@ nil;
 )
 
 
-(
-var k1 = Kinect.new(1);
-b = Synth.new(\bubbles, [\sndbuf, ~l.buffer("jingle4"), \amp, 0.4]);
-b.set(\freq, 10);
-// b.set(\dur, 0.1);
-b.set(\stop, 1);
-b.set(\run, 1);
-b.set(\stop, 0);
-// b.set(\rate, 4);
-
-r = Routine {
-    inf.do {
-        |i|
-        var acc1 = k1.accAll;
-        acc1.postln;
-
-        if((acc1 > 0.07 || k1.noHands), {
-            b.set(\freq, 20);
-            b.set(\dur, 0.1);
-            b.set(\run, 1);
-
-        }, {
-            "drazhe".postln;
-            b.set(\freq, 10);
-            b.set(\dur, 0.04);
-            b.set(\run, 0);
-        });
-        0.2.wait;
-    }
-}.play;
-
-)
-
-r.play;
-r.stop;
-
-
-
-
 Synth(\sample_beat, [\amp, 1.3, \buf, ~l.buffer("metal1"), \pos, 2.0.rand - 1, startPos: 10000.rand, \dur, [0.5, 2, 1].choose]);
 Synth(\sample_beat, [\amp, 1.3, \buf, ~l.buffer("metal2"), \pos, 2.0.rand - 1, startPos: 10000.rand, \dur, [0.5, 2, 1].choose]);
 Synth(\sample_beat, [\amp, 1.3, \buf, ~l.buffer("onion1"), \pos, 2.0.rand - 1, startPos: 10000.rand, \dur, [0.5, 2, 1].choose]);
-Synth(\sample_beat, [\amp, 5, \buf, ~l.buffer("onion2"), \pos, 2.0.rand - 1, startPos: 5000.rand, \dur, 1]);
+Synth(\sample_|beat, [\amp, 5, \buf, ~l.buffer("onion2"), \pos, 2.0.rand - 1, startPos: 5000.rand, \dur, 1]);
 
 
 
