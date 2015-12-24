@@ -1,7 +1,7 @@
 DrazheScene : SynthScene {
     var <person1, <person2;
     var <>osc;
-    var thresholdStart, thresholdStop;
+    var <>thresholdStart, <>thresholdStop;
 
     *new {
         arg person1, person2, osc;
@@ -10,7 +10,7 @@ DrazheScene : SynthScene {
 
     initDrazhe {
         arg kinectPerson1, kinectPerson2, oscOut;
-        var n = NetAddr("10.1.1.96", 10000);
+        var n = NetAddr("alex", 10000);
         person1 = kinectPerson1;
         person2 = kinectPerson2;
         osc = oscOut;

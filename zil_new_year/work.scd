@@ -111,13 +111,20 @@ s.waitForBoot({
         Out.ar(0, out);
     }).add;
 
+    SynthDef(\jingle_loops, {
+        arg amp = 1, buf, fadeIn = 0, start = 0, end = 1;
+        var sr = Server.default.sampleRate;
+        var asig = Pan2.ar(LoopBuf.ar(1, buf, startLoop: start * sr, endLoop: end * sr)) * EnvGate.new * amp * Line.ar(0, 1, fadeIn);
+        Out.ar(0, asig);
+    }).add;
+
     SynthDef(\mixer_synth, {
-        arg amp1 = 0.5, amp2 = 0.5, pan = 0, buf1, buf2;
+        arg amp1 = 0.5, amp2 = 0.5, pan = 0, buf1, buf2, fadeIn = 0;
         var asig1, asig2, out;
 
         asig1 = Pan2.ar(PlayBuf.ar(1, buf1, loop: 1), -0.3) * amp1;
         asig2 = PlayBuf.ar(2, buf2) * amp2;
-        out = Mix.ar([asig1, asig2]) * EnvGate.new;
+        out = Mix.ar([asig1, asig2]) * EnvGate.new * Line.ar(0, 1, fadeIn);
         Out.ar(0, out);
     }).add;
 

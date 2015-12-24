@@ -1,5 +1,6 @@
 MixerScene : SynthScene {
     var <person1, <person2;
+    var <loop_synth;
 
     *new {
         arg p1, p2;
@@ -23,17 +24,23 @@ MixerScene : SynthScene {
 
                 format("% - %", pos1, pos2).postln;
 
-                this.synthSet(\amp1, pos1, \amp2, pos1);
+                this.synthSet(\amp1, pos1, \amp2, pos2);
 
                 0.1.wait;
             }
         };
+
+        loop_synth = Synth.newPaused(\jingle_loops, [
+            \fadeIn, 5,
+            \end, 0.95,
+            \start, 0.48,
+            \buf, ~l.buffer("jingle4")]);
     }
 
     play1 {
         routine.stop;
-        this.synthSet(\amp1, 0, \amp2, 1);
-        this.start;
+        loop_synth.run(true);
+
     }
 
     release {
@@ -43,6 +50,12 @@ MixerScene : SynthScene {
     }
 
     play2 {
+        loop_synth.release(5);
+        routine.stop;
+        this.start;
+    }
+
+    play3 {
         routine.reset;
         routine.play;
     }
@@ -50,6 +63,7 @@ MixerScene : SynthScene {
     stop {
         routine.stop;
         super.stop;
+        loop_synth.run(false);
     }
 
 

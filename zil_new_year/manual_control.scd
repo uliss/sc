@@ -1,6 +1,7 @@
 // OSC control addr
 n = NetAddr("127.0.0.1", 7000);
 n = NetAddr("alex", 10000);
+n.sendMsg("/freeze", 1);
 n.sendMsg("/freeze", 0);
 
 // {SinOsc.ar([440, 460])}.play
@@ -48,23 +49,27 @@ k.seledka.stop;
 
 // я включаю
 k.dvoinik.start;
-// включтьб фонарь в 1:15
+// включить фонарь в 1:15
 // выключить фонарь когда вынесли елку
 k.dvoinik.pause;
 k.dvoinik.resume;
 k.dvoinik.stop;
 
+
+k.drazhe.thresholdStart = 0.1;
+k.drazhe.thresholdStop = 0.1;
 k.drazhe.start;
 k.drazhe.freeze(true)
 k.drazhe.freeze(false)
 k.drazhe.release(5);
 k.drazhe.stop;
 
-
+//
 k.metel.start
 
-k.mixer.play1;
-k.mixer.play2;
+k.mixer.play1; // loop
+k.mixer.play2; // no interaction
+k.mixer.play3; // interactive mixer
 k.mixer.stop;
 
 k.metel.stop;
