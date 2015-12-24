@@ -2,11 +2,6 @@ Scenes {
     var soundLib;
     var <person1, <person2;
 
-    var oscScene0_l, oscScene0_r;
-    var scene0_synth_l, scene0_synth_r;
-
-    var synth_dvoinik, synth_dvoinik_param, dvoinik_routine;
-
     var oscScene_xfader;
     var synth_xfader, synth_xfader_param, xfader_routine;
 
@@ -15,10 +10,6 @@ Scenes {
     var oscScene_drazhe;
     var drazhe_synth, drazhe_control;
     var <>drazheParam;
-
-
-    var oscScene_kuranty;
-    var synth_kuranty, synth_kuranty_param;
 
     var oscScene_wind;
     var synth_wind, synth_wind_param;
@@ -115,17 +106,6 @@ Scenes {
                 drazheParam[\timeout].wait;
             };
         };
-
-        oscScene_kuranty = OSCFunc({|msg|
-            msg.postln;
-            switch(msg[1],
-                \start, { synth_kuranty = Synth.new(\mono_player,
-                    [\buf, ~l.buffer("kuranty1")] ++ synth_kuranty_param) },
-                \pause, { synth_kuranty.run(false) },
-                \stop,  { synth_kuranty.free },
-                \release, { synth_kuranty.release(msg[2]) },
-                { format("unknown message: '%'", msg).postln });
-        }, "/kuranty", nil, osc_port);
 
 
         oscScene_wind = OSCFunc({|msg|
