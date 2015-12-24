@@ -3,7 +3,7 @@ n = NetAddr("127.0.0.1", 7000);
 
 // {SinOsc.ar([440, 460])}.play
 
-k = NYSketches.new(NetAddr("localhost", 10001));
+// k = NYSketches.new(NetAddr("localhost", 10001));
 k = NYSketches.new(NetAddr("alex", 10000));
 k.gadanie.debug = true;
 k.gadanie.debug = false;
@@ -44,20 +44,16 @@ k.drazhe.freeze(false)
 k.drazhe.release(5);
 k.drazhe.stop;
 
+
+k.metel.start(4)
+k.metel.release(4);
+k.metel.stop;
+
 k.kuranty.start
 k.kuranty.release(7)
 k.kuranty.stop;
 
 
-~scenes.drazheParam[\timeout] = 0.15;
-~scenes.drazheParam[\acc_threshold_up] = 0.21; // 0.11
-~scenes.drazheParam[\acc_threshold_down] = 0.1; // 0.7
-
-
-/// KURANTY
-n.sendMsg("/kuranty", \start);
-n.sendMsg("/kuranty", \stop);
-n.sendMsg("/kuranty", \release, 2);
 
 /// WIND
 ~scenes.init;

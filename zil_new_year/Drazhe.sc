@@ -1,15 +1,18 @@
 DrazheScene : SynthScene {
     var <person1, <person2;
+    var <>osc;
 
     *new {
-        arg person1, person2;
-        ^super.new.initDrazhe(person1, person2);
+        arg person1, person2, osc;
+        ^super.new.initDrazhe(person1, person2, osc);
     }
 
     initDrazhe {
-        arg kinectPerson1, kinectPerson2;
+        arg kinectPerson1, kinectPerson2, oscOut;
+        var n = NetAddr("10.1.1.96", 10000);
         person1 = kinectPerson1;
         person2 = kinectPerson2;
+        osc = oscOut;
 
         super.initSynth(\grains, [
             \sndbuf, ~l.buffer("drazhe"),
@@ -20,8 +23,8 @@ DrazheScene : SynthScene {
 
         routine = Routine {
             // var n = NetAddr("10.1.1.96", 10000);
-            var thr_up = 0.07;
-            var thr_down = 0.07;
+            var thr_up = 0.05;
+            var thr_down = 0.05;
 
             inf.do {
                 var acc1 = person1.accAll;
@@ -33,7 +36,7 @@ DrazheScene : SynthScene {
                     // synth.set(\dur, 0.1);
                     // synth.set(\run, 1);
                     this.freeze(false);
-                    // n.sendMsg("/freeze", 0);
+                    n.sendMsg("/freeze", 0);
                 }
                 {
                     "FREEZE".postln;
@@ -43,6 +46,7 @@ DrazheScene : SynthScene {
                         // synth.set(\dur, 0.04);
                         // synth.set(\run, 0);
                         // synth.set(\run, 0);
+                        n.sendMsg("/freeze", 0);
                         this.freeze(true);
                     };
                 };

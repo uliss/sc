@@ -41,7 +41,10 @@ NYSketches {
 
         kuranty = KurantyScene.new;
 
-        drazhe = DrazheScene.new(person1, person2);
+        drazhe = DrazheScene.new(person1, person2,  outOsc);
+        // drazhe?.out = outOsc;
+
+        metel = WindScene.new([\amp, 0.1], ~scenes.person1, ~scenes.person2);
     }
 
 
