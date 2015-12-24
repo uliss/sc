@@ -20,7 +20,7 @@ GadanieScene : AbstractScene {
         fadeOut = 0.5;
         timeout = 0.05;
 
-        synth1 = Synth.basicNew(\paper, Server.default);
+        synth1 = Synth.basicNew(\wind1, Server.default);
         synth2 = Synth.basicNew(\snowstep, Server.default);
 
         routine1 = Routine {
@@ -34,7 +34,7 @@ GadanieScene : AbstractScene {
                 if(playing.not && (acc > accThresholdOn)) {
                     if(debug) {acc.postln};
 
-                    this.play_synth1;
+                    this.play_synth1(acc);
                     playing = true;
                 }
                 {
@@ -108,18 +108,23 @@ GadanieScene : AbstractScene {
     }
 
     play_synth1 {
+        arg acc = 0.07;
+
         if(debug) { this.dbg("synth1 PLAY") };
 
         Server.default.sendBundle(nil, synth1.newMsg(nil, [
-            \amp, 0.45,
-            \sndbuf, ~l.buffer("paper1"),
-            \fr, 4,
+            \amp, 0.25 * acc.linlin(0.07, 0.2, 0.5, 2.5),
+            \min1, 800,
+            \max1, 6000,
+            \fadeIn, 1,
+            \min2, 0.9,
+            \max2, 1,
             \bus, 0]));
     }
 
     stop_synth1 {
         if(debug) { this.dbg("synth1 OFF") };
-        synth1.release(fadeOut);
+        synth1.release(1.5);
     }
 
     play_synth2 {
