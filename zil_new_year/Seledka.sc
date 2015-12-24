@@ -16,7 +16,7 @@ SeledkaScene : AbstractScene {
         var bass = Bjorklund(4, 11).clump(1).collect({|v| v ++ [0, 0, 0] }).flatten;
         var onion1 = Pseq(#[1, 0.2, 0.75, 0, 0.175, 0, 1, 0.5] * 1.3);
         var onion1a = Pseq(#[0.9, 0.5] * 0.2, 2);
-        var metal2 = Pseq(#[1, 1, 0, 0.1, 0.5, 0, 0, 1, 0.2], inf),
+        var metal2 = Pseq(#[1, 1, 0, 0.1, 0.5, 0, 0, 1, 0.2] * 0.7, inf),
 
         outOsc = out_osc;
         kinectPerson1 = person1;

@@ -5,7 +5,6 @@ Scenes {
     var oscScene0_l, oscScene0_r;
     var scene0_synth_l, scene0_synth_r;
 
-    var oscScene_dvoinik;
     var synth_dvoinik, synth_dvoinik_param, dvoinik_routine;
 
     var oscScene_xfader;
@@ -53,29 +52,6 @@ Scenes {
                 \amp, {scene0_synth_r.set(\amp, msg[2])},
                 { format("unknown message format: '%'", msg).postln });
         }, "/gadanie/1", nil, osc_port);
-
-        oscScene_dvoinik = OSCFunc({|msg|
-            msg.postln;
-            switch(msg[1],
-                \start, {
-                    synth_dvoinik = Synth.new(\dvoinik,
-                    ["buffer", ~l.buffer("schubert"), "delay", 23] ++ synth_dvoinik_param);
-                    dvoinik_routine.reset;
-                    dvoinik_routine.play;
-                },
-                \stop,  {
-                    synth_dvoinik.run(false);
-                    dvoinik_routine.stop;
-                },
-                \pos1, { synth_dvoinik.set(\pos1, msg[2]) },
-                \pos2, { synth_dvoinik.set(\pos2, msg[2]) },
-                \amp,  { synth_dvoinik.set(\amp, msg[2].asFloat) },
-                \release, {
-                    synth_dvoinik.release(msg[2]);
-                    dvoinik_routine.stop;
-                },
-                { format("unknown message: '%'", msg).postln });
-        }, "/dvoinik", nil, osc_port);
 
         oscScene_xfader = OSCFunc({|msg|
             msg.postln;

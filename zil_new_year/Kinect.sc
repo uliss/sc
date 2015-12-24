@@ -23,11 +23,6 @@ Kinect {
     var <accLeftHandTipX = 0, <accLeftHandTipY = 0, <accLeftHandTipZ = 0;
     var handtipl_tx, handtipl_ty, handtipl_tz;
 
-    // right hand
-    var <rightHandTipX = 0, <rightHandTipY = 0, <rightHandTipZ = 0;
-    var <accRightHandX = 0, <accRightHandY = 0, <accRightHandZ = 0;
-    var handr_tx, handr_ty, handr_tz;
-
     // right hand tip
     var <rightHandTipX = 0, <rightHandTipY = 0, <rightHandTipZ = 0;
     var <accRightHandTipX = 0, <accRightHandTipY = 0, <accRightHandTipZ = 0;
@@ -192,6 +187,12 @@ Kinect {
             leftHandTipY = v;
         }, this.oscP("handtip_l:ty"), nil, port);
 
+        handtipl_tz = OSCFunc({ |msg|
+            var v = msg[1..].mean;
+            accLeftHandTipZ = v - leftHandTipZ;
+            leftHandTipZ = v;
+        }, this.oscP("handtip_l:tz"), nil, port);
+
 
         handr_tx = OSCFunc({ |msg|
             var v = msg[1..].mean;
@@ -222,6 +223,12 @@ Kinect {
             accRightHandTipY = v - rightHandTipY;
             rightHandTipY = v;
         }, this.oscP("handtip_r:ty"), nil, port);
+
+        handtipr_tz = OSCFunc({ |msg|
+            var v = msg[1..].mean;
+            accRightHandTipZ = v - rightHandTipZ;
+            rightHandTipZ = v;
+        }, this.oscP("handtip_r:tz"), nil, port);
 
         //////////
         // KNEES
@@ -336,6 +343,38 @@ Kinect {
             }
         };
 
+    }
+
+    enable {
+        [head_tx, head_ty, head_tz,
+            handl_tx, handl_ty, handl_tz,
+            handr_tx, handr_ty, handr_tz,
+            handtipl_tx, handtipl_ty, handtipl_tz,
+            handtipr_tx, handtipr_ty, handtipr_tz,
+            spine_tx, spine_ty, spine_tz,
+            knee_rx, knee_ry, knee_rz,
+            knee_lx, knee_ly, knee_lz,
+            foot_lx, foot_ly, foot_lz,
+            foot_rx, foot_ry, foot_rz
+        ].do { |f|
+            f.enable;
+        };
+    }
+
+    disable {
+        [head_tx, head_ty, head_tz,
+            handl_tx, handl_ty, handl_tz,
+            handr_tx, handr_ty, handr_tz,
+            handtipl_tx, handtipl_ty, handtipl_tz,
+            handtipr_tx, handtipr_ty, handtipr_tz,
+            spine_tx, spine_ty, spine_tz,
+            knee_rx, knee_ry, knee_rz,
+            knee_lx, knee_ly, knee_lz,
+            foot_lx, foot_ly, foot_lz,
+            foot_rx, foot_ry, foot_rz
+        ].do { |f|
+            f.enable;
+        };
     }
 
     // @returns true on every hand movement

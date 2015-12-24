@@ -5,6 +5,21 @@ n = NetAddr("127.0.0.1", 7000);
 /// GADANIE  MANUAL CONTROL
 /////////////////////////////////
 
+y = Routine {
+    inf.do { |i|
+        i.postln;
+        1.wait;
+    }
+}.play;
+
+
+y.stop
+
+y.reset;
+y.play;
+
+
+
 // PERSON 1
 n.sendMsg("/gadanie/0", 1);
 n.sendMsg("/gadanie/0", 0);
@@ -12,6 +27,23 @@ n.sendMsg("/gadanie/0", 0);
 n.sendMsg("/gadanie/1", 1);
 n.sendMsg("/gadanie/1", 0);
 
+k = NYSketches.new;
+k.gadanie.debug = true;
+k.gadanie.debug = false;
+k.gadanie.start;
+k.gadanie.stop;
+k.gadanie.play_synth1;
+k.gadanie.stop_synth1;
+k.gadanie.play_synth2;
+k.gadanie.stop_synth2;
+k.gadanie.calibrate;
+k.gadanie.person1.dump(\head);
+k.gadanie.reload;
+
+k.bubbles.start
+k.bubbles.change_bass
+k.bubbles.release
+k.bubbles.stop
 
 
 /////////////////////////////////
@@ -33,8 +65,9 @@ n.sendMsg("/dvoinik", \release, 2);
 n.sendMsg("/dvoinik", \amp, 2);
 
 
-///
+/////////////////////////////////
 // DRAZHE MANUAL CONTROL
+/////////////////////////////////
 n.sendMsg("/drazhe", \start);
 n.sendMsg("/drazhe", \stop);
 n.sendMsg("/drazhe", \freeze, 1);
@@ -52,7 +85,7 @@ n.sendMsg("/kuranty", \release, 2);
 
 /// WIND
 ~scenes.init;
-w = WindScene.new([\amp, 0.1]);
+w = WindScene.new([\amp, 0.1], ~scenes.person1, ~scenes.person2);
 w.debug = true;
 w.start
 w.start(\amp, 2);
@@ -75,8 +108,9 @@ n.sendMsg("/wind", "param", "amp", 1.01);
 n.sendMsg("/wind", "param", "rate1", 2);
 n.sendMsg("/wind", "param", "rate2", 1.1);
 
-
-/// SELEDKA
+//////////////////////////////////
+////  SELEDKA MANUAL CONTROL  ////
+//////////////////////////////////
 ~scenes.init;
 t = SeledkaScene.new(kinectPerson1: ~scenes.person1, kinectPerson2: ~scenes.person2);
 t.play1;

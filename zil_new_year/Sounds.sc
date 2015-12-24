@@ -30,6 +30,7 @@ SoundLib {
         this.add("drazhe", "/Users/serj/work/music/sounds/new year/fei-drazhe-mono.wav");
         this.add("kuranty1", "/Users/serj/work/music/sounds/new year/kuranty-1.wav");
         this.add("kuranty2", "/Users/serj/work/music/sounds/new year/kuranty-2.wav");
+        this.add("step-snow1", "/Users/serj/work/music/sounds/new year/step-snow.wav");
     }
 
     add {

@@ -1,10 +1,16 @@
 DvoinikScene : SynthScene {
+    var person1, person2;
+
     *new {
-        arg param = [];
-        ^super.new("Dvoinik", "/dvoinik", synthName: \dvoinik, synthParam: param).initDv;
+        arg param = [], kinectPerson1, kinectPerson2;
+        ^super.new("Dvoinik", "/dvoinik", synthName: \dvoinik, synthParam: param).initDv(kinectPerson1, kinectPerson2);
     }
 
     initDv {
+        arg p1, p2;
+        person1 = p1;
+        person2 = p2;
+
         task = Task {
             inf.do { |i|
                 this.dbg(i.asTimeString[..7]);

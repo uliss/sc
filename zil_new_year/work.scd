@@ -1,7 +1,7 @@
 // ENTRY POINT
 (
-BuiltIn.gui;
-// Saffire.gui;
+// BuiltIn.gui;
+Saffire.gui;
 s = Server.default;
 s.waitForBoot({
     //////////////////////////
@@ -45,6 +45,12 @@ s.waitForBoot({
             GrainBuf.ar(1, Impulse.kr(fr), 1, sndbuf, LFNoise1.kr.range(0.5, 2),
                 pos, 2, pan, envbuf) * env);
 
+    }).add;
+
+    SynthDef(\snowstep, {
+        arg bus = 0, amp = 1, sndbuf;
+        var out = PlayBuf.ar(1, sndbuf, doneAction: 2) * EnvGate.new * amp;
+        Out.ar(bus, out);
     }).add;
 
     SynthDef(\bubbles, {
@@ -139,6 +145,7 @@ s.waitForBoot({
     ~l.load("drazhe");
     ~l.load("kuranty1");
     ~l.load("kuranty2");
+    ~l.load("step-snow1");
 
 
     "#################".postln;
