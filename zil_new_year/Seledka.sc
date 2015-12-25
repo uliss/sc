@@ -24,7 +24,8 @@ SeledkaScene : AbstractScene {
         var bass = Bjorklund(4, 11).clump(1).collect({|v| v ++ [0, 0, 0] }).flatten;
         var onion1 = Pseq(#[1, 0.2, 0.75, 0, 0.175, 0, 1, 0.5] * 1.3);
         var onion1a = Pseq(#[0.9, 0.5] * 0.2, 2);
-        var metal2 = Pseq(#[1, 1, 0, 0.1, 0.5, 0, 0, 1, 0.2] * 0.7, inf),
+        var metal2 = Pseq(#[1, 1, 0, 0.1, 0.5, 0, 0, 1, 0.2] * 0.7, inf);
+        var acc_factor = 1;
 
         outOsc = out_osc;
         kinectPerson1 = person1;
@@ -87,7 +88,7 @@ SeledkaScene : AbstractScene {
             Pseq([
                 Pseq([onion1], 3), // 3 sec
                 Pseq([[0.9, 0.5], [0.9, 0.5]] * 0.2, 2), // 1 sec
-                Pseq([Rest], 8 * 2), // 2 sec
+                // Pseq([Rest], 8 * 2), // 2 sec
                 Pseq([onion1] * 0.8, inf)
             ]),
         );
@@ -131,7 +132,7 @@ SeledkaScene : AbstractScene {
             ]),
         );
 
-        p_part1 = Pfindur(8 * 64, // 64 seconds
+        p_part1 = Pfindur(8 * 48, // 64 seconds
             Ppar([
                 p_part1_onion1,
                 p_part1_onion2,
@@ -176,7 +177,7 @@ SeledkaScene : AbstractScene {
             \instrument, \sample_beat,
             \buf, ~l.buffer("onion1"),
             \pos, 0.2,
-            \dur, 1,
+            \dur, 1 * acc_factor,
             \startPos, 1000,
             \amp,
             Pseq([onion1], inf),
@@ -186,7 +187,7 @@ SeledkaScene : AbstractScene {
             \instrument, \sample_beat,
             \buf, ~l.buffer("onion1"),
             \pos, -0.5,
-            \dur, 0.5,
+            \dur, 0.5 * acc_factor,
             \startPos, 1000,
             \amp, 2,
             \amp, Pseq([onion1a], inf),
@@ -195,7 +196,7 @@ SeledkaScene : AbstractScene {
         p_part3_metal = Pbind(
             \instrument, \sample_beat,
             \buf, ~l.buffer("metal2"),
-            \dur, 1,
+            \dur, 1 * acc_factor,
             \pos, -0.25,
             \amp, Pseq([metal2 * 0.8], inf),
         );
@@ -209,7 +210,7 @@ SeledkaScene : AbstractScene {
                 p_part3_metal,
                 Pbind(
                     \instrument, \bass,
-                    \dur,      0.5,
+                    \dur,      0.5 * acc_factor,
                     \midinote, Prand((28..33), inf),
                     \amp,      Pseq(bass, inf),
                 )
@@ -249,8 +250,8 @@ SeledkaScene : AbstractScene {
         pattern3 = Pdef(\stomp, Pseq([
             p_intro,
             p_part1,
-            p_inter1,
-            p_part2,
+            // p_inter1,
+            // p_part2,
             p_inter2,
             p_part3,
             p_final1,
@@ -262,37 +263,43 @@ SeledkaScene : AbstractScene {
     beat_metal1 {
         arg dur = 0.5;
         Synth(\sample_beat, [\amp, 1.3, \buf, ~l.buffer("metal1"), \pos, 2.0.rand - 1, startPos: 10000.rand, \dur, dur]);
-        outOsc.sendMsg("/beat1");
+        outOsc.sendMsg("/beat1", 1);
+        {outOsc.sendMsg("/beat1", 0)}.defer(0.1);
     }
 
     beat_metal2 {
         arg amp = 1, dur = 0.5, pos = -0.25, startPos = 0;
         Synth(\sample_beat, [\amp, amp, \buf, ~l.buffer("metal2"), \pos, pos, startPos: startPos, \dur, dur]);
-        outOsc.sendMsg("/beat2");
+        outOsc.sendMsg("/beat2", 1);
+        {outOsc.sendMsg("/beat2", 0)}.defer(0.1);
     }
 
     beat_onion1 {
         arg amp = 1, dur = 0.5, pos = 0.2, startPos = 1000;
         Synth(\sample_beat, [\amp, amp, \buf, ~l.buffer("onion1"), \pos, pos, startPos: startPos, \dur, dur]);
-        outOsc.sendMsg("/beat3");
+        outOsc.sendMsg("/beat3", 1);
+        {outOsc.sendMsg("/beat3", 0)}.defer(0.1);
     }
 
     beat_onion2 {
         arg dur = 0.5;
         Synth(\sample_beat, [\amp, 5, \buf, ~l.buffer("onion2"), \pos, 2.0.rand - 1, startPos: 5000.rand, \dur, dur]);
-        outOsc.sendMsg("/beat4");
+        outOsc.sendMsg("/beat4", 1);
+        {outOsc.sendMsg("/beat4", 0)}.defer(0.1);
     }
 
     beat_microwave {
         arg dur = 5;
         Synth(\sample_beat, [\amp, 1, \buf, ~l.buffer("microwave1"), \dur, dur, \pos: [-0.8, 0.8].choose, \startPos, 1000]);
-        outOsc.sendMsg("/beat6");
+        outOsc.sendMsg("/beat6", 1);
+        {outOsc.sendMsg("/beat6", 0)}.defer(0.1);
     }
 
     beat_bass {
         arg amp = 1, dur = 0.1;
         Synth(\bass, [\amp, amp, \freq, 25.rand + 42, \dur, dur]);
-        outOsc.sendMsg("/beat5");
+        outOsc.sendMsg("/beat5", 1);
+        {outOsc.sendMsg("/beat5", 0)}.defer(0.1);
     }
 
     stop {

@@ -11,4 +11,23 @@ WindScene : SynthScene {
         person1 = p1;
         person2 = p2;
     }
+
+    quiter {
+        arg dest, time = 5;
+        var steps = time * 10;
+        var l = synth.get(\amp);
+        var diff = (l - dest) / steps;
+        var r;
+        diff.postln;
+
+        r = Routine {
+            steps.do {
+                l = l - diff;
+                synth.set(\amp, l);
+                0.1.wait;
+            }
+        };
+
+        r.play;
+    }
 }

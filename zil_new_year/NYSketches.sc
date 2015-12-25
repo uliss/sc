@@ -62,6 +62,8 @@ NYSketches {
 
         mixer = MixerScene.new(person1, person2);
 
+        final = FinalScene.new;
+
         this.init_dump_routine;
     }
 

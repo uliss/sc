@@ -157,6 +157,12 @@ s.waitForBoot({
         Out.ar(0, Pan2.ar(out, pan));
     }).add;
 
+    SynthDef(\final, {
+        arg amp = 0.5, pan = 0, buf;
+        var out = DiskIn.ar(2, buf) * EnvGate.new * amp;
+        Out.ar(0, Pan2.ar(out, pan));
+    }).add;
+
     ////////////////////////////////////
     //     INIT & LOAD SOUND LIBRARY
     ////////////////////////////////////
@@ -196,7 +202,6 @@ s.waitForBoot({
 });
 
 n = NetAddr("127.0.0.1", 7000);
-
 nil;
 )
 

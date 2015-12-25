@@ -69,6 +69,6 @@ DrazheScene : SynthScene {
 
         if(v) { run = 0 } { run = 1 };
         synth.set(\run, run);
-        osc.sendMsg("/freeze", run);
+        osc.sendMsg("/freeze", v);
     }
 }

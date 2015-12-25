@@ -1,33 +1,38 @@
 // OSC control addr
-n = NetAddr("127.0.0.1", 7000);
-// n = NetAddr("alex", 10000);
+// n = NetAddr("127.0.0.1", 7000);
+n = NetAddr("alex", 10000);
 n.sendMsg("/freeze", 1);
 n.sendMsg("/freeze", 0);
 
-// {SinOsc.ar([440, 460])}.play
-
-k = NYSketches.new(NetAddr("localhost", 10001));
-// k = NYSketches.new(NetAddr("alex", 10000));
-
+k.gadanie.play_synth1;
+k.gadanie.stop_synth1;
+k.gadanie.play_synth2;
+k.gadanie.stop_synth2;
 k.gadanie.debug = true;
 k.gadanie.debug = false;
 k.dumpKinect(true);
 k.dumpKinect(false);
 
+{SinOsc.ar([440, 460], mul: 0.1)}.play
+
+
+/////////////////
+///    START
+/////////////////
+// k = NYSketches.new(NetAddr("localhost", 10001));
+k = NYSketches.new(NetAddr("alex", 10000));
+
 //  гаснет свет
-k.gadanie.start;
+k.gadanie.start; // сделать длинее хвост - в начале тише звуки (!!!)
 k.gadanie.stop; // может быть позже?
-k.gadanie.play_synth1;
-k.gadanie.stop_synth1;
-k.gadanie.play_synth2;
-k.gadanie.stop_synth2;
+
 k.gadanie.calibrate;
 k.gadanie.person1.dump(\head);
 k.gadanie.reload; // NB!
 
 // появляется синяя заливка
 k.bubbles.start
-// k.gadanie.stop; ?????
+k.gadanie.stop;
 k.bubbles.change_bass
 k.bubbles.release
 // k.bubbles.stop
@@ -38,49 +43,59 @@ k.stol.stop
 
 k.seledka.reload; //NB!
 k.seledka.play1;
+// k.seledka.beat_onion2
 // выход девушек три раза
 k.seledka.play2;
-
+// выход девушек 3 раза
 k.seledka.play3;
-
 
 // уносим стол
 k.seledka.stop;
 
-// я включаю
+// (!) Я включаю
 k.dvoinik.start;
-// включить фонарь в 1:15
+// Я ВКЛЮЧАЮ ФОНАРЬ в 1:15
 // выключить фонарь когда вынесли елку
 k.dvoinik.pause;
 k.dvoinik.resume;
 k.dvoinik.stop;
+n = NetAddr("alex", 10000);
+n.sendMsg("/freeze", 0);
 
 
-k.drazhe.thresholdStart = 0.1;
-k.drazhe.thresholdStop = 0.1;
+k.drazhe.thresholdStart = 0.13;
+k.drazhe.thresholdStop = 0.13;
 k.drazhe.start;
 k.drazhe.freeze(true)
 k.drazhe.freeze(false)
+// только после проигрыша в конце
 k.drazhe.release(5);
 k.drazhe.stop;
 
+
 //
 k.metel.start
+k.metel.quiter(0.1)
 
-k.mixer.play1; // loop
-k.mixer.play2; // no interaction
+// k.mixer.play1; // loop
+// k.mixer.play2; // no interaction
 k.mixer.play3; // interactive mixer
 k.mixer.stop;
 
 k.metel.stop;
-k.metel.release(4);
+k.metel.release(10);
 
 
-k.mixer.release(0.3);
+k.mixer.release(3.3);
 
 // выносить елку
 k.metel.release(4);
 k.kuranty.start
 k.kuranty.release(7)
 k.kuranty.stop;
+
+k.final.set(\amp, 0.5);
+k.final.start
+k.final.release(10)
+k.final.stop
 

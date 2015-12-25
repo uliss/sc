@@ -75,6 +75,10 @@ AbstractScene {
         this.dbg("implement me");
     }
 
+    set {
+        this.dbg("implement me");
+    }
+
     amp {
         arg level;
         if(synth.notNil) {
