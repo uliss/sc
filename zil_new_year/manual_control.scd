@@ -44,10 +44,11 @@ k.stol.stop
 k.seledka.reload; //NB!
 k.seledka.play1;
 // k.seledka.beat_onion2
-// выход девушек три раза
+// выход девушек 4 раза - ОКОЛО СТОЛА
 k.seledka.play2;
-// выход девушек 3 раза
+// выход девушек назад - в линию
 k.seledka.play3;
+// УНОСИМ СТОЛ СРАЗУ!!!!
 
 // уносим стол
 k.seledka.stop;
@@ -73,29 +74,27 @@ k.drazhe.release(5);
 k.drazhe.stop;
 
 
-//
 k.metel.start
-k.metel.quiter(0.1)
 
-// k.mixer.play1; // loop
-// k.mixer.play2; // no interaction
 k.mixer.play3; // interactive mixer
 k.mixer.stop;
 
 k.metel.stop;
 k.metel.release(10);
 
-
 k.mixer.release(3.3);
 
-// выносить елку
 k.metel.release(4);
 k.kuranty.start
 k.kuranty.release(7)
 k.kuranty.stop;
 
-k.final.set(\amp, 0.5);
+// k.final.set(\amp, 0.5);
 k.final.start
-k.final.release(10)
+k.metel.volume(0.1, 5)
+k.final.release(20)
+k.metel.volume(0.05, 5)
+// выносить елку
+k.metel.release(15)
 k.final.stop
 

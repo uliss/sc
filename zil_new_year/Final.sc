@@ -18,4 +18,8 @@ FinalScene : SynthScene {
         }
     }
 
+    start {
+        this.initFinal;
+    }
+
 }

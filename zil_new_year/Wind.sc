@@ -12,22 +12,26 @@ WindScene : SynthScene {
         person2 = p2;
     }
 
-    quiter {
-        arg dest, time = 5;
+    volume {
+        arg amp, time = 5;
         var steps = time * 10;
-        var l = synth.get(\amp);
-        var diff = (l - dest) / steps;
+        var old_amp;
         var r;
-        diff.postln;
 
-        r = Routine {
-            steps.do {
-                l = l - diff;
-                synth.set(\amp, l);
-                0.1.wait;
-            }
-        };
+        synth.get(\amp, { |x|
+            var old_amp = x;
+            var amp_diff = (old_amp - amp) / steps;
+            var r;
 
-        r.play;
+            Routine {
+                var current_amp = old_amp;
+                steps.do {
+                    current_amp = current_amp - amp_diff;
+                    synth.set(\amp, current_amp);
+                    0.1.wait;
+                }
+            }.play;
+        }
+        );
     }
 }

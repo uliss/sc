@@ -132,7 +132,7 @@ SeledkaScene : AbstractScene {
             ]),
         );
 
-        p_part1 = Pfindur(8 * 48, // 64 seconds
+        p_part1 = Pfindur(8 * 96, // 64 seconds
             Ppar([
                 p_part1_onion1,
                 p_part1_onion2,
