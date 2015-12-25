@@ -27,20 +27,33 @@ DrazheScene : SynthScene {
         routine = Routine {
             var thr_up = 0.05;
             var thr_down = 0.05;
+            var time_on = 0;
+            var time_off = 0;
 
-            inf.do {
+            inf.do { |i|
                 var acc1 = person1.accAll;
                 acc1.postln;
 
-                if(acc1 > thr_up || (acc1 == 0)) { this.freeze(false) }
+                if(acc1 > thr_up || (acc1 == 0)) {
+                    if((i - time_off) > 4) {
+                        this.freeze(false);
+                    };
+                    // time_on = i;
+                }
                 {
                     if(acc1 < thr_down) {
-                        "FREEZE".postln;
-                        this.freeze(true);
+                        if((i - time_off) > 4) {
+                            "FREEZE".postln;
+                            this.freeze(true);
+                        };
+
+                        time_off = i;
+
+
                     };
                 };
 
-                0.2.wait;
+                0.1.wait;
             };
         };
 
