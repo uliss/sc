@@ -73,22 +73,16 @@ k.drazhe.freeze(false)
 k.drazhe.release(5);
 k.drazhe.stop;
 
-
+// девушки катаются по полу
 k.metel.start
 
+// недeвают шапки
 k.mixer.play3; // interactive mixer
+
+// девушки уходят из зоны кинекта, остается вьюга, я выключаю
 k.mixer.stop;
 
-k.metel.stop;
-k.metel.release(10);
-
-k.mixer.release(3.3);
-
-k.metel.release(4);
-k.kuranty.start
-k.kuranty.release(7)
-k.kuranty.stop;
-
+// появляется елка - шар
 // k.final.set(\amp, 0.5);
 k.final.start
 k.metel.volume(0.1, 5)

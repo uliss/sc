@@ -20,6 +20,7 @@ FinalScene : SynthScene {
 
     start {
         this.initFinal;
+        super.start;
     }
 
 }
