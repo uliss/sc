@@ -169,15 +169,24 @@ s.waitForBoot({
     ~l.load("onion2");
     ~l.load("metal1");
     ~l.load("metal2");
+    ~l.load("metal3");
     ~l.load("microwave1");
-    ~l.load("microwave2");
     ~l.load("rice1");
     ~l.load("jingle4");
     ~l.load("drazhe");
     ~l.load("kuranty1");
     ~l.load("kuranty2");
     ~l.load("step-snow1");
+    ~l.load("step-snow2");
     ~l.load("glass1");
+    ~l.load("glass2");
+    ~l.load("dish1");
+    ~l.load("beat1");
+    ~l.load("tick1");
+    ~l.load("water1");
+    ~l.load("cap1");
+    ~l.load("friture1");
+
 
 
     "#################".postln;

@@ -1,13 +1,13 @@
 // OSC control addr
 n = NetAddr("127.0.0.1", 7000);
-n = NetAddr("alex", 10000);
+// n = NetAddr("alex", 10000);
 n.sendMsg("/freeze", 1);
 n.sendMsg("/freeze", 0);
 
 // {SinOsc.ar([440, 460])}.play
 
-// k = NYSketches.new(NetAddr("localhost", 10001));
-k = NYSketches.new(NetAddr("alex", 10000));
+k = NYSketches.new(NetAddr("localhost", 10001));
+// k = NYSketches.new(NetAddr("alex", 10000));
 
 k.gadanie.debug = true;
 k.gadanie.debug = false;

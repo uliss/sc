@@ -21,6 +21,7 @@ SoundLib {
         this.add("onion2", "/Users/serj/work/music/sounds/cook/onion-cut-2.wav");
         this.add("metal1", "/Users/serj/work/music/sounds/cook/metal-1.wav");
         this.add("metal2", "/Users/serj/work/music/sounds/cook/metal-2.wav");
+        this.add("metal3", "/Users/serj/work/music/sounds/cook/metal-3.aif");
         this.add("microwave1", "/Users/serj/work/music/sounds/cook/microwave-1.wav");
         this.add("microwave2", "/Users/serj/work/music/sounds/cook/microwave-2.wav");
         this.add("jingle1", "/Users/serj/work/music/sounds/new year/jingle-1.wav");
@@ -31,7 +32,15 @@ SoundLib {
         this.add("kuranty1", "/Users/serj/work/music/sounds/new year/kuranty-1.wav");
         this.add("kuranty2", "/Users/serj/work/music/sounds/new year/kuranty-2.wav");
         this.add("step-snow1", "/Users/serj/work/music/sounds/new year/step-snow.wav");
+        this.add("step-snow2", "/Users/serj/work/music/sounds/new year/step-snow-2.wav");
         this.add("glass1", "/Users/serj/work/music/sounds/new year/glasses-2.wav");
+        this.add("tick1", "/Users/serj/work/music/sounds/cook/tick-1.wav");
+        this.add("water1", "/Users/serj/work/music/sounds/cook/water-1.aif");
+        this.add("cap1", "/Users/serj/work/music/sounds/cook/cap-1.aif");
+        this.add("friture1", "/Users/serj/work/music/sounds/cook/friture-1.wav");
+        this.add("beat1", "/Users/serj/work/music/sounds/cook/beat-1.aif");
+        this.add("glass2", "/Users/serj/work/music/sounds/cook/glass-1.aif");
+        this.add("dish1", "/Users/serj/work/music/sounds/cook/dish-1.aif");
     }
 
     add {

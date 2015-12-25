@@ -2,9 +2,17 @@ SeledkaScene : AbstractScene {
     var <kinectPerson1, <kinectPerson2;
     var <>threshold1, <>timeout1;
     var <>tempo;
-    var routine1, pattern2, pattern3;
+    var routine1, pattern2, pattern3, pattern4;
     var <>outOsc;
     var pattern_clock;
+
+    var p_intro, p_part1, p_part2, p_part3;
+    var p_part1_onion1, p_part1_onion2;
+    var p_part1_metal1, p_part1_metal2;
+    var p_inter1, p_inter2;
+    var p_part2_instr, p_part3_instr1;
+    var p_part3_onion1, p_part3_onion2, p_part3_metal;
+    var p_final1, p_final2;
 
     *new {
         arg oscPort = 7000, outOsc, kinectPerson1, kinectPerson2, threshold1 = 0.07, timeout1 = 0.3, tempo = 120; //NetAddr("10.1.1.96", 10000)
@@ -56,92 +64,198 @@ SeledkaScene : AbstractScene {
             \amp,      Pseq(bass * 0.7, inf),
         ));
 
-        pattern3 = Pdef(\stomp, Ppar([
-            Pbind(
-                \instrument, \sample_beat,
-                \buf, ~l.buffer("onion1"),
-                \pos, 0.2,
-                \dur, 2,
-                \startPos, 1000,
-                \amp,
-                Pseq([
-                    // init rest
-                    Pseq([Rest], 16 * 2), // 32 (32)
-                    Pseq([onion1], 3),    // 24 (56)
-                    Pseq([[0.9, 0.5], [0.9, 0.5]] * 0.2, 2),   // 8  (64)
-                    Pseq([Rest], 8),
-                    Pseq([Rest], 8),      // 8  (72)
-                    Pseq([onion1], inf)
-                ],
-                inf),
-            ),
-
-
-            Pbind(
-                \instrument, \sample_beat,
-                \buf, ~l.buffer("onion1"),
-                \pos, -0.5,
-                \dur, 2,
-                \startPos, 1000,
-                \amp, Pseq(
-                    [
-                        // init rest
-                        Pseq([Rest], 72), // 72
-                        Pseq([onion1a], inf),
-                ]),
-            ),
-
-            Pbind(
-                \instrument, \sample_beat,
-                \buf, ~l.buffer("metal1"),
-                \dur, 2,
-                \pos, -0.25,
-                \amp, Pseq([
-                    // init rest
-                    Pseq([Rest], 136), // 72 + 16 * 4
-                    Pseq([
-                        Pseq([1], 1),
-                        Pseq([Rest], 40)
-                    ], inf),
-                ]),
-            ),
-
-            Pbind(
-                \instrument, \sample_beat,
-                \buf, ~l.buffer("metal2"),
-                \dur, 2,
-                \pos, -0.25,
-                \amp, Pseq([
-                    // init rest
-                    Pseq([Rest], 136 + 16),
-                    metal2
-                ]),
-            ),
-
-            Pbind(
-                \instrument, \bass,
-                \dur,      0.5,
-                \midinote, Prand((28..33), inf),
-                \amp,      Pseq([
-                    Pseq([Rest], (136 + 16 + 36) * 4),
-                    Pseq(bass, inf),
-                ], inf),
-            ),
-
+        p_intro = Pseq([
+            Pseq([Rest], 8),
             Pbind(
                 \instrument, \sample_beat,
                 \buf, ~l.buffer("microwave1"),
                 \dur, 8,
                 \fadeOut, 3,
-                \pos, Prand([-0.8, 0.8], inf),
+                \pos, Pseq([-0.8]),
                 \startPos, 1000,
-                \amp, Pseq([
-                    // init offset
-                    // Pseq([Rest], 0),
-                    1,
-                    Pseq([Rest], 4 * 40),
+                \amp, Pseq([1])),
+            Pseq([Rest], 8 * 6)]
+        );
+
+        p_part1_onion1 = Pbind(
+            \instrument, \sample_beat,
+            \buf, ~l.buffer("onion1"),
+            \pos, 0.2,
+            \dur, 2,
+            \startPos, 1000,
+            \amp,
+            Pseq([
+                Pseq([onion1], 3), // 3 sec
+                Pseq([[0.9, 0.5], [0.9, 0.5]] * 0.2, 2), // 1 sec
+                Pseq([Rest], 8 * 2), // 2 sec
+                Pseq([onion1] * 0.8, inf)
+            ]),
+        );
+
+        p_part1_onion2 = Pbind(
+            \instrument, \sample_beat,
+            \buf, ~l.buffer("onion1"),
+            \pos, -0.5,
+            \dur, 2,
+            \startPos, 1000,
+            \amp, Pseq(
+                [
+                    Pseq([Rest], 8 * 5), // 5 seconds
+                    Pseq([onion1a], inf),
+            ]),
+        );
+
+        p_part1_metal1 = Pbind(
+            \instrument, \sample_beat,
+            \buf, ~l.buffer("metal1"),
+            \dur, 2,
+            \pos, -0.25,
+            \amp, Pseq([
+                Pseq([Rest], 8 * (4 + 8) - 1), // 13 seconds
+                Pseq([
+                    Pseq([1]),
+                    Pseq([Rest], 8 * 8)
                 ], inf),
+            ]),
+        );
+
+        p_part1_metal2 = Pbind(
+            \instrument, \sample_beat,
+            \buf, ~l.buffer("metal2"),
+            \dur, 2,
+            \pos, -0.25,
+            \amp, Pseq([
+                // init rest
+                Pseq([Rest], 8 * (5 + 8)),
+                metal2 * 0.8
+            ]),
+        );
+
+        p_part1 = Pfindur(8 * 64, // 64 seconds
+            Ppar([
+                p_part1_onion1,
+                p_part1_onion2,
+                p_part1_metal1,
+                p_part1_metal2
+            ])
+        );
+
+        p_inter1 = Pfin(1, Pbind(
+            \instrument, \sample_beat,
+            \buf, ~l.buffer("water1"),
+            \amp, 1,
+            \dur, 18
+        ));
+
+        p_part2_instr = Pbind(
+            \dur, 1,
+            \instrument, \sample_beat,
+            \buf, Prand([~l.buffer("metal3"),
+                ~l.buffer("dish1"),
+                ~l.buffer("glass2"),
+                ~l.buffer("beat1")], inf),
+            \amp, Prand([0.6, 0.7, 0.8, 0.9] * 1.4, inf),
+            \pan, Prand([-0.3, -0.1, 0, 0.1, 0.3], inf),
+        );
+
+        p_part3_instr1 = Pbind(
+            \dur, Prand([0.1, 0.12, 0.05], inf),
+            \instrument, \sample_beat,
+            \buf, Prand([~l.buffer("metal3"),
+                ~l.buffer("dish1"),
+                ~l.buffer("glass2"),
+                ~l.buffer("beat1")], inf),
+            \amp, Prand([0.6, 0.7, 0.8, 0.9] * 0.6, inf)
+        );
+
+        p_part2 = Pfindur(8 * 32, Ppar([
+            p_part2_instr
+        ]));
+
+        p_part3_onion1 = Pbind(
+            \instrument, \sample_beat,
+            \buf, ~l.buffer("onion1"),
+            \pos, 0.2,
+            \dur, 1,
+            \startPos, 1000,
+            \amp,
+            Pseq([onion1], inf),
+        );
+
+        p_part3_onion2 = Pbind(
+            \instrument, \sample_beat,
+            \buf, ~l.buffer("onion1"),
+            \pos, -0.5,
+            \dur, 0.5,
+            \startPos, 1000,
+            \amp, 2,
+            \amp, Pseq([onion1a], inf),
+        );
+
+        p_part3_metal = Pbind(
+            \instrument, \sample_beat,
+            \buf, ~l.buffer("metal2"),
+            \dur, 1,
+            \pos, -0.25,
+            \amp, Pseq([metal2 * 0.8], inf),
+        );
+
+
+        p_part3 =  Pfindur(8 * 64, // 64 seconds
+            Ppar([
+                // p_part2_instr,
+                p_part3_onion1,
+                p_part3_onion2,
+                p_part3_metal,
+                Pbind(
+                    \instrument, \bass,
+                    \dur,      0.5,
+                    \midinote, Prand((28..33), inf),
+                    \amp,      Pseq(bass, inf),
+                )
+            ])
+        );
+
+        p_inter2 = Pfin(1, Pbind(
+            \dur, 8 * 4,
+            \amp, 2,
+            \instrument, \sample_beat,
+            \buf, ~l.buffer("tick1")));
+
+        p_final1 = Pfindur(8 * 8, Ppar([
+            p_part3_instr1,
+            Pbind(
+                \instrument, \bass,
+                \dur,      Prand([0.1, 0.15, 0.05], inf),
+                \midinote, Prand((28..33), inf),
+                \amp,      Pseq(bass, inf),
             ),
+            Pbind(
+                \instrument, \sample_beat,
+                \buf, ~l.buffer("metal2"),
+                \dur, Prand([0.11, 0.13, 0.07], inf) ,
+                \pos, 0.25,
+                \amp, 0.5
+            );
+
+        ]));
+
+        p_final2 = Pfin(1, Pbind(
+            \amp, 2,
+            \dur, 16,
+            \instrument, \sample_beat,
+            \buf, ~l.buffer("friture1")));
+
+        pattern3 = Pdef(\stomp, Pseq([
+            p_intro,
+            p_part1,
+            p_inter1,
+            p_part2,
+            p_inter2,
+            p_part3,
+            p_final1,
+            p_final2,
+            p_intro,
         ]));
     }
 
