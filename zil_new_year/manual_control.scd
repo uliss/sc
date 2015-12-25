@@ -13,7 +13,7 @@ k.gadanie.debug = false;
 k.dumpKinect(true);
 k.dumpKinect(false);
 
-{SinOsc.ar([440, 460], mul: 0.1)}.play
+{SinOsc.ar([440, 460], mul: 0.01)}.play
 
 
 /////////////////
@@ -64,7 +64,7 @@ n = NetAddr("alex", 10000);
 n.sendMsg("/freeze", 0);
 
 
-k.drazhe.thresholdStart = 0.13;
+k.drazhe.thresholdStart = 0.15;
 k.drazhe.thresholdStop = 0.13;
 k.drazhe.start;
 k.drazhe.freeze(true)
@@ -76,7 +76,7 @@ k.drazhe.stop;
 // девушки катаются по полу
 k.metel.start
 
-// недeвают шапки
+// начинают прыгать далеко за кинектом
 k.mixer.play3; // interactive mixer
 
 // девушки уходят из зоны кинекта, остается вьюга, я выключаю
