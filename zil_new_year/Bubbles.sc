@@ -95,4 +95,10 @@ BubblesScene : AbstractScene {
         var a = 100;
         bus.value = [99, 100 * 2 / 3 - 1, 50 * 3 / 4 - 1, 50 * 5 / 6 - 1].choose;
     }
+
+    volume {
+        arg v1, v2;
+        vol1 = v1;
+        vol2 = v2;
+    }
 }

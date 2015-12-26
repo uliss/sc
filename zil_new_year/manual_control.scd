@@ -89,9 +89,9 @@ k.final.start
 k.metel.volume(0.3, 5)
 k.final.release(20)
 k.metel.volume(0.1, 10)
-// выносить елку
+// выносить елку и вернуться назад
 k.metel.release(15)
 k.final.stop
 
-{k.bubbles.start;k.bubbles.fadeIn}.defer(4);
+{k.bubbles.volume(0.1, 0.1); k.bubbles.start}.defer(30);
 
