@@ -92,11 +92,16 @@ GadanieScene : AbstractScene {
     }
 
     stop {
-        arg fadeOut = 4;
-        routine1.stop;
-        routine2.stop;
+        arg fadeOut = 20;
+        var tm = 30;
+
         synth1.release(fadeOut);
         synth2.release(fadeOut);
+
+        {
+            routine1.stop;
+            routine2.stop;
+        }.defer(fadeOut);
     }
 
     resume {
@@ -113,7 +118,7 @@ GadanieScene : AbstractScene {
         if(debug) { this.dbg("synth1 PLAY") };
 
         Server.default.sendBundle(nil, synth1.newMsg(nil, [
-            \amp, 0.25 * acc.linlin(0.07, 0.2, 0.5, 2.5),
+            \amp, 0.23 * acc.linlin(0.07, 0.2, 0.5, 2.5),
             \min1, 800,
             \max1, 6000,
             \fadeIn, 1,
@@ -131,7 +136,7 @@ GadanieScene : AbstractScene {
         if(debug) { this.dbg("synth2 PLAY") };
 
         Server.default.sendBundle(nil, synth2.newMsg(nil, [
-            \amp, 0.15,
+            \amp, 0.33,
             \sndbuf, ~l.buffer("step-snow1"),
             \bus, 1]));
     }

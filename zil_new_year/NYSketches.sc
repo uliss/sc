@@ -63,6 +63,10 @@ NYSketches {
         mixer = MixerScene.new(person1, person2);
 
         final = FinalScene.new;
+        final.synthParam[\fadeIn] = 3;
+        final.synthParam[\amp] = 0.25;
+        final.fileName = "/Users/serj/work/music/sounds/flow_my_tears.wav";
+        // final.fileName = "/Users/serj/work/music/sounds/gombert.wav"
 
         this.init_dump_routine;
     }

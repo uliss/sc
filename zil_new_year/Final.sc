@@ -1,14 +1,16 @@
 FinalScene : SynthScene {
     var buf;
+    var <>fileName;
 
     *new {
+        arg fname = "/Users/serj/work/music/sounds/gombert.wav";
         ^super.new("Final", "/final",
             synthName: "final").initFinal;
     }
 
     initFinal {
-        buf = Buffer.cueSoundFile(Server.default, "/Users/serj/work/music/sounds/gombert.wav");
-        this.synthParam[\buf] = buf;
+        arg fname;
+        fileName = fname;
     }
 
     set {
@@ -19,7 +21,8 @@ FinalScene : SynthScene {
     }
 
     start {
-        this.initFinal;
+        buf = Buffer.cueSoundFile(Server.default, fileName);
+        this.synthParam[\buf] = buf;
         super.start;
     }
 

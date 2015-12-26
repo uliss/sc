@@ -86,7 +86,7 @@ k.mixer.stop;
 // появляется елка - шар
 // k.final.set(\amp, 0.5);
 k.final.start
-k.metel.volume(0.3, 5)
+k.metel.volume(0.12, 5)
 k.final.release(20)
 k.metel.volume(0.1, 10)
 // выносить елку и вернуться назад

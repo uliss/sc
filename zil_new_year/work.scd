@@ -158,8 +158,8 @@ s.waitForBoot({
     }).add;
 
     SynthDef(\final, {
-        arg amp = 0.5, pan = 0, buf;
-        var out = DiskIn.ar(2, buf) * EnvGate.new * amp;
+        arg amp = 0.5, pan = 0, fadeIn = 0, buf;
+        var out = DiskIn.ar(2, buf) * EnvGate.new * amp * Line.ar(0, 1, fadeIn);
         Out.ar(0, Pan2.ar(out, pan));
     }).add;
 
