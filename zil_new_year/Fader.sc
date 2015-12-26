@@ -14,16 +14,49 @@ MixerScene : SynthScene {
         person2 = p2;
 
         routine = Routine {
+            var prev_kin_pos1 = 5;
+            var prev_kin_pos2 = 5;
+
             inf.do {
-                var pos1 = p1.headZ.linlin(1, 4, 1, 0);
-                var pos2 = p2.headZ.linlin(1, 4, 1, 0,);
-                if(p1.headZ == 0) { pos1 = 0 };
-                if(p2.headZ == 0) { pos2 = 0 };
+                // spine?
+                var kin_pos1 = p1.headZ;
+                var kin_pos2 = p2.headZ;
 
+                if(kin_pos1 == 0) { // если сигнал потерян
+                    if(prev_kin_pos1 < 1.1) { // вышли за пределы кинекта вперед
+                        "P1 TOO CLOSE".postln;
+                    }
+                    {
+                        if(prev_kin_pos1 > 4) { // если вышли за пределы кинекта назад
+                            this.synthSet(\amp2, 0); // выключаем фейдер
+                        } { // если кинект потерял в середине
+                            "P1 LOST IN THE MIDDLE".postln;
+                        };
+                    };
+                }
+                { // нормальный сигнал кинекта
+                    this.synthSet(\amp1, kin_pos1.linlin(1, 4, 1, 0));
+                    // сохраняем предыдущую позицию
+                    prev_kin_pos1 = kin_pos1;
+                };
 
-                format("% - %", pos1, pos2).postln;
-
-                this.synthSet(\amp1, pos1, \amp2, pos2);
+                if(kin_pos2 == 0) { // если сигнал потерян
+                    if(prev_kin_pos2 < 1.1) { // вышли за пределы кинекта вперед
+                        "P2 TOO CLOSE".postln;
+                    }
+                    {
+                        if(prev_kin_pos2 > 4) { // если вышли за пределы кинекта назад
+                            this.synthSet(\amp2, 0); // выключаем фейдер
+                        } { // если кинект потерял в середине
+                            "P2 LOST IN THE MIDDLE".postln;
+                        };
+                    };
+                }
+                { // нормальный сигнал кинекта
+                    this.synthSet(\amp2, kin_pos2.linlin(1, 4, 1, 0));
+                    // сохраняем предыдущую позицию
+                    prev_kin_pos2 = kin_pos2;
+                };
 
                 0.1.wait;
             }
@@ -46,7 +79,9 @@ MixerScene : SynthScene {
     }
 
     play3 {
-        this.start;
+        // начинаем с выключенными звуками
+        this.start(\amp1, 0, \amp2, 0);
+        // запускаем реакцию на кинект
         routine.reset;
         routine.play;
     }

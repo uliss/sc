@@ -10,6 +10,9 @@ k.gadanie.play_synth2;
 k.gadanie.stop_synth2;
 k.gadanie.debug = true;
 k.gadanie.debug = false;
+k.gadanie.calibrate;
+k.gadanie.person1.dump(\head);
+
 k.dumpKinect(true);
 k.dumpKinect(false);
 
@@ -19,20 +22,18 @@ k.dumpKinect(false);
 /////////////////
 ///    START
 /////////////////
-// k = NYSketches.new(NetAddr("localhost", 10001));
-k = NYSketches.new(NetAddr("alex", 10000));
+k = NYSketches.new(NetAddr("localhost", 10001));
+// k = NYSketches.new(NetAddr("alex", 10000));
 
 //  гаснет свет
 k.gadanie.start; // сделать длинее хвост - в начале тише звуки (!!!)
 k.gadanie.stop; // может быть позже?
 
-k.gadanie.calibrate;
-k.gadanie.person1.dump(\head);
 k.gadanie.reload; // NB!
 
 // появляется синяя заливка
 k.bubbles.start
-k.gadanie.stop;
+k.gadanie.stop(15) // fadeout 15 seconds
 k.bubbles.change_bass
 k.bubbles.release
 // k.bubbles.stop
@@ -91,4 +92,6 @@ k.metel.volume(0.1, 10)
 // выносить елку
 k.metel.release(15)
 k.final.stop
+
+{k.bubbles.start;k.bubbles.fadeIn}.defer(4);
 
