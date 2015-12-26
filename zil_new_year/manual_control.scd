@@ -22,13 +22,12 @@ k.dumpKinect(false);
 /////////////////
 ///    START
 /////////////////
-k = NYSketches.new(NetAddr("localhost", 10001));
-// k = NYSketches.new(NetAddr("alex", 10000));
+// k = NYSketches.new(NetAddr("localhost", 10001));
+k = NYSketches.new(NetAddr("alex", 10000));
 
 //  гаснет свет
 k.gadanie.start; // сделать длинее хвост - в начале тише звуки (!!!)
 k.gadanie.stop; // может быть позже?
-
 k.gadanie.reload; // NB!
 
 // появляется синяя заливка
@@ -65,8 +64,8 @@ n = NetAddr("alex", 10000);
 n.sendMsg("/freeze", 0);
 
 
-// k.drazhe.thresholdStart = 0.12; // ?
-// k.drazhe.thresholdStop = 0.1; // ?
+k.drazhe.thresholdStart = 0.12; // ?
+k.drazhe.thresholdStop = 0.1; // ?
 k.drazhe.start;
 k.drazhe.freeze(true)
 k.drazhe.freeze(false)
@@ -90,8 +89,9 @@ k.metel.volume(0.12, 5)
 k.final.release(20)
 k.metel.volume(0.1, 10)
 // выносить елку и вернуться назад
-k.metel.release(15)
+k.metel.release(5)
 k.final.stop
 
+///
 {k.bubbles.volume(0.1, 0.1); k.bubbles.start}.defer(30);
 
