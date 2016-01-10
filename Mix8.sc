@@ -2,6 +2,7 @@ Sp_AppOSC {
     var <inPort;
     var <outHost;
     var <outPort;
+    var <prefix;
 
     *new {
         arg inPort, outHost, outPort;
@@ -220,11 +221,9 @@ Sp_OscControl {
                 value = msg[1];
                 this.notifyOthers(client_id);
             };
-        }, path, nil, inPort);
+        }, path, NetAddr(outHost), inPort);
         // make alive after Ctrl-.
         osc_func.permanent = true;
-
-                client_id.postln;
 
         client.listener.func = osc_func;
         this.addClient(client);
@@ -242,7 +241,7 @@ Sp_OscControl {
         arg except;
         oscListeners.do { |c|
             if(c.id != except) {
-                format("% - notify other: %", except, c.id).postln;
+                // format("% - notify other: %", except, c.id).postln;
                 c.send(value)
             }
         };
@@ -501,7 +500,7 @@ Sp_OscTestTone : Sp_OscControlGroup {
 
     mapSynthControls {
         arg synth;
-        controls["/testTone/mute"].callback_({|m| synth.run(m == 0)});
+        synth.map(\mute, this.bus("/testTone/mute"));
         synth.map(\amp, this.bus("/testTone/level"));
         synth.map(\pan, this.bus("/testTone/pan"));
         synth.map(\freq, this.bus("/testTone/freq"));
