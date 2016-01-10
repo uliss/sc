@@ -31,12 +31,118 @@ Sp_AppTouchOSC : Sp_AppOSC {
         ^ Sp_AppTouchOSC.new("serge-iphone");
     }
 
-     *ipad {
+    *ipad {
         ^ Sp_AppTouchOSC.new("serge-ipad");
+    }
+
+    appendFloatIndicator {
+        arg path;
+        var n = NetAddr(outHost, outPort);
+        var f = OSCFunc({ |m|
+            var out_path = path ++ "-ind";
+            n.sendMsg(out_path, m[1].round(0.01));
+        }, path, nil, inPort);
     }
 
     initTouchOsc {
 
+    }
+}
+
+Sp_OscAbstractClient {
+    var path;
+    var port;
+
+    *new {
+        arg oscPath, oscPort;
+        ^super.new.init(oscPath, oscPort);
+    }
+
+    init {
+        arg osc_path, osc_port;
+        path = osc_path;
+        port = osc_port;
+    }
+
+    // do no remove!!!
+    clear {}
+    send {}
+    id { ^format("%:%", path, port) }
+}
+
+Sp_OscListener : Sp_OscAbstractClient {
+    var <>func;
+    var oscFunc;
+
+    *new {
+        arg oscPath, inPort, func;
+        ^super.new(oscPath, inPort).initListener(func);
+    }
+
+    initListener {
+        arg func_;
+        func = func_;
+        oscFunc = OSCFunc({ func.value }, path, nil, port);
+    }
+
+    clear {
+        oscFunc.free;
+    }
+}
+
+Sp_OscSender : Sp_OscAbstractClient {
+    // private
+    var addr;
+    var host;
+
+    *new {
+        arg path, host, port;
+        ^super.new(path, port).initSender(host, port);
+    }
+
+    initSender {
+        arg host_, port_;
+        host = host_;
+        addr = NetAddr(host, port);
+    }
+
+    id {
+        ^format("osc://%:%%", host, port, path);
+    }
+
+    send {
+        arg msg;
+        addr.sendMsg(path, msg);
+    }
+}
+
+Sp_OscClientDuplex : Sp_OscAbstractClient {
+    var <>listener;
+    var sender;
+
+    *new {
+        arg path, inPort, outHost, outPort, oscFunc;
+        ^super.new(path, inPort).initDuplex(path, inPort, outHost, outPort, oscFunc);
+    }
+
+    initDuplex {
+        arg p, in_port, host, out_port, osc_func;
+        path = p;
+        listener = Sp_OscListener(p, in_port, osc_func);
+        sender = Sp_OscSender(p, host, out_port);
+    }
+
+    clear {
+        listener.clear;
+    }
+
+    id {
+        ^sender.id;
+    }
+
+    send {
+        arg msg;
+        sender.send(msg);
     }
 }
 
@@ -67,6 +173,15 @@ Sp_OscControl {
         oscListeners = Dictionary.new;
     }
 
+    addClient {
+        arg c;
+        oscListeners[c.id] = c;
+
+        if(debug) {
+            format("[Sp_OscControl] OSC control binded: (%)", c.id).postln;
+        };
+    }
+
     bindMidiCC {
         arg ccNum, chan = nil, func = linlin(_, 0, 127, 0, 1);
         midiFunc = MIDIFunc.cc({ |v|
@@ -74,58 +189,50 @@ Sp_OscControl {
         }, ccNum, chan);
     }
 
-    *oscClientId {
-        arg path, outHost, outPort;
-        ^format("osc://%:%%", outHost, outPort, path);
-    }
-
     bindOscApp {
         arg app;
         this.bindOsc(app.path(name), app.inPort, app.outHost, app.outPort);
     }
 
+    bindOscIndicator {
+        arg path, outHost, outPort;
+        var client = Sp_OscSender.new(path, outHost, outPort);
+        this.addClient(client);
+    }
+
     bindOsc {
-        arg path, inPort, outHost, outPort, func = nil;
-        var client_id = this.class.oscClientId(path, outHost, outPort);
-        var osc_func = nil;
+        arg path, inPort, outHost, outPort;
+        var client = Sp_OscClientDuplex(path, inPort, outHost, outPort, {});
+        var client_id = client.id;
 
-        if(func.isNil) {
-            osc_func = OSCFunc({ |msg|
-                if(debug) { msg.postln };
-                // write to the bus
-                bus.set(msg[1]);
+        var osc_func = OSCFunc({ |msg|
+            if(debug) { msg.postln };
+            // write to the bus
+            bus.set(msg[1]);
 
-                // use callback
-                if(callback.notNil) {
-                    callback.value(msg[1]);
-                };
+            // fire callback
+            if(callback.notNil) {
+                callback.value(msg[1]);
+            };
 
-                // if there's value change - notify other clients
-                if(value != msg[1]) {
-                    value = msg[1];
-                    this.notifyOthers(client_id);
-                };
-            }, path, nil, inPort);
-            // make alive after Ctrl-.
-            osc_func.permanent = true;
-        };
+            // if there's value change - notify other clients
+            if(value != msg[1]) {
+                value = msg[1];
+                this.notifyOthers(client_id);
+            };
+        }, path, nil, inPort);
+        // make alive after Ctrl-.
+        osc_func.permanent = true;
 
+                client_id.postln;
 
-        oscListeners.add(client_id -> (
-            path: path,
-            func: osc_func,
-            addr: NetAddr(outHost, outPort)
-        ));
-
-        if(debug) {
-            format("[Sp_OscControl] OSC client binded: (%)", client_id).postln;
-        };
+        client.listener.func = osc_func;
+        this.addClient(client);
     }
 
     unbindAll {
-        oscListeners.keysValuesDo { |id, v|
-            var f = v[\func];
-            f.free;
+        oscListeners.keysValuesDo { |id, c|
+            c.clear
         };
 
         oscListeners.clear;
@@ -133,24 +240,16 @@ Sp_OscControl {
 
     notifyOthers {
         arg except;
-        oscListeners.keysDo { |id|
-            if(except != id) { this.notify(id) }
+        oscListeners.do { |c|
+            if(c.id != except) {
+                format("% - notify other: %", except, c.id).postln;
+                c.send(value)
+            }
         };
     }
 
     notifyAll {
-        oscListeners.keysDo { |id| this.notify(id) };
-    }
-
-    notify {
-        arg id;
-        var v = oscListeners.at(id);
-
-        try {
-            if(v.notNil) {
-                v[\addr].sendMsg(v[\path], value);
-            };
-        } { /*host not found */}
+        oscListeners.do { |c| c.send(value) };
     }
 
     set {
@@ -210,7 +309,7 @@ Sp_OscControlWriter : Sp_OscControl {
 
     bindOsc {
         arg path, inPort, outHost, outPort;
-        ^super.bindOsc(path, inPort, outHost, outPort, {});
+        ^super.bindOscIndicator(path, outHost, outPort);
     }
 }
 
@@ -385,6 +484,27 @@ Sp_OscViolaIn : Sp_OscControlGroup {
         osc_vu = OSCFunc({|m| controls[\vu].set(m[3].ampdb + 100 / 100)}, '/violaIn/vu');
 
         this.restore();
+    }
+}
+
+Sp_OscTestTone : Sp_OscControlGroup {
+    *new {
+        ^super.new("testTone").initTone;
+    }
+
+    initTone {
+        this.add("/testTone/freq");
+        this.add("/testTone/pan");
+        this.add("/testTone/level");
+        this.add("/testTone/mute");
+    }
+
+    mapSynthControls {
+        arg synth;
+        controls["/testTone/mute"].callback_({|m| synth.run(m == 0)});
+        synth.map(\amp, this.bus("/testTone/level"));
+        synth.map(\pan, this.bus("/testTone/pan"));
+        synth.map(\freq, this.bus("/testTone/freq"));
     }
 }
 
