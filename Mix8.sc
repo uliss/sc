@@ -113,7 +113,7 @@ Sp_OscSender : Sp_OscAbstractClient {
 
     send {
         arg msg;
-        addr.sendMsg(path, msg);
+        try { addr.sendMsg(path, msg) } {};
     }
 }
 
@@ -266,6 +266,7 @@ Sp_OscControl {
 
     save {
         Archive.global.put(("OscControl" ++ name).asSymbol, value);
+        this.set(value);
     }
 
     restore {
@@ -493,9 +494,9 @@ Sp_OscTestTone : Sp_OscControlGroup {
 
     initTone {
         this.add("/testTone/freq");
-        this.add("/testTone/pan");
         this.add("/testTone/level");
         this.add("/testTone/mute");
+        this.add("/testTone/pan");
     }
 
     mapSynthControls {
