@@ -49,18 +49,21 @@ Sp_SynthViolaIn : Sp_Synth {
     var <synth_play;
     var <synth_vu;
     var <synth_reverb;
+    var <synth_record;
+    var <sample_buf;
 
     // private
-    classvar sample_buf;
 
     *new {
         arg bus = 100, server = Server.default;
-        ^super.new("violaIn", bus, server);
+        ^super.new("violaIn", bus, server).violaInInit;
+    }
+
+    violaInInit {
+
     }
 
     *loadSynths {
-        sample_buf = Buffer.cueSoundFile(Server.default, "~/work/music/sounds/viola_rec1.wav".standardizePath, 0, 1);
-
         SynthDef(\violaIn, {
             arg in = 0, out = 0, amp = 1;
             var snd = SoundIn.ar(in, amp);
@@ -84,8 +87,8 @@ Sp_SynthViolaIn : Sp_Synth {
         }).add;
 
         SynthDef(\violaInPlay, {
-            arg amp = 1, out = 0;
-            var snd = DiskIn.ar(1, sample_buf, 1);
+            arg amp = 1, out = 0, playBuf = 0;
+            var snd = DiskIn.ar(1, playBuf, 1);
             ReplaceOut.ar(out, snd * amp);
         }).add;
 
@@ -120,10 +123,29 @@ Sp_SynthViolaIn : Sp_Synth {
         synth_reverb = Synth.after(synth_compress, \violaInReverb, [\in, bus, \out, bus]);
         synth_vu = Synth.after(synth_reverb, \vu, [\in, bus]);
 
-        synth_vu.run(false);
-/*        synth_reverb.run(false);*/
-        synth_play.run(false);
-        synth_compress.run(true);
+        {
+            synth_play.run(false);
+            synth_reverb.run(true);
+        }.defer(1);
+    }
+
+    play {
+        arg value, playPos = 0;
+
+        if(value) {
+            sample_buf = Buffer.cueSoundFile(server, "~/work/music/sounds/viola_rec1.wav".standardizePath, playPos * 44100, 1);
+
+            synth_play.set(\playBuf, sample_buf);
+            synth_play.run(true);
+        }
+        {
+            synth_play.run(false)
+        }
+    }
+
+    play1 {
+        arg msg;
+        msg.postln;
     }
 
     filter {

@@ -28,6 +28,10 @@ Sp_AppTouchOSC : Sp_AppOSC {
         ^super.new(5000, host, 5001).initTouchOsc;
     }
 
+    *default {
+        ^ Sp_AppTouchOSC.new("localhost");
+    }
+
     *iphone {
         ^ Sp_AppTouchOSC.new("serge-iphone");
     }
@@ -223,7 +227,7 @@ Sp_OscControl {
             };
         }, path, NetAddr(outHost), inPort);
         // make alive after Ctrl-.
-        osc_func.permanent = true;
+        // osc_func.permanent = true;
 
         client.listener.func = osc_func;
         this.addClient(client);
@@ -478,8 +482,12 @@ Sp_OscViolaIn : Sp_OscControlGroup {
         synth.synth_viola.map(\amp, this.bus("/viola/level"));
 
         controls["/viola/mute"].callback_({|m| synth.mute(m == 1)});
-        controls["/viola/pass"].callback_({|m| synth.filter(m == 0)});
-        controls["/viola/compress"].callback_({|m| synth.reverb(m == 1)});
+        controls["/viola/pass"].callback_({|m|
+            synth.filter(m == 0);
+            synth.reverb(m == 0);
+        });
+        controls["/viola/compress"].callback_({|m| synth.compress(m == 1)});
+        controls["/violaFull/play"].callback_({|m| synth.play(m == 1)});
 
         osc_vu = OSCFunc({|m| controls[\vu].set(m[3].ampdb + 100 / 100)}, '/violaIn/vu');
 

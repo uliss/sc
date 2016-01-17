@@ -1,25 +1,70 @@
-Saffire {
-    *gui { |bufsize = 256|
-        Server.default = Server.new("FocusWrite Saffire", NetAddr("127.0.0.1", 58009),
-            ServerOptions.new.device_("Saffire").memSize_((2**10) * 100).hardwareBufferSize_(bufsize).numOutputBusChannels_(6).numInputBusChannels_(4)).makeWindow;
-        ^Server.default;
+SoundCard {
+    classvar <>defaultCard;
+
+    var <name;
+    var <bufSize;
+    var <memSize;
+    var <numOutCh;
+    var <numInCh;
+    var <server;
+
+    *saffire {
+        arg bufSize = 256, memSize = (2**10) * 100 /* 100Mb*/, inCh = 4, outCh = 6;
+        ^super.new.init("Saffire", bufSize, memSize, inCh, outCh, "127.0.0.1", 58009);
+    }
+
+    *mbox {
+        arg bufSize = 256, memSize = (2**10) * 100 /* 100Mb*/, inCh = 6, outCh = 6;
+        ^super.new.init("MBox Pro", bufSize, memSize, inCh, outCh, "127.0.0.1", 58010);
+    }
+
+    *builtin {
+        arg bufSize = 512, memSize = (2**10) * 100 /* 100Mb*/, inCh = 2, outCh = 2;
+        ^super.new.init("BuiltIn", bufSize, memSize, inCh, outCh, "127.0.0.1", 58011);
+    }
+
+    *default {
+        if(SoundCard.defaultCard.isNil) { SoundCard.defaultCard = \builtin };
+
+        switch(SoundCard.defaultCard,
+            \builtin, {^SoundCard.builtin},
+            \mbox,    {^SoundCard.mbox},
+            \saffire, {^SoundCard.saffire},
+            {^nil}
+        )
+    }
+
+    init {
+        arg sName, bufsize, memsize, inCh, outCh, host, port;
+        var options;
+
+        name = sName;
+        bufSize = bufsize;
+        memSize = memsize;
+        numInCh = inCh;
+        numOutCh = outCh;
+
+        options = ServerOptions.new.device_(name)
+        .memSize_(memSize).hardwareBufferSize_(bufSize)
+        .numInputBusChannels_(numInCh)
+        .numOutputBusChannels_(numOutCh);
+
+        server = Server.new(name, NetAddr(host, port), options);
+        server.makeWindow;
+        server.window.alwaysOnTop = true;
+        Server.default_(server);
+        ^this;
+    }
+
+    printOn {
+        arg stream;
+        var str = format("SoundCard % (in: %, out: %, buf=%, mem=%)",
+            name.quote, numInCh, numOutCh, bufSize, memSize);
+        stream << str;
+    }
+
+    options {
+        ^server.options;
     }
 }
 
-MBox {
-    *gui {
-        Server.default = Server.new("MBox Pro", NetAddr("127.0.0.1", 58010),
-            ServerOptions.new.device_("MBox Pro")).makeWindow;
-        ^Server.default;
-    }
-}
-
-BuiltIn {
-    *gui {
-        var srv = Server.new("Built-In macbook", NetAddr("127.0.0.1", 58011),
-            ServerOptions.new.device_("BuiltIn").memSize_((2**10) * 100));
-        srv.makeWindow;
-        Server.default = srv;
-        ^srv;
-    }
-}
