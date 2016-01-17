@@ -2,47 +2,27 @@
 // INIT
 SoundCard.defaultCard = \builtin;
 k = SoundCard.default;
-
-f = {
-    Sp_SynthViolaIn.loadSynths;
-};
-
-ServerBoot.add(f, \default);
 k.server.boot;
 )
 
-(
 // RUN
-var osc_remote_app, osc_control, viola_synth;
-
-osc_remote_app = Sp_AppTouchOSC.ipad;
-osc_remote_app.appendFloatIndicator("/viola/level");
-
-osc_control = Sp_OscViolaIn.new.bindOscApp(osc_remote_app);
-osc_control.connected;
-osc_control.debug(true);
-
-~viola = Sp_SynthViolaIn.new;
-~viola.run(true);
-
-osc_control.mapSynthControls(~viola);
-
-~viola.monitor;
-~viola.vu(true);
+(
+~vla = Local_ViolaAmp1.new();
+~vla.connectIpad;
 )
 
-~viola.play(true)
-~viola.play(true, 60);
-~viola.play(false)
+// MANUAL CONTROL
+~vla.testPlay(0)
+~vla.testPlay(106.7)
+~vla.testPlay(130);
+~vla.testStop
 
-~viola.reverb(true)
-~viola.reverb(false)
+~vla.mute(true)
+~vla.mute(false)
 
-~viola.filter(true)
-~viola.filter(false)
+~vla.reverb(0.9, 0.9, 0.9)
+~vla.reverb
 
-~viola.compress(true)
-~viola.compress(false)
-
-~viola.mute(true)
-~viola.mute(false)
+~vla.pan(-1)
+~vla.pan(1)
+~vla.pan

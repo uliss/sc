@@ -488,6 +488,7 @@ Sp_OscViolaIn : Sp_OscControlGroup {
         });
         controls["/viola/compress"].callback_({|m| synth.compress(m == 1)});
         controls["/violaFull/play"].callback_({|m| synth.play(m == 1)});
+        controls["/violaFull/rec"].callback_({|m| synth.record(m == 1)});
 
         osc_vu = OSCFunc({|m| controls[\vu].set(m[3].ampdb + 100 / 100)}, '/violaIn/vu');
 

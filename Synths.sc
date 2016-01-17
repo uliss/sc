@@ -39,6 +39,48 @@ Sp_Synth {
         arg value = true;
         group.run(value.not);
     }
+
+    run {
+        "implement me! (%)".postf(this.class.name);
+    }
+}
+
+Sp_SynthOut : Sp_Synth {
+    var <synth_out;
+
+    *new {
+        arg bus = 0, server = Server.default;
+        ^super.new("spSynthOut", bus, server).initOut;
+    }
+
+    initOut {
+        monitor_.free;
+        group.free;
+    }
+
+    *loadSynths {
+        ">>>LOAD SYNTHS: Sp_SynthOut...".postln;
+
+        SynthDef(\spSynthOut, {
+            arg amp = 1, pan = 0, in = 0, out = 0;
+            var ain = In.ar(in) * amp.lag(0.1);
+            Out.ar(out, Pan2.ar(ain, pan.lag(1)));
+        }).add;
+    }
+
+    *initClass {
+        ServerBoot.add({Sp_SynthOut.loadSynths}, \default);
+    }
+
+    run {
+        arg synth, out = 0;
+        synth_out = Synth.tail(synth.group, \spSynthOut, [\in, synth.bus]);
+    }
+
+    pan {
+        arg pos = 0;
+        synth_out.set(\pan, pos);
+    }
 }
 
 Sp_SynthViolaIn : Sp_Synth {
@@ -63,7 +105,13 @@ Sp_SynthViolaIn : Sp_Synth {
 
     }
 
+    *initClass {
+        ServerBoot.add({Sp_SynthViolaIn.loadSynths}, \default);
+    }
+
     *loadSynths {
+        ">>>LOAD SYNTHS: Sp_SynthViolaIn...".postln;
+
         SynthDef(\violaIn, {
             arg in = 0, out = 0, amp = 1;
             var snd = SoundIn.ar(in, amp);
@@ -143,7 +191,7 @@ Sp_SynthViolaIn : Sp_Synth {
         }
     }
 
-    play1 {
+    record {
         arg msg;
         msg.postln;
     }
