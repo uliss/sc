@@ -1,7 +1,7 @@
 Local_ViolaAmp1 {
     var app_ipad;
     var add_iphone;
-    var osc_control;
+    var <osc_control;
     var <viola;
     var out;
 
@@ -39,6 +39,27 @@ Local_ViolaAmp1 {
         osc_control.bindOscApp(add_iphone);
     }
 
+    save {
+        osc_control.save;
+    }
+
+    restore {
+        osc_control.restore;
+    }
+
+    osc_set {
+        arg name, value;
+        var v;
+
+        switch(value.class.name,
+            \True, {v = 1},
+            \False, {v = 0},
+            {v = value}
+        );
+
+        osc_control.set("/viola/" ++ name, v);
+    }
+
     pan {
         arg pos = 0;
         out.synth_out.set(\pan, pos);
@@ -49,9 +70,19 @@ Local_ViolaAmp1 {
         out.synth_out.set(\amp, amp);
     }
 
+    compress {
+        arg value = true;
+        this.osc_set("compress", value);
+    }
+
+    level {
+        arg amp;
+        this.osc_set("level", amp);
+    }
+
     mute {
         arg value = true;
-        viola.mute(value);
+        this.osc_set("mute", value);
     }
 
     reverb {
@@ -59,12 +90,18 @@ Local_ViolaAmp1 {
         viola.synth_reverb.set(\room, room, \damp, damp, \mix, mix);
     }
 
+    pass {
+        arg value = true;
+        this.osc_set("pass", value);
+    }
+
     testPlay {
         arg time = 0;
+        osc_control.set("/violaFull/play", 1);
         viola.play(true, time);
     }
 
     testStop {
-        viola.play(false);
+        osc_control.set("/violaFull/play", 0);
     }
 }

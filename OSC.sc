@@ -470,16 +470,35 @@ Sp_OscViolaIn : Sp_OscControlGroup {
 
         this.add("/viola/mute");
         this.add("/viola/level");
-        this.add("/viola/compress");
         this.add("/viola/pass");
         this.add("/violaFull/rec");
         this.add("/violaFull/play");
+
+        this.add("/viola/reverbRoom");
+        this.add("/viola/reverbDamp");
+        this.add("/viola/reverbMix");
+
+        this.add("/viola/compress");
+        this.add("/viola/d");
+        this.add("/viola/cmpSlopeBelow");
+        this.add("/viola/cmpSlopeAbove");
+        this.add("/viola/cmpClampTime");
     }
 
     mapSynthControls {
         arg synth;
         synth.synth_play.map(\amp, this.bus("/viola/level"));
         synth.synth_viola.map(\amp, this.bus("/viola/level"));
+
+        // synth.synth_compress.map(\thresh, this.bus("/viola/d"));
+        synth.synth_reverb.map(\room, this.bus("/viola/reverbRoom"));
+        synth.synth_reverb.map(\damp, this.bus("/viola/reverbDamp"));
+        synth.synth_reverb.map(\mix, this.bus("/viola/reverbMix"));
+
+
+        // synth.synth_compress.map(\slopeBelow, this.bus("/viola/compressSlopeBelow"));
+        // synth.synth_compress.map(\slopeAbove, this.bus("/viola/compressSlopeAbove"));
+        // synth.synth_compress.map(\clampTime, this.bus("/viola/compressClampTime"));
 
         controls["/viola/mute"].callback_({|m| synth.mute(m == 1)});
         controls["/viola/pass"].callback_({|m|
@@ -491,8 +510,6 @@ Sp_OscViolaIn : Sp_OscControlGroup {
         controls["/violaFull/rec"].callback_({|m| synth.record(m == 1)});
 
         osc_vu = OSCFunc({|m| controls[\vu].set(m[3].ampdb + 100 / 100)}, '/violaIn/vu');
-
-        this.restore();
     }
 }
 

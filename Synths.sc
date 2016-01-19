@@ -147,9 +147,9 @@ Sp_SynthViolaIn : Sp_Synth {
         }).add;
 
         SynthDef(\violaCompress, {
-            arg amp = 1, in = 0, out = 0, thresh = 0.5;
+            arg amp = 1, in = 0, out = 0, thresh = 0.5, slopeBelow = 1, slopeAbove = 1/3, clampTime = 0.002;
             var ain = In.ar(in);
-            var snd = Compander.ar(ain, ain, thresh, 1, 1/3, 0.002);
+            var snd = Compander.ar(ain, ain, thresh, slopeBelow, slopeAbove, clampTime);
             ReplaceOut.ar(out, snd * amp);
         }).add;
 
