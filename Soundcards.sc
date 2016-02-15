@@ -49,6 +49,7 @@ SoundCard {
         .numInputBusChannels_(numInCh)
         .numOutputBusChannels_(numOutCh);
 
+
         server = Server.new(name, NetAddr(host, port), options);
         server.makeWindow;
         server.window.alwaysOnTop = true;

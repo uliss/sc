@@ -33,10 +33,11 @@ OSCFunc.trace(false)
 
 (
 ~c = ControlApp.new("serge-android", portrait: false);
-o = OSCFunc({|m| m.postln;}, "/test1", nil, 5001);
+o = OSCFunc({|m| m.postln;}, "/viola/level", nil, 5001);
 
-~w1 = ControlHSlider.new(\test1, value: 0.4);
-~w1.address;
+~w1 = ControlVSlider.new("viola", value: 0.2);
+// ~w1 = ControlKnob("viola", value: 0.3, usesRotation: false);
+~w1.address = "/viola/level";
 ~w1.json;
 ~w1.addIndicator;
 ~c.add(~w1);
@@ -49,6 +50,7 @@ o = OSCFunc({|m| m.postln;}, "/test1", nil, 5001);
 ~w1.value
 ~w1.width_(0.1)
 ~w1.height_(0.4)
+~w1.x = 0.5
 ~w1.sendColors
 ~w1.fillColor = "#D0D"
 ~w1.children[0].json

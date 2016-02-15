@@ -64,8 +64,8 @@ n = NetAddr("alex", 10000);
 n.sendMsg("/freeze", 0);
 
 
-k.drazhe.thresholdStart = 0.12; // ?
-k.drazhe.thresholdStop = 0.1; // ?
+k.drazhe.thresholdStart = 0.05; // ?
+k.drazhe.thresholdStop = 0.05; // ?
 k.drazhe.start;
 k.drazhe.freeze(true)
 k.drazhe.freeze(false)
@@ -85,13 +85,13 @@ k.mixer.stop;
 // появляется елка - шар
 // k.final.set(\amp, 0.5);
 k.final.start
-k.metel.volume(0.12, 5)
+k.metel.volume(0.2, 5)
 k.final.release(20)
-k.metel.volume(0.1, 10)
+k.metel.volume(0.09, 5)
 // выносить елку и вернуться назад
 k.metel.release(5)
 k.final.stop
 
-///
-{k.bubbles.volume(0.1, 0.1); k.bubbles.start}.defer(30);
+
+{{PlayBuf.ar(2, ~l.buffer("jingle4")) * Line.ar(0, 0.02, 3)}.play}.defer(10);
 

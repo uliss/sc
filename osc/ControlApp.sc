@@ -13,6 +13,12 @@ ControlApp {
         ^super.new.init(host, port, name, portrait, dHost, dPort);
     }
 
+    orientation {
+        ^ case
+        {portrait == true} {"portrait"}
+        {portrait == false} {"landscape"};
+    }
+
     init {
         arg oscHost, oscPort, nameI, isPort, dHost, dPort;
         host = oscHost;
@@ -21,15 +27,16 @@ ControlApp {
         portrait = isPort;
         widgets = List.new;
 
-        dest = (dHost ++ ":" ++ dPort);
+        dest = (NetAddr(dHost).ip ++ ":" ++ dPort);
         dest.postln;
 
         addr = NetAddr(host, port);
         addr.sendMsg("/control/pushDestination", dest);
-        addr.sendMsg("/control/createBlankInterface", nameI, "portrait");
+        addr.sendMsg("/control/createBlankInterface", nameI, this.orientation);
 
         colors = Dictionary.new;
         colors["Slider"] = ["#2c3e50", "#0dc3c7", "#95a5a6"];
+        colors["Knob"] = ["#2c3e50", "#0dc3c7", "#95a5a6"];
         colors["Label"] =  [nil, "#FFF", "#95a5a6"];
     }
 
@@ -228,6 +235,7 @@ ControlWidget {
         dict[\stroke] = this.strokeColor;
         dict[\backgroundColor] = this.backgroundColor;
         dict[\color] = this.fillColor;
+        dict[\address] = this.address;
         ^ControlWidget.toJSON(dict);
     }
 
@@ -301,7 +309,19 @@ ControlLabel : ControlWidget{
         arg id, bounds, label, args = [];
         ^super.new(id, "Label", bounds).setArgs(args ++ [\value, label]);
     }
+}
 
+ControlKnob : ControlWidget{
+    *new {
+        arg id, bounds = Rect(0.1, 0.1, 0.3, 0.3), value = 0, min = -1, max = 1,
+        centerZero = true, usesRotation = true, args = [];
+        ^super.new(id, "Knob", bounds, value, nil, min, max)
+        .setArgs(args ++ [\centerZero, centerZero, \usesRotation : usesRotation]);
+    }
 
-
+    addIndicator {
+        var id = name ++ 'Label';
+        children.add(ControlLabel.new(id, bounds, "0"));
+        this.setArgs([\onvaluechange, "%.changeValue(this.value.toFixed(2));".format(id)]);
+    }
 }

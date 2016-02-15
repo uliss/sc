@@ -10,6 +10,11 @@ Sp_Synth {
         ^super.new.initSynth(name, bus, server);
     }
 
+    free {
+        group.freeAll;
+        group = nil;
+    }
+
     initSynth {
         arg n, b, s;
         name = n;
@@ -53,6 +58,10 @@ Sp_SynthOut : Sp_Synth {
         ^super.new("spSynthOut", bus, server).initOut;
     }
 
+    free {
+        synth_out.free;
+    }
+
     initOut {
         monitor_.free;
         group.free;
@@ -91,18 +100,30 @@ Sp_SynthViolaIn : Sp_Synth {
     var <synth_play;
     var <synth_vu;
     var <synth_reverb;
-    var <synth_record;
     var <sample_buf;
+    var bus_viola_in;
 
     // private
 
     *new {
-        arg bus = 100, server = Server.default;
-        ^super.new("violaIn", bus, server).violaInInit;
+        arg bus = 100, server = Server.default, in = 0;
+        ^super.new("violaIn", bus, server).violaInInit(in);
+    }
+
+    free {
+        synth_viola.free;
+        synth_compress.free;
+        synth_filter.free;
+        synth_play.free;
+        synth_record.free;
+        synth_reverb.free;
+        synth_vu.free;
+        sample_buf.free;
     }
 
     violaInInit {
-
+        arg inCh;
+        bus_viola_in = inCh;
     }
 
     *initClass {
@@ -164,17 +185,17 @@ Sp_SynthViolaIn : Sp_Synth {
     run {
         arg value = true;
 
-        synth_viola = Synth.new(\violaIn, [\in, 0, \out, bus], group);
-        synth_play = Synth.after(synth_viola, \violaInPlay, [\out, bus]);
-        synth_filter = Synth.after(synth_play, \violaInFilter, [\in, bus, \out, bus]);
+        synth_viola = Synth.new(\violaIn, [\in, bus_viola_in, \out, bus], group);
+        // synth_play = Synth.after(synth_viola, \violaInPlay, [\out, bus]);
+        synth_filter = Synth.after(synth_viola, \violaInFilter, [\in, bus, \out, bus]);
         synth_compress = Synth.after(synth_filter, \violaCompress, [\in, bus, \out, bus]);
-        synth_reverb = Synth.after(synth_compress, \violaInReverb, [\in, bus, \out, bus]);
-        synth_vu = Synth.after(synth_reverb, \vu, [\in, bus]);
+        // synth_reverb = Synth.after(synth_compress, \violaInReverb, [\in, bus, \out, bus]);
+        synth_vu = Synth.after(synth_filter, \vu, [\in, bus]);
 
-        {
+/*        {
             synth_play.run(false);
             synth_reverb.run(true);
-        }.defer(1);
+        }.defer(0.5);*/
     }
 
     play {
@@ -214,5 +235,100 @@ Sp_SynthViolaIn : Sp_Synth {
     vu {
         arg value;
         synth_vu.run(value);
+    }
+}
+
+Sp_SynthGameBoy : Sp_Synth {
+    var inChannel;
+    var bus_click;
+    var synth_gameboy_in;
+    var synth_vu;
+    var synth_click;
+    var ground_stream;
+
+    *new {
+        arg bus = 110, server = Server.default, in = 5, clickBus = 5;
+        ^super.new("gameBoy", bus, server).gameboyInit(in, clickBus);
+    }
+
+    gameboyInit {
+        arg in, clickBus;
+        inChannel = in;
+        bus_click = clickBus;
+
+        ground_stream = Pbind(
+            \instrument, \gameboySynth,
+            \note, Pseq([4, 11, 18, 0, 7, 14, 2, 9, 16, -3, 4, 11, 12], inf),
+            \dur, Pseq([1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 1] * 0.5, inf),
+            \width, 0.5,
+            \octave, 3,
+            \group, group,
+            \out, bus
+        ).asEventStreamPlayer;
+    }
+
+    *initClass {
+        ServerBoot.add({Sp_SynthGameBoy.loadSynths}, \default);
+    }
+
+    *loadSynths {
+        ">>>LOAD SYNTHS: Sp_SynthGameBoy...".postln;
+
+        SynthDef(\gameboyIn, {
+            arg in = 0, out = 0, amp = 1, clickOut = 1, clickAmp = 2;
+            var inB = SoundIn.ar(in, amp);
+            var inC = SoundIn.ar(in + 1, clickAmp);
+            Out.ar(out, inB * EnvGate.new);
+            Out.ar(clickOut, inC * EnvGate.new);
+        }).add;
+
+        SynthDef(\gameboySynth, {
+            arg freq = 440, out = 0, amp = 1, width = 0.6, detune = 1, tempo;
+            var snd = Pulse.ar([freq, freq + detune], width, amp);
+            Out.ar(out, snd * EnvGate.new);
+        }).add;
+
+        SynthDef(\gameboyClick, {
+            arg out = 0, amp = 1, tempo = 144;
+            var snd = Impulse.ar(tempo / 60) * EnvGate.new;
+            Out.ar(out, snd);
+        }).add;
+
+
+    }
+
+    playGround {
+        arg value = true, tempo = 144;
+        if(value) {
+            var t = TempoClock.new(tempo/60);
+            ground_stream.play(t, doReset: true);
+            synth_click = Synth.new(\gameboyClick, [
+                \out, bus_click,
+                \tempo, tempo], group)
+        }
+        {
+            ground_stream.stop;
+            synth_click.free;
+        };
+
+    }
+
+    run {
+        arg value = true;
+
+        if(value) {
+            synth_gameboy_in = Synth.new(\gameboyIn, [
+                \in, inChannel,
+                \out, bus,
+                \clickOut, bus_click
+            ], group);
+            synth_vu = Synth.after(synth_gameboy_in, \vu, [\in, bus]);
+        }
+        {
+            synth_gameboy_in.free;
+            synth_vu.free;
+        };
+
+
     }
 }
