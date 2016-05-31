@@ -22,10 +22,10 @@ cc = MIDIFunc.cc({
             "START".postln;
             ground = Sp_SynthMessageGround.new(violaIn: 1, gameboyIn: 2, fx_mix: 0.2, tempo: 140);
             ground.gameboy.run(true);
-            ground.out_mix.set(\gameboyAmp, 8);
-            ground.out_mix.set(\violaAmp, 1);
+            ground.out_mix.set(\gameboyAmp, 6);
+            ground.out_mix.set(\violaAmp, 0.8);
             ground.viola_delay.set(\v1_amp, 2);
-            ground.viola_delay.set(\v2_amp, 1);
+            ground.viola_delay.set(\v2_amp, 0.8);
             // ground.viola_in.compress(true);
             // ground.viola_in.synth_play.run(false);
 
@@ -40,6 +40,8 @@ cc = MIDIFunc.cc({
 }, 102, 0);
 
 )
+
+{Pulse.ar(220, mul: 0.01)}.play
 
 (
 a = Sp_SynthViolaIn.new(in: 1);
