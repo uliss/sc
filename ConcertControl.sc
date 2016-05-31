@@ -129,8 +129,3 @@ ConcertControl {
         }
     }
 }
-
-NodeJS {
-    *inOscPort { ^5000 }
-    *outOscPort { ^5001 }
-}
