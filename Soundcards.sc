@@ -15,7 +15,7 @@ SoundCard {
 
     *mbox {
         arg bufSize = 256, memSize = (2**10) * 100 /* 100Mb*/, inCh = 6, outCh = 6;
-        ^super.new.init("MBox Pro", bufSize, memSize, inCh, outCh, "127.0.0.1", 58010);
+        ^super.new.init("Mbox Pro", bufSize, memSize, inCh, outCh, "127.0.0.1", 58010);
     }
 
     *builtin {
