@@ -274,6 +274,21 @@ Sp_SynthGameBoy : Sp_Synth {
     *loadSynths {
         ">>>LOAD SYNTHS: Sp_SynthGameBoy...".postln;
 
+        SynthDef(\gameboySynthFile, {
+            // "/Users/serj/work/music/sounds/davidson_message_ground.wav"
+            // arg freq = 440, out = 0, amp = 1, width = 0.6, detune = 1, tempo;
+            // var snd = Pulse.ar([freq, freq + detune], width, amp);
+            arg out = 0, clickOut = 1, buf;
+            var snd, click;
+            snd = DiskIn.ar(2, buf, 1);
+            snd = Pan2.ar(snd[1]);
+
+            click = snd[0];
+
+            Out.ar(out, snd * EnvGate.new);
+            Out.ar(clickOut, click * EnvGate.new);
+        }).add;
+
         SynthDef(\gameboyIn, {
             arg in = 0, out = 0, amp = 1, clickOut = 1, clickAmp = 2;
             var inB = SoundIn.ar(in, amp);
@@ -317,11 +332,20 @@ Sp_SynthGameBoy : Sp_Synth {
         arg value = true;
 
         if(value) {
-            synth_gameboy_in = Synth.new(\gameboyIn, [
+            var buf = Buffer.cueSoundFile(Server.default, "/Users/serj/work/music/sounds/davidson_message_ground.wav");
+
+            /*synth_gameboy_in = Synth.new(\gameboyIn, [
                 \in, inChannel,
                 \out, bus,
                 \clickOut, bus_click
+            ], group);*/
+
+            synth_gameboy_in = Synth.new(\gameboySynthFile, [
+                \buf, buf,
+                \out, bus,
+                \clickOut, bus_click
             ], group);
+
             synth_vu = Synth.after(synth_gameboy_in, \vu, [\in, bus]);
         }
         {
