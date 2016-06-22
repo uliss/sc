@@ -11,7 +11,7 @@ JSON {
             {
                 if(obj.isKindOf(Number)) {
                     ^obj.asString;
-                }
+                };
 
                 ^obj.asString.quote;
             }
