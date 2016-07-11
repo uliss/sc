@@ -118,52 +118,6 @@ NodeJS {
     }
 }
 
-NodeJS_Widget {
-    classvar idx_count = 1;
-    var <idx;
-    var <>type;
-    var <>params;
-    var <>action;
-    var osc;
-
-    *new {
-        arg type, params = [];
-        ^super.new.init(type, params);
-    }
-
-    init {
-        arg t, p = [];
-        type = t;
-        idx = idx_count;
-        params = p;
-        idx_count = idx_count + 1;
-        osc = OSCFunc({|m|
-            if(action.notNil) {
-                var dict = m[1].asString.parseYAML;
-                if(dict["idx"].asInteger == idx) {
-                    action.value(dict);
-                }
-            }
-        }, "/sc/button", nil, NodeJS.outOscPort);
-    }
-
-    set {
-        arg k, v;
-        params[k] = v;
-    }
-
-    asDict {
-        var d = Dictionary.newFrom(params);
-        d[\idx] = idx;
-        d[\type] = type;
-        ^d;
-    }
-
-    asJSON {
-        ^JSON.toJSON(this.asDict);
-    }
-}
-
 NodeJS_Label {
     classvar currentTime;
     classvar timerRoutine;
