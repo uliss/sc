@@ -23,6 +23,7 @@ NodeJS_Widget {
         added = false;
         params = Dictionary.new;
         params[\idx] = type ++ idx;
+        params[\parent] = "ui-elements";
         params = params ++ Dictionary.newFrom(p);
         params[\type] = type;
         params[\oscPath] = "/nodejs/ui";
@@ -82,19 +83,33 @@ NodeJS_Widget {
     label_ { |txt|
         params[\label] = txt;
     }
+
+    css {
+        arg k, v;
+        NodeJS.css("#" ++ this.id, k, v);
+    }
 }
 
 NodeJS_Knob : NodeJS_Widget {
     *new {
-        arg params = [];
-        ^super.new("knob", params);
+        arg value = 0.0, min = 0.0, max = 1.0, size = 100, label = "", params = [];
+        ^super.new("knob", [
+            \size, size,
+            \label, label,
+            \min, min,
+            \max, max,
+            \value, value
+        ] ++ params);
     }
 }
 
 NodeJS_Pan : NodeJS_Widget {
     *new {
-        arg params = [];
-        var p = super.new("pan", params);
+        arg value = 0, size = 50, params = [];
+        var p = super.new("pan", [
+            \size, size,
+            \value, value
+        ] ++ params);
         p.label = p.id;
         ^p;
     }
@@ -102,12 +117,14 @@ NodeJS_Pan : NodeJS_Widget {
 
 NodeJS_Slider : NodeJS_Widget {
     *new {
-        arg horizontal = 0, relative = 0, min = 0.0, max = 1.0, size = 180, params = [];
+        arg value = 0.0, min = 0.0, max = 1.0, size = 180, label = "", horizontal = 0, relative = 0, params = [];
         var p = super.new("slider", [
             \horizontal, horizontal,
             \min, min,
             \max, max,
+            \value, value,
             \size, size,
+            \label, label,
             \relative, relative] ++ params);
         ^p;
     }
@@ -115,9 +132,10 @@ NodeJS_Slider : NodeJS_Widget {
 
 NodeJS_Toggle : NodeJS_Widget {
     *new {
-        arg value = 0, size = 60, params = [];
+        arg value = 0, size = 100, label = "", params = [];
         var p = super.new("toggle", [
             \value, value,
+            \label, label,
             \size, size] ++ params);
         ^p;
     }
@@ -125,8 +143,8 @@ NodeJS_Toggle : NodeJS_Widget {
 
 NodeJS_Button : NodeJS_Widget {
     *new {
-        arg size = 60, params = [];
-        var p = super.new("button", [\size, size] ++ params);
+        arg size = 100, label = "", params = [];
+        var p = super.new("button", [\size, size, \label, label] ++ params);
         ^p;
     }
 }
@@ -155,22 +173,22 @@ NodeJS_UI1 {
             var l;
 
             l = "knob" ++ i;
-            k = NodeJS_Knob.new([\idx, l]);
+            k = NodeJS_Knob.new(params: [\idx, l]);
             knob.add(k);
             k.label = l;
 
             l = "toggle" ++ i;
-            t = NodeJS_Toggle.new(params: [\idx, l, \size, 100]);
+            t = NodeJS_Toggle.new(size: 100, params: [\idx, l]);
             toggle.add(t);
             t.label = l;
 
             l = "button" ++ i;
-            b = NodeJS_Button.new(100, [\idx, l]);
+            b = NodeJS_Button.new(100, params: [\idx, l]);
             button.add(b);
             b.label = l;
 
             l = "slider" ++ i;
-            s = NodeJS_Slider.new(params:[\idx, l, \width, 100, \height, 150]);
+            s = NodeJS_Slider.new(0, params:[\idx, l]);
             slider.add(s);
             s.label = l;
         }
@@ -183,7 +201,10 @@ NodeJS_UI1 {
         this.addNewline;
         button.do { |b| b.add };
         this.addNewline;
-        slider.do { |s| s.add };
+        slider.do { |s|
+            s.add;
+            s.css("margin", "5px 33px");
+        };
     }
 
     addNewline {
@@ -196,6 +217,20 @@ NodeJS_UI1 {
         toggle.do { |t| t.remove };
         button.do { |b| b.remove };
         slider.do { |s| s.remove };
+    }
+
+    labels_ {
+        arg type, values = [];
+        var elems;
+
+        case(type.toString,
+            "knob",   {elems = `knob},
+            "toggle", {elems = `toggle},
+            "button", {elems = `button},
+            "slider", {elems = `slider}
+        );
+
+        elems.dump;
     }
 }
 
