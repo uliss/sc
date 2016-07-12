@@ -1,3 +1,49 @@
+TestNodeJS : UnitTest {
+    setUp {
+        // NodeJS.start;
+    }
+
+    tearDown {
+        // {NodeJS.stop}.defer(3);
+    }
+
+    test_Init {
+        // this.assert(NodeJS.connected.isNil);
+        this.assertEquals(NodeJS.outOscPort, 5001);
+        this.assertEquals(NodeJS.inOscPort, 5000);
+    }
+
+    test_Stop {
+        this.assert(NodeJS.stop);
+        this.assertEquals(NodeJS.connected, false);
+    }
+
+    test_Subscribe {
+        var osc, v = -1;
+
+        this.assert(NodeJS.start);
+
+        this.assert(NodeJS.subscribe(nil).isNil);
+        osc = NodeJS.subscribe({|m| v = m[1];});
+        this.assert(osc.notNil);
+        this.assertEquals(v, -1);
+
+        {
+            NodeJS.verbose;
+            {
+                NodeJS.set("test1", 2);
+                NodeJS.get("test1");
+            }.defer(0.1);
+        }.defer(1);
+
+
+        {this.assertEquals(v, 2)}.defer(2);
+
+        {this.assert(NodeJS.stop)}.defer(3);
+    }
+}
+
+
 TestNodeJS_Widget : UnitTest {
     setUp {
         NodeJS.start;

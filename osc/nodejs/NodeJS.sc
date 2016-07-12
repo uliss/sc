@@ -80,7 +80,7 @@ NodeJS {
         NodeJS.sendMsg("/sc/redirect", path);
     }
 
-     *reload {
+    *reload {
         NodeJS.sendMsg("/sc/reload");
     }
 
@@ -102,13 +102,6 @@ NodeJS {
             }, "/server/get", nil, NodeJS.outOscPort);
         };
         ^nil;
-    }
-
-    *addWidget {
-        arg type ... args;
-        var widget = NodeJS_Widget.new(type, *args);
-        NodeJS.sendMsg("/sc/addWidget", widget.asJSON);
-        ^widget;
     }
 
     *verbose {
