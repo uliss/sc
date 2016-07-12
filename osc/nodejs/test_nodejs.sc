@@ -72,30 +72,6 @@ TestNodeJS : UnitTest {
         this.assertEquals(msg, ["/sc/css", "html", "color", "red"]);
         NodeJS.connected = false;
     }
-
-    test_Subscribe {
-        var osc, v = -1;
-
-        this.assert(NodeJS.start);
-
-        this.assert(NodeJS.subscribe(nil).isNil);
-        osc = NodeJS.subscribe({|m| v = m[1];});
-        this.assert(osc.notNil);
-        this.assertEquals(v, -1);
-
-        {
-            NodeJS.verbose;
-            {
-                NodeJS.set("test1", 2);
-                NodeJS.get("test1");
-            }.defer(0.1);
-        }.defer(1.5);
-
-
-        {this.assertEquals(v, 2)}.defer(2);
-
-        {this.assert(NodeJS.stop)}.defer(3);
-    }
 }
 
 

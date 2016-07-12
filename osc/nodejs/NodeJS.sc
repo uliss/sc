@@ -51,7 +51,6 @@ NodeJS {
     *sendMsg {
         arg addr ... args;
         var n = NetAddr("localhost", NodeJS.inOscPort);
-        n.sendMsg(addr, *args);
 
         if(connected.notNil && connected)
         {
