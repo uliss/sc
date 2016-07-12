@@ -2,6 +2,7 @@ NodeJS {
     classvar <>connected;
     classvar osc_funcs;
     classvar <>outOscPort = 5001;
+    classvar <>sendCallback = nil;
 
     *inOscPort { ^5000 }
 
@@ -50,24 +51,17 @@ NodeJS {
     *sendMsg {
         arg addr ... args;
         var n = NetAddr("localhost", NodeJS.inOscPort);
+        n.sendMsg(addr, *args);
 
-        if(connected.notNil && connected) {
-            n.sendMsg(addr, *args);
-        }
+        if(connected.notNil && connected)
         {
-            var v;
-            var osc_f = NodeJS.subscribe({|m| v = m[1]; NodeJS.connected = true; });
-            n.sendMsg("/server/set", "ping", 1);
-            {n.sendMsg("/server/get", "ping");}.defer(0.1);
-            {
-                if(connected.notNil && connected) {
-                    n.sendMsg(addr, *args);
-                }{
-                    "NodeJS is not running".error;
-                };
-                osc_f.free;
-            }.defer(1);
-        };
+            n.sendMsg(addr, *args);
+            if(sendCallback.notNil) {
+                sendCallback.value(addr, *args);
+            };
+            ^true
+        }
+        { "NodeJS is not running".error; ^false; };
     }
 
     *css {

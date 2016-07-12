@@ -4,11 +4,10 @@ TestNodeJS : UnitTest {
     }
 
     tearDown {
-        // {NodeJS.stop}.defer(3);
+        NodeJS.sendCallback = nil;
     }
 
     test_Init {
-        // this.assert(NodeJS.connected.isNil);
         this.assertEquals(NodeJS.outOscPort, 5001);
         this.assertEquals(NodeJS.inOscPort, 5000);
     }
@@ -16,6 +15,62 @@ TestNodeJS : UnitTest {
     test_Stop {
         this.assert(NodeJS.stop);
         this.assertEquals(NodeJS.connected, false);
+    }
+
+
+    test_Send {
+        var msg, func;
+        msg = List.new;
+        NodeJS.connected = false;
+        this.assertEquals(NodeJS.sendMsg("test"), false);
+        NodeJS.connected = true;
+        NodeJS.sendCallback = {
+            arg addr ... args;
+            msg.add(addr);
+            msg = msg ++ args;
+        };
+        this.assert(NodeJS.sendMsg("test", 1, 2, 3), true);
+        this.assertEquals(msg, ["test", 1,2,3]);
+        NodeJS.connected = false;
+    }
+
+    test_Redirect {
+        var msg = List.new;
+        NodeJS.connected = true;
+        NodeJS.sendCallback = {
+            arg addr ... args;
+            msg.add(addr);
+            msg = msg ++ args;
+        };
+        NodeJS.redirect("/ui");
+        this.assertEquals(msg, ["/sc/redirect", "/ui"]);
+        NodeJS.connected = false;
+    }
+
+    test_Reload {
+        var msg = List.new;
+        NodeJS.connected = true;
+        NodeJS.sendCallback = {
+            arg addr ... args;
+            msg.add(addr);
+            msg = msg ++ args;
+        };
+        NodeJS.reload;
+        this.assertEquals(msg, ["/sc/reload"]);
+        NodeJS.connected = false;
+    }
+
+    test_Css {
+        var msg = List.new;
+        NodeJS.connected = true;
+        NodeJS.sendCallback = {
+            arg addr ... args;
+            msg.add(addr);
+            msg = msg ++ args;
+        };
+        NodeJS.css("html", "color", "red");
+        this.assertEquals(msg, ["/sc/css", "html", "color", "red"]);
+        NodeJS.connected = false;
     }
 
     test_Subscribe {
@@ -34,7 +89,7 @@ TestNodeJS : UnitTest {
                 NodeJS.set("test1", 2);
                 NodeJS.get("test1");
             }.defer(0.1);
-        }.defer(1);
+        }.defer(1.5);
 
 
         {this.assertEquals(v, 2)}.defer(2);
