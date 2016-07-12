@@ -190,7 +190,6 @@ NodeJS_UI1 {
             l = "slider" ++ i;
             s = NodeJS_Slider.new(0, params:[\idx, l]);
             slider.add(s);
-            s.label = l;
         }
     }
 
@@ -221,16 +220,23 @@ NodeJS_UI1 {
 
     labels_ {
         arg type, values = [];
-        var elems;
+        var elems, dict;
 
-        case(type.toString,
+        switch(type.toString,
             "knob",   {elems = `knob},
             "toggle", {elems = `toggle},
             "button", {elems = `button},
             "slider", {elems = `slider}
-        );
+            );
 
-        elems.dump;
+        dict = Dictionary.newFrom(values);
+        dict.postln;
+        dict.keysValuesDo{ |k,v|
+            if(elems[k].notNil) {
+                elems[k].label = v;
+                elems[k].update;
+            };
+        };
     }
 }
 
