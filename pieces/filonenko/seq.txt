@@ -1,0 +1,65 @@
+%1 t 1 b 3
+%2 t 0.5 b 7
+%3 t 0.5 b 7
+%4 t 1 b 3
+%5 t 1 b 3 mark 1
+%6 t 1 b 3
+%7 t 1 b 3
+%8 t 1 b 3
+%9 t 1 b 3 mark 2
+%10 t 1 b 3
+%11 t 1 b 3
+%12 t 1 b 3
+%13 t 1 b 3
+%14 t 1 b 3 mark 3
+%15 t 1 b 3
+%16 t 0.5 b 7
+%17 t 1 b 3
+%18 t 1 b 3
+%19 t 0.5 b 7
+%20 t 1 b 3 mark 4
+%21 t 0.5 b 7
+%22 t 1 b 3
+%23 t 1 b 3
+%24 t 1 b 3 mark 4a
+%25 t 0.5 b 7
+%26 t 0.5 b 7
+%27 t 1 b 3
+%28 t 0.5 b 7 mark 5
+%29 t 1 b 1
+%30 t 1 b 3
+%31 t 0.5 b 7
+%32 t 1 b 3 mark 5a
+%33 t 1 b 3
+%34 t 1 b 3
+%35 t 1 b 3
+%36 t 1 b 3 mark 6
+%37 t 0.5 b 7
+%38 t 1 b 3
+%39 t 1 b 3
+%40 t 1 b 3 mark 6a
+%41 t 1 b 3
+%42 t 1 b 3
+%43 t 0.5 b 7
+%44 t 0.5 b 7 mark 7
+%45 t 1 b 3
+%46 t 1 b 3
+%47 t 1 b 3
+%48 t 1 b 3 mark 8
+%49 t 1 b 3
+%50 t 1 b 3
+%51 t 1 b 3
+%52 t 1 b 3
+%53 t 1 b 3 mark 9
+%54 t 1 b 3
+%55 t 1 b 3
+%56 t 1 b 3
+%57 t 1 b 3
+%58 t 1 b 3 mark 9a
+%59 t 0.5 b 7
+%60 t 1 b 3
+%61 t 0.5 b 7
+%62 t 1 b 3 mark 10
+%63 t 1 b 3
+%64 t 1 b 3
+%65 t 1 b 3

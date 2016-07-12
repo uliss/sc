@@ -28,7 +28,7 @@ TestNodeJS_Widget : UnitTest {
         w.label = "Label";
         this.assertEquals(w.label, "Label");
         w.params[\idx] = \pan0;
-        this.assertEquals(w.asJSON, '{"oscPath": "/nodejs/ui","type": "pan","idx": "pan0","label": "Label"}'.asString);
+        this.assertEquals(w.asJSON, '{"oscPath": "/nodejs/ui","idx": "pan0","type": "pan","label": "Label"}'.asString);
     }
 
     test_Value {
@@ -37,7 +37,7 @@ TestNodeJS_Widget : UnitTest {
         w.value = 45;
         this.assertEquals(w.value, 45);
         w.params[\idx] = \test0;
-        this.assertEquals(w.asJSON, '{"oscPath": "/nodejs/ui","value": 45,"type": "test","idx": "test0"}'.asString);
+        this.assertEquals(w.asJSON, '{"oscPath": "/nodejs/ui","value": 45,"idx": "test0","type": "test"}'.asString);
     }
 
     test_Idx {

@@ -1,99 +1,150 @@
-SoundCard.builtin
+SoundCard.saffire;
 
 {SinOsc.ar}.play
 
 MIDIIn.connectAll;
-MKtl.find;
+
+
+// {SoundIn.ar(0)}.play
 
 (
 
+var osc_f1, osc_f2, osc_f3;
 ~track_path_click = "/Users/serj/work/music/sc/pieces/missy_mazzoli/A Thousand Tongues - tape part with click.aiff";
 ~track_path = "/Users/serj/work/music/sc/pieces/missy_mazzoli/AThousandTongues-Tape Part.aiff";
+m = NetAddr("127.0.0.1", NetAddr.langPort);
 
 Spec.add(\gain, [0.5, 4, \lin]);
 
 Ndef(\tape).clear;
 Ndef(\tape, {
-    arg buf, rate = 1;
-    VDiskIn.ar(2, buf, rate) * \gain.kr(1, 0.5) * \amp.kr(1, 0.5) * 20;
+    arg buf, buf_click, aout, aclick;
+    aclick = VDiskIn.ar(2, buf_click, BufRateScale.kr(buf)) * \gain.kr(1, 0.5) * \amp.kr(1, 0.5);
+    aout = VDiskIn.ar(2, buf, BufRateScale.kr(buf_click)) * \gain.kr(1, 0.5) * \amp.kr(1, 0.5);
+    Out.ar(3, aclick);
+    Out.ar(0, aout * 1.5);
 });
 
 Ndef(\viola).clear;
 Ndef(\viola, {
-    var in = SPU_ViolaInTest.ar(0);
-    in = SPU_ViolaReverb.ar(SPU_ViolaCompress.ar(SPU_ViolaFilter.ar(in)), \mix.kr(0.5, 0.5), \room.kr(0.65));
+    |src = 0|
+    var in;
+    in = SPU_ViolaIn.ar(0);
+    // in = in.fold2(0.23);
+    in = SPU_ViolaReverb.ar(SPU_ViolaCompress.ar(SPU_ViolaFilter.ar(in)), \mix.kr(0.2, 0.5), \room.kr(0.8));
     Pan2.ar(in, \pan.kr(0, 0.5)) * \gain.kr(1, 0.5) * \amp.kr(1, 0.5);
 });
 
-~midik = MKtl(\nano, 'midi_1_nanokontrol2');
+Ndef(\flanger, {
+    arg out=0, in=0, depth=0.08, rate=0.06, fdbk=0.0, decay=0;
+    var input, maxdelay, maxrate, dsig, mixed, local;
+    maxdelay = 0.013;
+    maxrate = 10.0;
+    input = Ndef(\viola).ar;
+    local = LocalIn.ar(1);
+    dsig = AllpassL.ar( // the delay (you could use AllpassC (put 0 in decay))
+        input + (local * fdbk),
+        maxdelay * 2,
+        LFPar.kr( // very similar to SinOsc (try to replace it) - Even use LFTri
+            rate * maxrate,
+            0,
+            depth * maxdelay,
+            \delay.kr(0.1) * maxdelay),
+        decay);
+    mixed = input + dsig;
+    LocalOut.ar(mixed);
+    Out.ar([out, out+1], mixed * \amp.kr(1, 0.4));
+});
 
-// LED blink
-Routine{
-    11.do { |i|
-        {[\play, \stop, \mset].do{arg e; ~midik.elAt(\tr, e).value = i % 2}}.defer;
-        {[\R, \S, \M].do{arg e; ~midik.elAt(\bt, e, 0).value = i % 2}}.defer;
-        0.2.wait;
+Ndef(\distort).clear;
+Ndef(\distort, {
+    |amp = 0.5|
+    var sig, in2, in, rfreq = 100.midicps, in_dist, distort = 1, in3, in1, outL, outR, gate = 0;
+    in = Ndef(\flanger).ar[0];
+    in = BRF.ar(in, \violaReject1.kr(250), 0.1);
+
+    in_dist = (in * \dist.kr(13)).tanh.softclip * distort.lag(0.5);
+    in = in_dist * 0.1 * amp.lag(2);
+
+    in3 = MoogLadder.ar(in, LFTri.ar(\moogFreq.kr(10).reciprocal).range(250, 3000), 0.9);
+    in = XFade2.ar(in, in3, \moogLevel.kr(0.6));
+
+    in1 = PitchShift.ar(in, 0.1, pitchRatio: \detune.kr(6) / 10000.0 +  1.0);
+    [in, in1] * \gain.kr(3);
+
+});
+
+
+osc_f1 = OSCFunc({
+    |m|
+    m.postln;
+    if(m[1] == 1) {
+        "PLAY".postln;
+        ~cue_buf = Buffer.cueSoundFile(s, ~track_path_click, 0);
+        ~cue_buf_normal = Buffer.cueSoundFile(s, ~track_path, 0);
+        Ndef(\tape).set(\buf, ~cue_buf_normal.bufnum);
+        Ndef(\tape).set(\buf_click, ~cue_buf.bufnum);
+        Ndef(\tape).play();
+    }
+    {
+        "STOP".postln;
+        Ndef(\tape).free();
     };
-}.play;
+}, "/button/1");
 
-~midik.elAt(\tr, \mset).action = {|el| if(el.value == 1) {{~n = NdefMixer(s)}.defer(0)}};
-
-~midik.elAt(\tr, \play).action = {|el| if(el.value == 1) {
-    "PLAY".postln;
-    ~midik.elAt(\tr, \stop).value = 0;
-    ~cue_buf = Buffer.cueSoundFile(s, ~track_path_click, 0);
-    Ndef(\tape).set(\buf, ~cue_buf.bufnum);
+osc_f2 = OSCFunc({
+    |m|
+    "GO TO %".format(m[1].asTimeString.drop(-4)).postln;
+    ~cue_buf = Buffer.cueSoundFile(s, ~track_path_click, 44100 * m[1].asInt);
+    ~cue_buf_normal = Buffer.cueSoundFile(s, ~track_path, 44100 * m[1].asInt);
+    Ndef(\tape).set(\buf, ~cue_buf_normal.bufnum);
+    Ndef(\tape).set(\buf_click, ~cue_buf.bufnum);
     Ndef(\tape).play();
-} {
-    el.value = 1;
-}};
 
-~midik.elAt(\tr, \stop).action = {|el| if(el.value == 1) {
-    "STOP".postln;
-    ~midik.elAt(\tr, \play).value = 0;
-    Ndef(\tape).stop();
-} {
-    el.value = 1;
-}};
+}, "/mazzoli/time");
 
-
-
-// LED init state
-{~midik.elAt(\tr, \stop).valueAction = 1}.defer(3);
-Ndef(\tape).set(\rate, 1);
-Ndef(\viola).play();
-
-// Tape amp at slider 0
-~midik.elAt(\sl, 0).action = {|el| Ndef(\tape).set(\amp, el.value)};
-// Viola amp at slider 1
-~midik.elAt(\sl, 1).action = {|el| Ndef(\viola).set(\amp, el.value)};
-// Viola pan at knob 1
-~midik.elAt(\kn, 1).action = {|el| Ndef(\viola).set(\pan, el.value.range(-1, 1))};
-
-// setting time jumps
-[83, 124, 171, 198, 251, 278, 304, 351].do { |i, v|
-    Ndef(\tape).set(\buf, ~cue_buf.bufnum);
-    ~midik.elAt(\bt, \R, v).action = { |el|
-        if(el.value == 1) {
-            el.value = 1;
-            "jump to %".format(i.asTimeString.drop(-4).drop(4)).postln;
-            ~cue_buf = Buffer.cueSoundFile(s, ~track_path_click, 44100 * i);
-            Ndef(\tape).set(\buf, ~cue_buf.bufnum);
-        }
-        {
-            el.value = 0;
-        };
+osc_f3 = OSCFunc({
+    |m|
+    if(m[1] == 1) {
+        "DIST ON".postln;
+        Ndef(\viola).set(\amp, 0.7);
+        Ndef(\distort).play();
+        // Ndef(\flanger).play();
+        Ndef(\distort).set(\gate, 1);
+    }
+    {
+        "DIST OFF".postln;
+        // Ndef(\distort).set(\gate, 0);
+        Ndef(\viola).set(\amp, 1);
+        // Ndef(\flanger).play();
+        // Ndef(\distort).release;
+        Ndef(\distort).stop;
     };
-};
+}, "/button/2");
 
+// Ndef(\tape).set(\rate, 1);
+ Ndef(\viola).play;
 )
 
 
-// clean up
-~midik.elAt.value = 1;
+~n = NdefMixer(s);
+
+Ndef(\viola).stop
+Ndef(\viola).set(\src, 1);
+Ndef(\distort).set(\dist, 2.002);
+Ndef(\distort).set(\gate, 1);
+Ndef(\distort).play;
+Ndef(\distort).stop
+Ndef(\viola).play;
+Ndef(\viola).stop;
 
 
-
+m.sendMsg("/button/1", 1);
+m.sendMsg("/button/1", 0);
+m.sendMsg("/button/2", 1);
+m.sendMsg("/button/2", 0);
+m.sendMsg("/mazzoli/time", 171);// 2:51
+m.sendMsg("/mazzoli/time", 198);
 
 
 

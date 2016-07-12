@@ -1,9 +1,10 @@
 NodeJS {
     classvar <>connected;
     classvar osc_funcs;
+    classvar <>outOscPort = 5001;
 
     *inOscPort { ^5000 }
-    *outOscPort { ^5001 }
+
     *httpPort { ^3000 }
     *lockPath { ^"/var/tmp/sc-node.lock" }
 
