@@ -149,6 +149,17 @@ NodeJS_Button : NodeJS_Widget {
     }
 }
 
+NodeJS_Pianoroll : NodeJS_Widget {
+    *new {
+        arg size = 600, octaves = 3, midibase = 48, params = [];
+        var p = super.new("pianoroll", [
+            \size, size,
+            \octaves, octaves,
+            \midibase, midibase] ++ params);
+        ^p;
+    }
+}
+
 NodeJS_UI1 {
     var <knob;
     var <toggle;
