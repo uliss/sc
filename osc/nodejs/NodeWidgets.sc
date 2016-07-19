@@ -26,7 +26,7 @@ NodeJS_Widget {
         params[\parent] = "ui-elements";
         params = params ++ Dictionary.newFrom(p);
         params[\type] = type;
-        params[\oscPath] = "/nodejs/ui";
+        params[\oscPath] = "/ui";
 
         idx_count = idx_count + 1;
         osc = OSCFunc({|m|
@@ -44,18 +44,18 @@ NodeJS_Widget {
 
     add {
         added = true;
-        NodeJS.sendMsg("/sc/widget/add", this.asJSON);
+        NodeJS.sendMsg("/node/widget/add", this.asJSON);
         ^this;
     }
 
     remove {
         added = false;
-        NodeJS.sendMsg("/sc/widget/remove", this.id);
+        NodeJS.sendMsg("/node/widget/remove", this.id);
         ^this;
     }
 
     update {
-        NodeJS.sendMsg("/sc/widget/update", this.asJSON);
+        NodeJS.sendMsg("/node/widget/update", this.asJSON);
         ^this;
     }
 
@@ -158,6 +158,29 @@ NodeJS_Pianoroll : NodeJS_Widget {
             \midibase, midibase] ++ params);
         ^p;
     }
+}
+
+NodeJS_XFade : NodeJS_Widget {
+    *new {
+        arg size = 200, label = "", params = [];
+        var p = super.new("crossfade", [
+            \size, size,
+            \label, label] ++ params);
+        ^p;
+    }
+}
+
+NodeJS_Matrix : NodeJS_Widget {
+    *new {
+        arg size = 200, row = 4, col = 4, label = "", params = [];
+        var p = super.new("matrix", [
+            \size, size,
+            \row, row,
+            \col, col,
+            \label, label] ++ params);
+        ^p;
+    }
+
 }
 
 NodeJS_UI1 {
