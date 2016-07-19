@@ -79,12 +79,16 @@ NodeJS {
 
     *set {
         arg key, val;
-        NodeJS.sendMsg("/server/set", key, val);
+        NodeJS.sendMsg("/node/set", key, val);
     }
 
     *get {
         arg key;
-        NodeJS.sendMsg("/server/get", key);
+        NodeJS.sendMsg("/node/get", key);
+    }
+
+    *ping {
+        NodeJS.sendMsg("/node/echo", "ping -> pong");
     }
 
     *subscribe {
@@ -92,7 +96,7 @@ NodeJS {
         if(func.notNil) {
             ^OSCFunc({|msg|
                 func.value(msg.drop(1));
-            }, "/server/get", nil, NodeJS.outOscPort);
+            }, "/sc/get", nil, NodeJS.outOscPort);
         };
         ^nil;
     }
@@ -101,7 +105,7 @@ NodeJS {
         arg v = true;
         var on = 0;
         if(v) {on = 1};
-        NodeJS.sendMsg("/server/set", "verbose", on);
+        NodeJS.sendMsg("/node/set", "verbose", on);
     }
 }
 
