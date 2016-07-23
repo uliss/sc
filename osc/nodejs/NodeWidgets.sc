@@ -4,6 +4,7 @@ NodeJS_Widget {
     var <>type;
     var <>params;
     var <>action;
+    var <>widgetAction;
     var added;
     var osc;
 
@@ -33,6 +34,9 @@ NodeJS_Widget {
             params[\value] = m[1];
             if(action.notNil) {
                 action.value(m);
+            };
+            if(widgetAction.notNil) {
+                widgetAction.value(m);
             }
         }, "/sc/ui/" ++ this.id, nil, NodeJS.outOscPort);
     }
@@ -56,6 +60,12 @@ NodeJS_Widget {
 
     update {
         NodeJS.sendMsg("/node/widget/update", this.asJSON);
+        ^this;
+    }
+
+    command {
+        arg msg;
+        NodeJS.sendMsg("/node/widget/command", JSON.toJSON(msg));
         ^this;
     }
 
@@ -181,6 +191,88 @@ NodeJS_Matrix : NodeJS_Widget {
         ^p;
     }
 
+}
+
+NodeJS_Playcontrol : NodeJS_Widget {
+    var timerRoutine;
+    var currentTime;
+    var isPaused;
+    var syncTime;
+
+    *new {
+        arg back = true, forward = true, display = true, syncTime = 10, params = [];
+        var p = super.new("playcontrol", [
+            \back, back,
+            \forward, forward,
+            \display, display
+        ] ++ params);
+        ^p.initPlaycontrol(syncTime);
+    }
+
+    initPlaycontrol {
+        arg sync_time = 10;
+
+        syncTime = sync_time;
+        currentTime = 0;
+        isPaused = false;
+
+        timerRoutine = Task {
+            inf.do {
+                if(currentTime.mod(syncTime) == 0) {
+                    this.sync;
+                };
+                1.wait;
+                currentTime = currentTime + 1;
+            }
+        };
+
+        widgetAction = { |msg|
+            msg.postln;
+            switch(msg[1].asString,
+                "play", {this.play},
+                "stop", {this.stop},
+                "pause", {this.pause}
+            );
+        };
+
+        ^this;
+    }
+
+    part {
+        arg txt;
+        this.command((part: txt, idx: this.id));
+    }
+
+    sync {
+        this.command((sync: currentTime, idx: this.id));
+    }
+
+    play {
+        if(isPaused) {
+            timerRoutine.resume;
+        }
+        {
+            timerRoutine.start;
+        };
+        isPaused = false;
+        this.command((state: "play", idx: this.id));
+        this.sync;
+    }
+
+    stop {
+        isPaused = false;
+        currentTime = 0;
+        timerRoutine.stop;
+        timerRoutine.reset;
+        this.command((state: "stop", idx: this.id));
+        this.sync;
+    }
+
+    pause {
+        isPaused = true;
+        timerRoutine.pause;
+        this.command((state: "pause", idx: this.id));
+    }
 }
 
 NodeJS_UI1 {
