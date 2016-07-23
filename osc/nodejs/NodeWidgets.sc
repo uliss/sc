@@ -198,6 +198,16 @@ NodeJS_Playcontrol : NodeJS_Widget {
     var currentTime;
     var isPaused;
     var syncTime;
+    var <>onPlay;
+    var <>onStop;
+    var <>onPause;
+    var <>onPrev;
+    var <>onNext;
+    var <>onFirst;
+    var <>onLast;
+    var sections;
+    var sectionTimes;
+    var currentSection;
 
     *new {
         arg back = true, forward = true, display = true, syncTime = 10, params = [];
@@ -227,20 +237,81 @@ NodeJS_Playcontrol : NodeJS_Widget {
         };
 
         widgetAction = { |msg|
-            msg.postln;
             switch(msg[1].asString,
-                "play", {this.play},
-                "stop", {this.stop},
-                "pause", {this.pause}
+                "play", { this.play },
+                "stop", { this.stop },
+                "pause", { this.pause },
+                "prev", { this.prevSection },
+                "next", { this.nextSection },
+                "first", { this.firstSection },
+                "last", { this.lastSection },
+                { "[%] unknown command: %".format(this.class, msg[1].asString).postln }
             );
         };
+
+        sections = SortedList.new;
+        sectionTimes = Dictionary.new;
 
         ^this;
     }
 
+    firstSection {
+        var first_section = sections.first;
+        if(first_section.notNil) {
+            currentSection = first_section;
+            currentTime = sectionTimes[currentSection];
+            this.part(currentSection);
+            this.sync;
+        };
+
+        if(onFirst.notNil) { onFirst.value(currentSection) };
+    }
+
+    lastSection {
+        var last_section = sections.last;
+        if(last_section.notNil) {
+            currentSection = last_section;
+            currentTime = sectionTimes[currentSection];
+            this.part(currentSection);
+            this.sync;
+        };
+
+        if(onLast.notNil) { onLast.value(currentSection) };
+    }
+
+    nextSection {
+        var idx = sections.indexOf(currentSection);
+        if(idx.notNil) {
+            var next_section = sections[idx + 1];
+            if(next_section.notNil) {
+                currentSection = next_section;
+                currentTime = sectionTimes[currentSection];
+                this.part(currentSection);
+                this.sync;
+            };
+        };
+
+        if(onNext.notNil) { onNext.value(currentSection) };
+    }
+
+    prevSection {
+        var idx = sections.indexOf(currentSection);
+        if(idx.notNil) {
+            var prev_section = sections[idx - 1];
+            if(prev_section.notNil) {
+                currentSection = prev_section;
+                currentTime = sectionTimes[currentSection];
+                this.part(currentSection);
+                this.sync;
+            };
+        };
+
+        if(onPrev.notNil) { onPrev.value(currentSection) };
+    }
+
     part {
         arg txt;
-        this.command((part: txt, idx: this.id));
+        this.command((part: txt.asString, idx: this.id));
     }
 
     sync {
@@ -257,6 +328,8 @@ NodeJS_Playcontrol : NodeJS_Widget {
         isPaused = false;
         this.command((state: "play", idx: this.id));
         this.sync;
+
+        if(onPlay.notNil) { onPlay.value(currentTime) }
     }
 
     stop {
@@ -266,12 +339,33 @@ NodeJS_Playcontrol : NodeJS_Widget {
         timerRoutine.reset;
         this.command((state: "stop", idx: this.id));
         this.sync;
+
+        if(onStop.notNil) { onStop.value }
     }
 
     pause {
         isPaused = true;
         timerRoutine.pause;
         this.command((state: "pause", idx: this.id));
+
+        if(onPause.notNil) { onPause.value }
+    }
+
+    setSections {
+        arg ... values;
+        sections.clear;
+        sectionTimes.clear;
+
+        sections.add(".".asSymbol);
+        sectionTimes[".".asSymbol] = 0;
+
+        Dictionary.newFrom(*values).keysValuesDo { |k, v|
+            sections.add(k);
+            sectionTimes[k] = v;
+        };
+
+        currentSection = sections.first;
+        this.part(currentSection);
     }
 }
 
@@ -353,7 +447,7 @@ NodeJS_UI1 {
             "toggle", {elems = `toggle},
             "button", {elems = `button},
             "slider", {elems = `slider}
-            );
+        );
 
         dict = Dictionary.newFrom(values);
         dict.postln;
