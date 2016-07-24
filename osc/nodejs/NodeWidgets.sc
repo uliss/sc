@@ -196,6 +196,7 @@ NodeJS_Matrix : NodeJS_Widget {
 NodeJS_Playcontrol : NodeJS_Widget {
     var timerRoutine;
     var currentTime;
+    var maxTime;
     var isPaused;
     var syncTime;
     var <>onPlay;
@@ -208,6 +209,9 @@ NodeJS_Playcontrol : NodeJS_Widget {
     var sections;
     var sectionTimes;
     var currentSection;
+    var sound_file;
+    var cue_params;
+    var play_event;
 
     *new {
         arg back = true, forward = true, display = true, syncTime = 10, params = [];
@@ -224,6 +228,7 @@ NodeJS_Playcontrol : NodeJS_Widget {
 
         syncTime = sync_time;
         currentTime = 0;
+        maxTime = 100000;
         isPaused = false;
 
         timerRoutine = Task {
@@ -233,6 +238,8 @@ NodeJS_Playcontrol : NodeJS_Widget {
                 };
                 1.wait;
                 currentTime = currentTime + 1;
+
+                if(currentTime >= maxTime) { this.stop };
             }
         };
 
@@ -318,29 +325,74 @@ NodeJS_Playcontrol : NodeJS_Widget {
         this.command((sync: currentTime, idx: this.id));
     }
 
+    bindSoundfile {
+        arg path, begin = 0, end = nil, fadeIn = 0, fadeOut = 0, out = 0;
+
+        if(sound_file.notNil) {sound_file.free};
+        sound_file = SoundFile.new;
+        sound_file.openRead(path);
+        cue_params = (out: out,
+            ar: fadeIn,
+            dr: fadeOut,
+            begin: begin * sound_file.sampleRate
+        );
+
+        if(end.notNil) {
+            var pos = end * sound_file.sampleRate;
+            cue_params.add(\lastFrame -> pos);
+            maxTime = pos;
+        } {
+            maxTime = sound_file.duration;
+        };
+
+        maxTime.postln;
+
+        cue_params.postln;
+    }
+
     play {
         if(isPaused) {
             timerRoutine.resume;
         }
         {
-            timerRoutine.start;
+            timerRoutine.play(doReset: true);
         };
         isPaused = false;
         this.command((state: "play", idx: this.id));
         this.sync;
 
-        if(onPlay.notNil) { onPlay.value(currentTime) }
+        if(onPlay.notNil) { onPlay.value(currentTime) };
+
+        if(sound_file.notNil) {
+            // play after stop
+            if(play_event.isNil) {
+                var pos = (currentTime * sound_file.sampleRate) + cue_params[\begin];
+                cue_params[\firstFrame] = pos;
+                play_event = sound_file.cue(cue_params, true, true);
+            };
+
+            // resume
+            if(play_event.notNil) {
+                play_event.resume
+            };
+        }
     }
 
     stop {
         isPaused = false;
         currentTime = 0;
         timerRoutine.stop;
-        timerRoutine.reset;
         this.command((state: "stop", idx: this.id));
         this.sync;
 
-        if(onStop.notNil) { onStop.value }
+        if(onStop.notNil) { onStop.value };
+
+        if(sound_file.notNil && play_event.notNil) {
+            var delay = play_event[\dr] + 0.1;
+
+            { play_event = nil }.defer(delay);
+            play_event.stop;
+        }
     }
 
     pause {
@@ -348,16 +400,17 @@ NodeJS_Playcontrol : NodeJS_Widget {
         timerRoutine.pause;
         this.command((state: "pause", idx: this.id));
 
-        if(onPause.notNil) { onPause.value }
+        if(onPause.notNil) { onPause.value };
+
+        if(sound_file.notNil && play_event.notNil) {
+            play_event.pause;
+        }
     }
 
     setSections {
         arg ... values;
         sections.clear;
         sectionTimes.clear;
-
-        sections.add(".".asSymbol);
-        sectionTimes[".".asSymbol] = 0;
 
         Dictionary.newFrom(*values).keysValuesDo { |k, v|
             sections.add(k);
