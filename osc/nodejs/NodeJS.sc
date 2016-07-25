@@ -3,11 +3,15 @@ NodeJS {
     classvar osc_funcs;
     classvar <>outOscPort = 5001;
     classvar <>sendCallback = nil;
+    classvar <serverRootDir = "/Users/serj/work/music/nodejs/supercollider_ui";
+    classvar <imageDirPrefix = "/img";
+    classvar <thumbDirPrefix = "/img/thumb";
 
     *inOscPort { ^5000 }
-
     *httpPort { ^3000 }
     *lockPath { ^"/var/tmp/sc-node.lock" }
+    *imageDir { ^serverRootDir +/+ "build" +/+ imageDirPrefix }
+    *thumbDir { ^serverRootDir +/+ "build" +/+ thumbDirPrefix }
 
     *start {
         var dir, res, pid, cmd, node;

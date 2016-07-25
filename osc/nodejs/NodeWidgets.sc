@@ -7,6 +7,7 @@ NodeJS_Widget {
     var <>widgetAction;
     var added;
     var osc;
+    var auto_add;
 
     *toUI {
         NodeJS.sendMsg("/sc/redirect", "/ui");
@@ -107,6 +108,21 @@ NodeJS_Widget {
     css {
         arg k, v;
         NodeJS.css("#" ++ this.id, k, v);
+    }
+
+    autoAdd {
+        arg value = true, interval = 10;
+        if(value) {
+            if(auto_add.isNil) {
+                auto_add = SkipJack.new({this.add}, interval, false, "auto_add");
+            }
+            {
+                auto_add.start;
+            }
+        }
+        {
+            if(auto_add.notNil) { auto_add.stop }
+        }
     }
 }
 
@@ -433,8 +449,7 @@ NodeJS_Playcontrol : NodeJS_Widget {
 }
 
 NodeJS_Image : NodeJS_Widget {
-    classvar <node_image_dir = "/Users/serj/work/music/nodejs/supercollider_ui/build/img";
-    var <path;
+    var <>path;
     var <>url;
     var <width;
     var <height;
@@ -473,11 +488,11 @@ NodeJS_Image : NodeJS_Widget {
             ^false;
         };
 
-        // unsure dir exists
-        node_image_dir.mkdir;
+        // ensure dir exists
+        NodeJS.imageDir.mkdir;
 
         // convert
-        dest_path = NodeJS_Image.node_image_dir +/+ url.basename;
+        dest_path = NodeJS.imageDir +/+ url.basename;
         cmd = gm + "convert";
         if(size.notNil) {
             cmd = cmd + "-resize" + size.asPoint.asArray.join("x")
@@ -492,21 +507,13 @@ NodeJS_Image : NodeJS_Widget {
         img_size = (cmd.unixCmdGetStdOut.split($ ) @@ -6).drop(-4).split($x).asInt;
         width = img_size[0];
         height = img_size[1];
+        this.path = dest_path;
 
         ^true;
     }
 
     setAsPageBackground {
-        arg bgcolor = "#60646D", size = "cover";
-
-        if(url.notNil) {
-            NodeJS.css("html", "background", bgcolor + "url('/img" +/+ url ++ "') no-repeat center fixed");
-            NodeJS.css("html", "background-size", size);
-            NodeJS.css("body", "background-color", "transparent");
-            NodeJS.css("h1",   "background-color", "transparent");
-        } {
-            "[%] ERROR: url is undefined".format(this.class).error;
-        }
+        this.command("url", NodeJS.imageDirPrefix +/+ url);
     }
 
     clearBackground {
@@ -515,7 +522,7 @@ NodeJS_Image : NodeJS_Widget {
 }
 
 NodeJS_ImageSequence {
-    var <urls;
+    var <>urls;
 
     *new {
         ^super.new.init();
@@ -525,7 +532,7 @@ NodeJS_ImageSequence {
         urls = List.new;
     }
 
-    clearUrls {
+    clear {
         urls.clear;
     }
 
@@ -534,13 +541,18 @@ NodeJS_ImageSequence {
         urls.add(url);
     }
 
+    addUrls {
+        arg urls_;
+        urls = (urls ++ urls_).asList;
+    }
+
     addUrlPattern {
         arg pattern = "*.jpg";
         var files;
 
-        pattern = NodeJS_Image.node_image_dir +/+ pattern.basename;
+        pattern = NodeJS.imageDir +/+ pattern.basename;
         files = pathMatch(pattern);
-        urls = files.collect({|p| "/img" +/+ p.basename});
+        urls = (urls ++ files.collect({|p| p.basename})).asList;
     }
 
     addImage {
@@ -548,7 +560,7 @@ NodeJS_ImageSequence {
         var img = NodeJS_Image.new(path.basename);
         img.upload(path, size);
         urls.add(img.url);
-        "[%] image uploaded: /img/%".format(this.class, img.url).postln;
+        "[%] image uploaded: %".format(this.class, NodeJS.imageDirPrefix +/+ img.url).postln;
     }
 
     addImages {
@@ -558,24 +570,131 @@ NodeJS_ImageSequence {
         }
     }
 
+    addImagePattern {
+        arg pattern, size = nil;
+        this.addImages(pathMatch(pattern), size);
+    }
+
     makeThumbs {
         arg size = nil;
-        var img;
-
         size = size ? 100@100;
-        img = NodeJS_Image.new;
 
         urls.do { |u|
             var path_name = PathName(u);
             var new_url = path_name.fileNameWithoutExtension ++ "_thumb." ++ path_name.extension;
-
-            img.url = new_url;
-            img.upload(NodeJS_Image.node_image_dir +/+ path_name.fileName, size);
-            "[%] image thumbs created: %".format(this.class, new_url).postln;
+            var img = NodeJS_Image.new(new_url);
+            img.upload(NodeJS.imageDir +/+ path_name.fileName, size);
+            img.path.moveToDir(NodeJS.thumbDir, true, true);
+            "[%] image thumbs created: %".format(this.class, NodeJS.thumbDirPrefix +/+ new_url).postln;
         }
     }
 }
 
+
+NodeJS_Slideshow : NodeJS_Widget {
+    var <seq;
+    var currentImage;
+
+    *new {
+        arg urls = [], params = [];
+        var p = super.new("slideshow", [] ++ params);
+        ^p.initSlideshow(urls);
+    }
+
+    initSlideshow {
+        arg urls;
+        currentImage = 0;
+        seq = NodeJS_ImageSequence.new;
+        seq.urls = urls.asList;
+
+        widgetAction = { |msg|
+            switch(msg[1].asString,
+                "prev", { this.prev },
+                "next", { this.next },
+                "first", { this.first },
+                "last", { this.last },
+                { "[%] unknown command: %".format(this.class, msg[1].asString).postln }
+            );
+        };
+    }
+
+    addImages {
+        arg paths, size = nil;
+        seq.addImages(paths, size);
+    }
+
+    addUrlPattern {
+        arg pattern = "*.jpg";
+        seq.addUrlPattern(pattern);
+    }
+
+    addImagePattern {
+        arg pattern;
+        seq.addImagePattern(pattern);
+    }
+
+    imageUrls {
+        ^seq.urls;
+    }
+
+    imageCount {
+        ^seq.urls.size;
+    }
+
+    currentUrl {
+        ^seq.urls[currentImage];
+    }
+
+    sync {
+        if(this.currentUrl.notNil) {
+            this.command("url", NodeJS.imageDirPrefix +/+ this.currentUrl);
+        }
+    }
+
+    next {
+        if(currentImage < (seq.urls.size - 1)) {
+            currentImage = currentImage + 1;
+            this.sync;
+        }
+    }
+
+    prev {
+        if(currentImage > 0) {
+            currentImage = currentImage - 1;
+            this.sync;
+        }
+    }
+
+    first {
+        if(this.imageCount > 0) {
+            currentImage = 0;
+            this.sync;
+        }
+    }
+
+    last {
+        if(this.imageCount > 0) {
+            currentImage = this.imageCount - 1;
+            this.sync;
+        }
+    }
+
+    toImage {
+        arg n;
+        if(n >= 0 && n < this.imageCount) {
+            currentImage = n;
+            this.sync;
+        }
+        {
+            "[%] invalid page number: %".format(this.class, n);
+        }
+    }
+
+    clear {
+        seq.clear;
+        currentImage = 0;
+    }
+}
 
 
 NodeJS_UI1 {
