@@ -433,64 +433,146 @@ NodeJS_Playcontrol : NodeJS_Widget {
 }
 
 NodeJS_Image : NodeJS_Widget {
-    var <>path;
-    var <url;
+    classvar <node_image_dir = "/Users/serj/work/music/nodejs/supercollider_ui/build/img";
+    var <path;
+    var <>url;
     var <width;
     var <height;
 
-     *new {
-        arg path, url = nil, params = [];
+    *new {
+        arg url, params = [];
         var p = super.new("image", [] ++ params);
-        ^p.initImage(path, url);
+        ^p.initImage(url);
     }
 
     initImage {
-        arg path_, url_;
-        var res = path_.pathExists;
-        path = path_;
+        arg url_;
         url = url_;
-
-        if(res == false) {
-            "[%] ERROR: path not exists '%'".format(this.class, path).postln;
-            ^nil;
-        };
-
-        if(res.asString == "folder") {
-            "[%] ERROR: path is directory '%'".format(this.class, path).postln;
-            ^nil;
-        };
-
-        if(["jpg", "jpeg", "png", "gif"].includesEqual(PathName(path).extension.toLower).not) {
-            "[%] ERROR: not image file '%'".format(this.class, path).postln;
-            ^nil;
-        }
     }
 
     // uploads to Node image directory
     upload {
-        var img_params = ();
-        this.sendMsg("/image/upload", path, JSON.toJSON(img_params));
-        OSCFunc({ |m|
-            url = m[1];
-            params[\url] = url.asString;
-        }, "/sc/image/upload/url").oneShot;
+        arg path, size = nil;
+        var res, ext, dest_path, info, cmd, img_size;
+        var gm = "/usr/local/bin/gm";
+        res = path.pathExists;
+        ext = PathName(path).extension.toLower;
 
-        OSCFunc({ |m|
-            width = m[1];
-            height = m[2];
-        }, "/sc/image/upload/size").oneShot;
+        if(res == false) {
+            "[%] path not exists '%'".format(this.class, path).error;
+            ^false;
+        };
+
+        if(res.asString == "folder") {
+            "[%] path is directory '%'".format(this.class, path).error;
+            ^false;
+        };
+
+        if(["jpg", "jpeg", "png", "gif"].includesEqual(ext).not) {
+            "[%] not image file '%'".format(this.class, path).error;
+            ^false;
+        };
+
+        // unsure dir exists
+        node_image_dir.mkdir;
+
+        // convert
+        dest_path = NodeJS_Image.node_image_dir +/+ url.basename;
+        cmd = gm + "convert";
+        if(size.notNil) {
+            cmd = cmd + "-resize" + size.asPoint.asArray.join("x")
+        };
+        cmd = cmd + path.escapeChar($").quote + dest_path.escapeChar($").quote;
+        cmd.systemCmd;
+
+        // get size information
+        cmd = gm + "identify" + dest_path.escapeChar($").quote;
+        // format:
+        // build/img/003.jpg JPEG 683x1024+0+0 DirectClass 8-bit 105.7Ki 0.000u 0:01
+        img_size = (cmd.unixCmdGetStdOut.split($ ) @@ -6).drop(-4).split($x).asInt;
+        width = img_size[0];
+        height = img_size[1];
+
+        ^true;
     }
 
     setAsPageBackground {
-        arg bgcolor = "#60646D";
-        NodeJS.css("html", "background", bgcolor + "url('" ++ url ++ "') no-repeat center fixed");
-        NodeJS.css("html", "background-size", "cover");
-        NodeJS.css("body", "background-color", "transparent");
-        NodeJS.css("h1",   "background-color", "transparent");
+        arg bgcolor = "#60646D", size = "cover";
+
+        if(url.notNil) {
+            NodeJS.css("html", "background", bgcolor + "url('/img" +/+ url ++ "') no-repeat center fixed");
+            NodeJS.css("html", "background-size", size);
+            NodeJS.css("body", "background-color", "transparent");
+            NodeJS.css("h1",   "background-color", "transparent");
+        } {
+            "[%] ERROR: url is undefined".format(this.class).error;
+        }
     }
 
     clearBackground {
         NodeJS.css("html", "background", "#60646D");
+    }
+}
+
+NodeJS_ImageSequence {
+    var <urls;
+
+    *new {
+        ^super.new.init();
+    }
+
+    init {
+        urls = List.new;
+    }
+
+    clearUrls {
+        urls.clear;
+    }
+
+    addUrl {
+        arg url;
+        urls.add(url);
+    }
+
+    addUrlPattern {
+        arg pattern = "*.jpg";
+        var files;
+
+        pattern = NodeJS_Image.node_image_dir +/+ pattern.basename;
+        files = pathMatch(pattern);
+        urls = files.collect({|p| "/img" +/+ p.basename});
+    }
+
+    addImage {
+        arg path, size = nil;
+        var img = NodeJS_Image.new(path.basename);
+        img.upload(path, size);
+        urls.add(img.url);
+        "[%] image uploaded: /img/%".format(this.class, img.url).postln;
+    }
+
+    addImages {
+        arg paths, size = nil;
+        paths.do { |p|
+            this.addImage(p, size);
+        }
+    }
+
+    makeThumbs {
+        arg size = nil;
+        var img;
+
+        size = size ? 100@100;
+        img = NodeJS_Image.new;
+
+        urls.do { |u|
+            var path_name = PathName(u);
+            var new_url = path_name.fileNameWithoutExtension ++ "_thumb." ++ path_name.extension;
+
+            img.url = new_url;
+            img.upload(NodeJS_Image.node_image_dir +/+ path_name.fileName, size);
+            "[%] image thumbs created: %".format(this.class, new_url).postln;
+        }
     }
 }
 
