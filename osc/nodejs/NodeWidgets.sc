@@ -48,24 +48,34 @@ NodeJS_Widget {
 
     add {
         added = true;
-        NodeJS.sendMsg("/node/widget/add", this.asJSON);
-        ^this;
+        this.sendMsg("/widget/add", this.asJSON);
     }
 
     remove {
         added = false;
-        NodeJS.sendMsg("/node/widget/remove", this.id);
-        ^this;
+        this.sendMsg("/widget/remove", this.id);
     }
 
     update {
-        NodeJS.sendMsg("/node/widget/update", this.asJSON);
+        this.sendMsg("/widget/update", this.asJSON);
         ^this;
     }
 
-    command {
+    commandGroup {
         arg msg;
-        NodeJS.sendMsg("/node/widget/command", JSON.toJSON(msg));
+        this.sendMsg("/widget/command", JSON.toJSON(msg));
+    }
+
+    command {
+        arg name, value;
+        var cmd = (idx: this.id);
+        cmd[name.asSymbol] = value;
+        this.sendMsg("/widget/command", JSON.toJSON(cmd));
+    }
+
+    sendMsg {
+        arg path, msg;
+        NodeJS.sendMsg("/node" ++ path, msg);
         ^this;
     }
 
@@ -318,11 +328,11 @@ NodeJS_Playcontrol : NodeJS_Widget {
 
     part {
         arg txt;
-        this.command((part: txt.asString, idx: this.id));
+        this.command(\part, txt.asString);
     }
 
     sync {
-        this.command((sync: currentTime, idx: this.id));
+        this.command(\sync, currentTime);
     }
 
     bindSoundfile {
@@ -358,7 +368,7 @@ NodeJS_Playcontrol : NodeJS_Widget {
             timerRoutine.play(doReset: true);
         };
         isPaused = false;
-        this.command((state: "play", idx: this.id));
+        this.command(\state, "play");
         this.sync;
 
         if(onPlay.notNil) { onPlay.value(currentTime) };
@@ -382,7 +392,7 @@ NodeJS_Playcontrol : NodeJS_Widget {
         isPaused = false;
         currentTime = 0;
         timerRoutine.stop;
-        this.command((state: "stop", idx: this.id));
+        this.command(\state, "stop");
         this.sync;
 
         if(onStop.notNil) { onStop.value };
@@ -398,7 +408,7 @@ NodeJS_Playcontrol : NodeJS_Widget {
     pause {
         isPaused = true;
         timerRoutine.pause;
-        this.command((state: "pause", idx: this.id));
+        this.command(\state, "pause");
 
         if(onPause.notNil) { onPause.value };
 
@@ -421,6 +431,66 @@ NodeJS_Playcontrol : NodeJS_Widget {
         this.part(currentSection);
     }
 }
+
+NodeJS_Image : NodeJS_Widget {
+    var <>path;
+    var <url;
+    var <width;
+    var <height;
+
+     *new {
+        arg path, url = nil, params = [];
+        var p = super.new("image", [] ++ params);
+        ^p.initImage(path, url);
+    }
+
+    initImage {
+        arg path_, url_;
+        var res = path_.pathExists;
+        path = path_;
+        url = url_;
+
+        if(res == false) {
+            "[%] ERROR: path not exists '%'".format(this.class, path).postln;
+            ^nil;
+        };
+
+        if(res.asString == "folder") {
+            "[%] ERROR: path is directory '%'".format(this.class, path).postln;
+            ^nil;
+        };
+
+        if(["jpg", "jpeg", "png", "gif"].includesEqual(PathName(path).extension.toLower).not) {
+            "[%] ERROR: not image file '%'".format(this.class, path).postln;
+            ^nil;
+        }
+    }
+
+    // uploads to Node image directory
+    upload {
+        var img_params = ();
+        this.sendMsg("/image/upload", path, JSON.toJSON(img_params));
+        OSCFunc({ |m|
+            url = m[1];
+            params[\url] = url.asString;
+        }, "/sc/image/upload/url").oneShot;
+
+        OSCFunc({ |m|
+            width = m[1];
+            height = m[2];
+        }, "/sc/image/upload/size").oneShot;
+    }
+
+    setAsPageBackground {
+        arg bgcolor = "#60646D";
+        NodeJS.css("html", "background", bgcolor + "url('" ++ url ++ "') no-repeat center fixed");
+        NodeJS.css("html", "background-size", "cover");
+        NodeJS.css("body", "background-color", "transparent");
+        NodeJS.css("h1",   "background-color", "transparent");
+    }
+}
+
+
 
 NodeJS_UI1 {
     var <knob;
