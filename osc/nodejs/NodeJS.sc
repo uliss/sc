@@ -65,16 +65,16 @@ NodeJS {
 
     *css {
         arg selector, key, value;
-        NodeJS.sendMsg("/sc/css", selector, key, value);
+        NodeJS.sendMsg("/node/css", selector, key, value);
     }
 
     *redirect {
         arg path;
-        NodeJS.sendMsg("/sc/redirect", path);
+        NodeJS.sendMsg("/node/redirect", path);
     }
 
     *reload {
-        NodeJS.sendMsg("/sc/reload");
+        NodeJS.sendMsg("/node/reload");
     }
 
     *set {

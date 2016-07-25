@@ -488,6 +488,10 @@ NodeJS_Image : NodeJS_Widget {
         NodeJS.css("body", "background-color", "transparent");
         NodeJS.css("h1",   "background-color", "transparent");
     }
+
+    clearBackground {
+        NodeJS.css("html", "background", "#60646D");
+    }
 }
 
 
