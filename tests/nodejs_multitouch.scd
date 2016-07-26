@@ -30,3 +30,6 @@ m.onTouch4 = { |x,y|
 NodeJS.verbose(false)
 
 m.add
+
+g = NodeJS_MultitouchGrid.new;
+g.add

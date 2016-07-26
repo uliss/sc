@@ -227,7 +227,7 @@ NodeJS_Multitouch : NodeJS_Widget {
     var <>onTouch4;
 
     *new {
-        arg size = 500, label = "", params = [];
+        arg size = 400, label = "", params = [];
         var p = super.new("multitouch", [
             \size, size,
             \label, label] ++ params);
@@ -251,6 +251,19 @@ NodeJS_Multitouch : NodeJS_Widget {
             if(t3.notNil && onTouch3.notNil) { onTouch3.value(t3["x"], t3["y"]) };
             if(t4.notNil && onTouch4.notNil) { onTouch4.value(t4["x"], t4["y"]) };
         };
+    }
+}
+
+NodeJS_MultitouchGrid : NodeJS_Multitouch {
+    *new {
+        arg size = 400, rows = 10, cols = 10, labels = (1..10), params = [];
+        var p = super.new(size, params: [
+            \size, size,
+            \mode, "matrix",
+            \rows, rows,
+            \cols, cols,
+            \matrixLabels, labels] ++ params);
+        ^p;
     }
 }
 
