@@ -126,6 +126,62 @@ NodeJS_Widget {
     }
 }
 
+NodeJS_ValueWidget : NodeJS_Widget {
+    var <>onValue;
+
+    *new {
+        arg type, value = 0.0, min = 0.0, max = 1.0, size = 100, label = "", params = [];
+        ^super.new(type, [
+            \size, size,
+            \label, label,
+            \min, min,
+            \max, max,
+            \value, value
+        ] ++ params).initValue;
+    }
+
+    initValue {
+        widgetAction = { |e|
+            params[\value] = e[1].asFloat;
+            if(onValue.notNil) {
+                onValue.value(params[\value]);
+            }
+        }
+    }
+}
+
+NodeJS_Number : NodeJS_ValueWidget {
+    *new {
+        arg value = 0.0, min = 0, max = 1000, size = 120, step = 1, sensivity = 0.25, digits = 2, label = "", params = [];
+        ^super.new("number", value, min, max, size, label, [
+            \step, step,
+            \rate, sensivity,
+            \digits, digits
+        ] ++ params);
+    }
+}
+
+NodeJS_NumberFreq : NodeJS_Number {
+    *new {
+        arg freq = 1000, min = 20, max = 20000, size = 120, label = "freq";
+        ^super.new(freq, min, max, size, 1, 2, 0, label);
+    }
+}
+
+NodeJS_NumberAmp : NodeJS_Number {
+    *new {
+        arg amp = 0, min = 0, max = 1, size = 120, label = "amp";
+        ^super.new(amp, min, max, size, 0.01, 0.15, 2, label);
+    }
+}
+
+NodeJS_NumberMidi : NodeJS_Number {
+    *new {
+        arg note = 60, min = 36, max = 108, size = 120, label = "note";
+        ^super.new(note, min, max, size, 1, 0.2, 0, label);
+    }
+}
+
 NodeJS_Knob : NodeJS_Widget {
     *new {
         arg value = 0.0, min = 0.0, max = 1.0, size = 100, label = "", params = [];
