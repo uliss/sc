@@ -567,6 +567,7 @@ NodeJS_Image : NodeJS_Widget {
     initImage {
         arg url_;
         url = url_;
+        params[\url] = NodeJS.imageDirPrefix +/+ url;
     }
 
     // uploads to Node image directory
@@ -622,6 +623,25 @@ NodeJS_Image : NodeJS_Widget {
 
     clearBackground {
         NodeJS.css("html", "background", "#60646D");
+    }
+}
+
+NodeJS_SoundImage : NodeJS_Image {
+    var snd_path;
+
+    *new {
+        arg path;
+        ^super.new.initSoundImage(path);
+    }
+
+    initSoundImage {
+        arg path;
+        var image_path = "/tmp/%_tmp.png".format(this.class);
+        this.initImage("snd_" ++ PathName(path).fileNameWithoutExtension ++ ".png");
+        snd_path = path;
+
+        SP_Wav2Png.new(path, image_path).convert;
+        this.upload(image_path);
     }
 }
 
