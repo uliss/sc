@@ -216,7 +216,42 @@ NodeJS_Matrix : NodeJS_Widget {
             \label, label] ++ params);
         ^p;
     }
+}
 
+NodeJS_Multitouch : NodeJS_Widget {
+    var <event;
+    var <>onTouch0;
+    var <>onTouch1;
+    var <>onTouch2;
+    var <>onTouch3;
+    var <>onTouch4;
+
+    *new {
+        arg size = 500, label = "", params = [];
+        var p = super.new("multitouch", [
+            \size, size,
+            \label, label] ++ params);
+        p.initMultitouch;
+        ^p;
+    }
+
+    initMultitouch {
+        widgetAction = { |e|
+            var t0, t1, t2, t3, t4;
+            event = e[1].asString.parseYAML;
+            t0 = event["touch0"];
+            t1 = event["touch1"];
+            t2 = event["touch2"];
+            t3 = event["touch3"];
+            t4 = event["touch4"];
+
+            if(t0.notNil && onTouch0.notNil) { onTouch0.value(t0["x"], t0["y"]) };
+            if(t1.notNil && onTouch1.notNil) { onTouch1.value(t1["x"], t1["y"]) };
+            if(t2.notNil && onTouch2.notNil) { onTouch2.value(t2["x"], t2["y"]) };
+            if(t3.notNil && onTouch3.notNil) { onTouch3.value(t3["x"], t3["y"]) };
+            if(t4.notNil && onTouch4.notNil) { onTouch4.value(t4["x"], t4["y"]) };
+        };
+    }
 }
 
 NodeJS_Playcontrol : NodeJS_Widget {
