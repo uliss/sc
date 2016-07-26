@@ -6,12 +6,15 @@ NodeJS {
     classvar <serverRootDir = "/Users/serj/work/music/nodejs/supercollider_ui";
     classvar <imageDirPrefix = "/img";
     classvar <thumbDirPrefix = "/img/thumb";
+    classvar <soundDirPrefix = "/sound";
 
     *inOscPort { ^5000 }
     *httpPort { ^3000 }
     *lockPath { ^"/var/tmp/sc-node.lock" }
-    *imageDir { ^serverRootDir +/+ "build" +/+ imageDirPrefix }
-    *thumbDir { ^serverRootDir +/+ "build" +/+ thumbDirPrefix }
+    *htmlRootDir { ^serverRootDir +/+ "build" }
+    *imageDir { ^NodeJS.htmlRootDir +/+ imageDirPrefix }
+    *thumbDir { ^NodeJS.htmlRootDir +/+ thumbDirPrefix }
+    *soundDir { ^NodeJS.htmlRootDir +/+ soundDirPrefix }
 
     *start {
         var dir, res, pid, cmd, node;

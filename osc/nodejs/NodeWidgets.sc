@@ -126,6 +126,44 @@ NodeJS_Widget {
     }
 }
 
+NodeJS_SuperCollider : NodeJS_Widget {
+    var server;
+
+    *new {
+        arg server = Server.default;
+        ^super.new("sc_button").initSC(server);
+    }
+
+    id {
+        ^"sc_button";
+    }
+
+    initSC {
+        arg s;
+        server = s;
+
+        params[\idx] = "sc_button";
+        widgetAction = { |e|
+            if(e[1].asInt == 1) {
+                if(server.serverRunning.not) {
+                    server.boot;
+                };
+                this.command(\state, 1);
+            }
+            {
+                if(server.serverRunning) {
+                    server.quit;
+                };
+                this.command(\state, 0);
+            };
+        };
+
+        if(server.serverRunning) {
+            this.command(\state, 1);
+        }
+    }
+}
+
 NodeJS_ValueWidget : NodeJS_Widget {
     var <>onValue;
 
@@ -182,62 +220,49 @@ NodeJS_NumberMidi : NodeJS_Number {
     }
 }
 
-NodeJS_Knob : NodeJS_Widget {
+NodeJS_Knob : NodeJS_ValueWidget {
     *new {
         arg value = 0.0, min = 0.0, max = 1.0, size = 100, label = "", params = [];
-        ^super.new("knob", [
-            \size, size,
-            \label, label,
-            \min, min,
-            \max, max,
-            \value, value
-        ] ++ params);
+        ^super.new("knob", value, min, max, size, label, params);
     }
 }
 
-NodeJS_Pan : NodeJS_Widget {
+NodeJS_Pan : NodeJS_ValueWidget {
     *new {
         arg value = 0, size = 50, params = [];
-        var p = super.new("pan", [
-            \size, size,
-            \value, value
-        ] ++ params);
+        var p = super.new("pan", value, size: size, params: params);
         p.label = p.id;
         ^p;
     }
 }
 
-NodeJS_Slider : NodeJS_Widget {
+NodeJS_Slider : NodeJS_ValueWidget {
     *new {
         arg value = 0.0, min = 0.0, max = 1.0, size = 180, label = "", horizontal = 0, relative = 0, params = [];
-        var p = super.new("slider", [
+        var p = super.new("slider", value, min, max, size, label, [
             \horizontal, horizontal,
-            \min, min,
-            \max, max,
-            \value, value,
-            \size, size,
-            \label, label,
             \relative, relative] ++ params);
         ^p;
     }
 }
 
-NodeJS_Toggle : NodeJS_Widget {
+NodeJS_Toggle : NodeJS_ValueWidget {
     *new {
         arg value = 0, size = 100, label = "", params = [];
-        var p = super.new("toggle", [
-            \value, value,
-            \label, label,
-            \size, size] ++ params);
-        ^p;
+        ^super.new("toggle", value, size: size, label: label, params: params);
     }
 }
 
 NodeJS_Button : NodeJS_Widget {
+    var <>onClick;
+
     *new {
         arg size = 100, label = "", params = [];
-        var p = super.new("button", [\size, size, \label, label] ++ params);
-        ^p;
+        ^super.new("button", [\size, size, \label, label] ++ params).initButton;
+    }
+
+    initButton {
+        widgetAction = { if(onClick.notNil) { onClick.value } };
     }
 }
 
