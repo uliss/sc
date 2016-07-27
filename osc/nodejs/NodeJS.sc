@@ -7,6 +7,7 @@ NodeJS {
     classvar <imageDirPrefix = "/img";
     classvar <thumbDirPrefix = "/img/thumb";
     classvar <soundDirPrefix = "/sound";
+    classvar serverControl;
 
     *inOscPort { ^5000 }
     *httpPort { ^3000 }
@@ -17,7 +18,7 @@ NodeJS {
     *soundDir { ^NodeJS.htmlRootDir +/+ soundDirPrefix }
 
     *start {
-        var dir, res, pid, cmd, node;
+        var dir, res, pid, cmd, node, withScControl = true;
         node = "/usr/local/bin/node";
         // check lock file
         res = ("lockfile -r 0" + NodeJS.lockPath).systemCmd;
@@ -35,6 +36,20 @@ NodeJS {
         cmd = "% %/index.js &".format(node, dir);
         cmd.unixCmd;
         connected = true;
+
+        if(serverControl.isNil && withScControl == true) {
+            var send = {|k, v| NodeJS.sendMsg("/node/supercollider", k, v) };
+            serverControl = SP_SupercolliderControl.new(NodeJS.outOscPort);
+            serverControl.init(Server.default);
+            serverControl.onBoot = { send.value("boot", 1) };
+            serverControl.onQuit = { send.value("quit", 1) };
+            serverControl.onMute = { |v| send.value("mute", v) };
+            serverControl.onVolume = { |v| send.value("volume", v) };
+            serverControl.onRecord = { |path| send.value("record", path) };
+            serverControl.onRecordStop = { |path| send.value("recordStop", path) };
+            "[NodeJS] starting server control".postln;
+        };
+
         ^true;
     }
 
@@ -42,6 +57,10 @@ NodeJS {
         ("rm -f >/dev/null 2>&1" + NodeJS.lockPath).unixCmd(nil, false);
         "killall node index.js >/dev/null 2>&1".unixCmd(nil, false);
         connected = false;
+        if(serverControl.notNil) {
+            serverControl.stop;
+        };
+        serverControl = nil;
         ^true;
     }
 

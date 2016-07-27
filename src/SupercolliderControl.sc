@@ -11,15 +11,15 @@ SP_SupercolliderControl {
     var <lastRecPath;
 
     *new {
-        arg server = Server.default;
+        arg oscPort, server = Server.default;
         if(instance.isNil) {
-            instance = super.new.init(server);
+            instance = super.new.init(server, oscPort);
         };
         ^instance;
     }
 
     init {
-        arg s;
+        arg s, port;
         server = s;
 
         if(osc.isNil) {
@@ -54,7 +54,7 @@ SP_SupercolliderControl {
                         }
                     );
                 }.defer;
-            }, "/sc/control");
+            }, "/sc/control", nil, port);
             osc.permanent = true;
         };
 
