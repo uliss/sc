@@ -133,6 +133,21 @@ NodeJS {
         if(v) {on = 1};
         NodeJS.sendMsg("/node/set", "verbose", on);
     }
+
+    *modalOk {
+        arg msg, title = "Success";
+        NodeJS.sendMsg("/node/alert", "ok", title, msg);
+    }
+
+    *modalError {
+        arg msg, title = "Error";
+        NodeJS.sendMsg("/node/alert", "error", title, msg);
+    }
+
+    *modalInfo {
+        arg msg, title = "Information";
+        NodeJS.sendMsg("/node/alert", "info", title, msg);
+    }
 }
 
 NodeJS_Label {
