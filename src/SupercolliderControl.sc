@@ -90,15 +90,12 @@ SP_SupercolliderControl {
 
     mute {
         arg value = true;
-        if(server.serverRunning == true) {
-            if(value) { server.mute } { server.unmute };
-            // callback
-            if(onMute.notNil) { onMute.value(value) };
-            //
-            "[%] mute = %".format(this.class, value).postln;
-        } {
-            "[%] server is not running".format(this.class).warn;
-        }
+
+        if(value) { server.mute } { server.unmute };
+        // callback
+        if(onMute.notNil) { onMute.value(value) };
+        //
+        "[%] mute = %".format(this.class, value).postln;
     }
 
     volume_ {

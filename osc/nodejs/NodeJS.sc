@@ -8,6 +8,7 @@ NodeJS {
     classvar <thumbDirPrefix = "/img/thumb";
     classvar <soundDirPrefix = "/sound";
     classvar serverControl;
+    classvar rehearsalUtils;
 
     *inOscPort { ^5000 }
     *httpPort { ^3000 }
@@ -47,8 +48,12 @@ NodeJS {
             serverControl.onVolume = { |v| send.value("volume", v) };
             serverControl.onRecord = { |path| send.value("record", path) };
             serverControl.onRecordStop = { |path| send.value("recordStop", path) };
+            ServerBoot.add({send.value("boot", 1)}, \default);
+            ServerQuit.add({send.value("quit", 1)}, \default);
             "[NodeJS] starting server control".postln;
         };
+
+        if(rehearsalUtils.isNil) { rehearsalUtils = SP_RehearsalUtils.new };
 
         ^true;
     }
@@ -61,6 +66,8 @@ NodeJS {
             serverControl.stop;
         };
         serverControl = nil;
+        rehearsalUtils.stop();
+        rehearsalUtils = nil;
         ^true;
     }
 
@@ -87,6 +94,11 @@ NodeJS {
             ^true
         }
         { "NodeJS is not running".error; ^false; };
+    }
+
+    *send2Cli {
+        arg addr ... args;
+        NodeJS.sendMsg("/node/forward", addr, *args);
     }
 
     *css {
@@ -247,56 +259,5 @@ NodeJS_Metronome {
 
     *numBeats { |n|
         NodeJS.sendMsg(NodeJS_Metronome.path ++ "/numBeats", n);
-    }
-}
-
-NodeJS_Tone {
-    *new {
-        ^super.new.init;
-    }
-
-    init {
-        var s1, s2, s3, s4;
-
-        NodeJS.redirect("/vlabel");
-        SynthDef(\NodeJS_Tone, {
-            arg freq, amp = 1;
-            Out.ar([0,1], SinOsc.ar(freq, 0, amp) * EnvGate.new);
-        }).send;
-
-
-        {
-            var w_a415, w_a430, w_a440, w_a442;
-            NodeJS_Label.set("tone");
-            w_a415 = NodeJS.addWidget(\button, [\x, "100px", \y, "100px", \label, "415hz", \style, "success", \act, "toggle"]);
-            w_a430 = NodeJS.addWidget(\button, [\x, "200px", \y, "100px", \label, "430hz", \style, "success", \act, "toggle"]);
-            w_a440 = NodeJS.addWidget(\button, [\x, "300px", \y, "100px", \label, "440hz", \style, "success", \act, "toggle"]);
-            w_a442 = NodeJS.addWidget(\button, [\x, "400px", \y, "100px", \label, "442hz", \style, "success", \act, "toggle"]);
-
-
-            w_a415.action = {|m| if(m["on"] == "true") {
-                s1 = Synth(\NodeJS_Tone, [\freq, 415]);
-            } {
-                s1.release;
-            }};
-
-            w_a430.action = {|m| if(m["on"] == "true") {
-                s2 = Synth(\NodeJS_Tone, [\freq, 430]);
-            } {
-                s2.release;
-            }};
-
-            w_a440.action = {|m| if(m["on"] == "true") {
-                s3 = Synth(\NodeJS_Tone, [\freq, 440]);
-            } {
-                s3.release;
-            }};
-
-            w_a442.action = {|m| if(m["on"] == "true") {
-                s4 = Synth(\NodeJS_Tone, [\freq, 442]);
-            } {
-                s4.release;
-            }};
-        }.defer(5);
     }
 }
