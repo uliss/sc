@@ -2,13 +2,12 @@ SP_SupercolliderControl {
     classvar instance;
     var osc;
     var server;
-    var <>onBoot;
-    var <>onQuit;
     var <>onVolume;
     var <>onMute;
     var <>onRecord;
-    var <>onRecordStop;
+    var <>onStateRequest;
     var <lastRecPath;
+    var record_state;
 
     *new {
         arg oscPort, server = Server.default;
@@ -21,6 +20,7 @@ SP_SupercolliderControl {
     init {
         arg s, port;
         server = s;
+        record_state = false;
 
         if(osc.isNil) {
             osc = OSCFunc({|m|
@@ -28,26 +28,22 @@ SP_SupercolliderControl {
                     var cmd = m[1].asString;
                     switch(cmd,
                         "boot", {
-                            this.boot
+                            if(m[2] == 1) { this.boot } { this.quit };
                         },
-                        "quit", {
-                            this.quit
-                        },
-                        "reboot", {
-                            this.reboot
-                        },
-                        "setVolume", {
+                        "volume", {
                             this.volume_(m[2]);
+                        },
+                        "state?", {
+                            if(onStateRequest.notNil) {
+                                onStateRequest.value(this.state);
+                            };
                         },
                         "mute", {
                             var value = m[2] ? true;
                             this.mute(value.asBoolean);
                         },
                         "record", {
-                            this.record
-                        },
-                        "stopRecord", {
-                            this.stopRecord
+                            if(m[2] == 1) { this.record } { this.stopRecord };
                         },
                         {
                             "[%] unknown command: %".format(this.class, m[1..]).error;
@@ -61,28 +57,26 @@ SP_SupercolliderControl {
         ^this;
     }
 
+    state {
+        ^(
+            \boot: server.serverRunning,
+            \mute: server.volume.isMuted,
+            \volume: server.volume.volume,
+            \record: record_state
+        );
+    }
+
     boot {
-        if(server.serverRunning.not)
-        {
+        if(server.serverRunning.not) {
             server.boot;
-            if(onBoot.notNil) { onBoot.value }
         } {
             "[%] server already running".format(this.class).warn;
         }
     }
 
-    reboot {
-        if(server.serverRunning) {
-            server.reboot;
-            if(onQuit.notNil) { onQuit.value };
-            if(onBoot.notNil) { onBoot.value }
-        };
-    }
-
     quit {
         if(server.serverRunning) {
             server.quit;
-            if(onQuit.notNil) { onQuit.value }
         } {
             "[%] server is not running".format(this.class).warn;
         }
@@ -141,15 +135,17 @@ SP_SupercolliderControl {
             server.prepareForRecord(path);
             server.sync;
             server.record;
+            record_state = true;
 
-            if(onRecord.notNil) { onRecord.value(path) };
+            if(onRecord.notNil) { onRecord.value(1, path) };
             lastRecPath = path;
         });
     }
 
     stopRecord {
         server.stopRecording;
-        if(onRecordStop.notNil) { onRecordStop.value(lastRecPath) };
+        record_state = false;
+        if(onRecord.notNil) { onRecord.value(0, lastRecPath) };
     }
 
     stop {

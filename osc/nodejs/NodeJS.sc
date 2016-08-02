@@ -39,17 +39,20 @@ NodeJS {
         connected = true;
 
         if(serverControl.isNil && withScControl == true) {
-            var send = {|k, v| NodeJS.sendMsg("/node/supercollider", k, v) };
+            var sendState;
             serverControl = SP_SupercolliderControl.new(NodeJS.outOscPort);
             serverControl.init(Server.default);
-            serverControl.onBoot = { send.value("boot", 1) };
-            serverControl.onQuit = { send.value("quit", 1) };
-            serverControl.onMute = { |v| send.value("mute", v) };
-            serverControl.onVolume = { |v| send.value("volume", v) };
-            serverControl.onRecord = { |path| send.value("record", path) };
-            serverControl.onRecordStop = { |path| send.value("recordStop", path) };
-            ServerBoot.add({send.value("boot", 1)}, \default);
-            ServerQuit.add({send.value("quit", 1)}, \default);
+
+            sendState = {
+                NodeJS.sendMsg("/node/supercollider", "state", JSON.convert(serverControl.state));
+            };
+
+            serverControl.onMute = sendState;
+            serverControl.onVolume = sendState;
+            serverControl.onRecord = sendState;
+            serverControl.onStateRequest = sendState;
+            ServerBoot.add(sendState, \default);
+            ServerQuit.add(sendState, \default);
             "[NodeJS] starting server control".postln;
         };
 
@@ -166,6 +169,7 @@ NodeJS_Label {
     classvar currentTime;
     classvar timerRoutine;
     classvar blinkMap;
+    classvar text;
 
     *path { ^"/sc/vlabel" }
 
@@ -224,7 +228,7 @@ NodeJS_Label {
     *blink {
         arg ms = 100, color = "#FF0000";
         NodeJS_Label.backgroundColor(color);
-        {NodeJS_Label.backgroundColor}.defer(ms / 1000);
+        {NodeJS_Label.backgroundColor("transparent")}.defer(ms / 1000);
     }
 
     *open {

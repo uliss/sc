@@ -1,5 +1,6 @@
 SP_RehearsalUtils {
     var tone_gen;
+    var latency_test;
 
     *new {
         ^super.new.init;
@@ -7,10 +8,12 @@ SP_RehearsalUtils {
 
     init {
         tone_gen = NodeUtility_SinOsc.new;
+        latency_test = NodeUtility_LatencyTest.new;
     }
 
     stop {
         tone_gen.unbindOsc;
+        latency_test.unbindOsc;
     }
 }
 
@@ -42,7 +45,7 @@ NodeUtility {
             osc = OSCFunc({
                 arg msg;
                 this.processOsc(msg);
-            }, oscPath);
+            }, oscPath, nil, NodeJS.outOscPort);
             osc.permanent = true;
             this.addDependant(osc);
         } { |err|
