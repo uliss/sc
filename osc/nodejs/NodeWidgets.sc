@@ -277,12 +277,10 @@ NodeJS_Pianoroll : NodeJS_Widget {
     }
 }
 
-NodeJS_XFade : NodeJS_Widget {
+NodeJS_XFade : NodeJS_ValueWidget {
     *new {
-        arg size = 200, label = "", params = [];
-        var p = super.new("crossfade", [
-            \size, size,
-            \label, label] ++ params);
+        arg value = 0, min = -1.0, max = 1.0, size = 200, label = "", params = [];
+        var p = super.new("crossfade", value, min, max, size, label, params);
         ^p;
     }
 }

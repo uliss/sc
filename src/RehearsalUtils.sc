@@ -116,7 +116,7 @@ NodeUtility_Synth : NodeUtility {
             "play", { this.play(*msg[2..]) },
             "stop", { this.stop(*msg[2..]) },
             "set",  { this.set(*msg[2..]) },
-            { "[%] unknown message foramt: %".format(this.class, msg).postln }
+            { "[%] unknown message format: %".format(this.class, msg).postln }
         )
     }
 
