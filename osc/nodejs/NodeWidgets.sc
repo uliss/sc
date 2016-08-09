@@ -297,6 +297,35 @@ NodeJS_Matrix : NodeJS_Widget {
     }
 }
 
+NodeJS_Touchpad : NodeJS_Widget {
+    var <x;
+    var <y;
+    var <>onMove;
+    var <>onClick;
+    var <>onRelease;
+
+    *new {
+        arg size = 200, label = "", params = [];
+        var p = super.new("position", [
+            \size, size,
+            \label, label] ++ params);
+        p.initTouchPad;
+        ^p;
+    }
+
+    initTouchPad {
+        widgetAction = {|msg|
+            var state = msg[3].asString;
+            x = msg[1].asFloat;
+            y = msg[2].asFloat;
+
+            if(state == "click" && onClick.notNil) { onClick.value(x, y) };
+            if(state == "move" && onMove.notNil) { onMove.value(x, y) };
+            if(state == "release" && onRelease.notNil) { onRelease.value(x, y) };
+        };
+    }
+}
+
 NodeJS_Multitouch : NodeJS_Widget {
     var <event;
     var <>onTouch0;
