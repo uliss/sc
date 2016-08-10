@@ -307,14 +307,53 @@ NodeJS_XFade : NodeJS_ValueWidget {
 }
 
 NodeJS_Matrix : NodeJS_Widget {
+    var <row, <col;
+    var <matrix;
+    var <>onCell;
+
     *new {
         arg size = 200, row = 4, col = 4, label = "", params = [];
         var p = super.new("matrix", [
             \size, size,
             \row, row,
             \col, col,
-            \label, label] ++ params);
+            \label, label] ++ params).initMatrix(row, col);
         ^p;
+    }
+
+    initMatrix {
+        arg r = 4, c = 4;
+        row = r;
+        col = c;
+        matrix = Array.fill2D(row, col, 0);
+        params[\matrix] = matrix;
+
+        widgetAction = {
+            arg msg;
+            var row = msg[1].asInteger;
+            var col = msg[2].asInteger;
+            var state = msg[3].asInteger;
+            if(onCell.notNil) {
+                onCell.value(row, col, state);
+            };
+
+            matrix[row][col] = state;
+            params[\matrix] = matrix;
+        };
+    }
+
+    setCell {
+        arg row, col, state = 1;
+        matrix[row][col] = state;
+        params[\matrix] = matrix;
+        if(added) { this.update };
+    }
+
+    fill {
+        arg v = 1;
+        matrix = Array.fill2D(row, col, v);
+        params[\matrix] = matrix;
+        if(added) { this.update };
     }
 }
 
