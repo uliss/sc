@@ -188,6 +188,33 @@ NodeJS_ValueWidget : NodeJS_Widget {
     }
 }
 
+NodeJS_RotationSensor : NodeJS_Widget {
+    var <x, <y, <z;
+    var <>onX, <>onY, <>onZ, <>onRotate;
+
+     *new {
+        arg size = 100, label = "", params = [];
+        ^super.new("tilt", [
+            \size, size,
+            \label, label,
+        ] ++ params).initRotationSensor;
+    }
+
+    initRotationSensor {
+        widgetAction = {
+            arg msg;
+            x = msg[1].asFloat;
+            y = msg[2].asFloat;
+            z = msg[3].asFloat;
+
+            if(onX.notNil) { onX.value(x); };
+            if(onY.notNil) { onY.value(y); };
+            if(onZ.notNil) { onZ.value(z); };
+            if(onRotate.notNil) { onRotate.value(x, y, z); };
+        };
+    }
+}
+
 NodeJS_Number : NodeJS_ValueWidget {
     *new {
         arg value = 0.0, min = 0, max = 1000, size = 120, step = 1, sensivity = 0.25, digits = 2, label = "", params = [];
