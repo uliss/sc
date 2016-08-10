@@ -267,19 +267,40 @@ NodeJS_Button : NodeJS_Widget {
 }
 
 NodeJS_Pianoroll : NodeJS_Widget {
+    var <>onNote;
+
     *new {
         arg size = 600, octaves = 3, midibase = 48, params = [];
         var p = super.new("pianoroll", [
             \size, size,
             \octaves, octaves,
-            \midibase, midibase] ++ params);
+            \midibase, midibase] ++ params).initPianoroll;
         ^p;
+    }
+
+    initPianoroll {
+        widgetAction = { |msg|
+            if(onNote.notNil) {
+                onNote.value(msg[1].asInteger, msg[2].asInteger);
+            }
+        };
+    }
+
+    testSetup {
+        onNote = {
+            arg note, state;
+            if(state != 0) {
+                (\instrument: \default, \type: \on, \midinote: note).play;
+            } {
+                (\instrument: \default, \type: \off, \midinote: note).play;
+            };
+        };
     }
 }
 
 NodeJS_XFade : NodeJS_ValueWidget {
     *new {
-        arg value = 0, min = -1.0, max = 1.0, size = 200, label = "", params = [];
+        arg value = 0.0, min = -1.0, max = 1.0, size = 200, label = "", params = [];
         var p = super.new("crossfade", value, min, max, size, label, params);
         ^p;
     }
