@@ -131,6 +131,14 @@ NodeJS_Widget {
             if(auto_add.notNil) { auto_add.stop }
         }
     }
+
+    startDemo {
+        "[%] startDemo not implemented".format(this.class).warn;
+    }
+
+    stopDemo {
+        "[%] stopDemo not implemented".format(this.class).warn;
+    }
 }
 
 NodeJS_SuperCollider : NodeJS_Widget {
@@ -316,6 +324,8 @@ NodeJS_Toggle : NodeJS_ValueWidget {
 
 NodeJS_Button : NodeJS_Widget {
     var <>onClick;
+    var <>onPress;
+    var <>onRelease;
 
     *new {
         arg size = 100, label = "", params = [];
@@ -323,7 +333,28 @@ NodeJS_Button : NodeJS_Widget {
     }
 
     initButton {
-        widgetAction = { if(onClick.notNil) { onClick.value } };
+        widgetAction = { |msg|
+            var state = msg[1].asInteger;
+
+            if(onClick.notNil) { onClick.value(state) };
+            if(state == 1 && onPress.notNil) { onPress.value };
+            if(state == 0 && onRelease.notNil) { onRelease.value };
+        };
+    }
+
+    startDemo {
+        SynthDef(\NodeJS_Button_demo, {
+            var snd = LPF.ar(Impulse.ar(0), 1000) ! 2;
+            Out.ar(0, snd * EnvGate.new(fadeTime: 0));
+        }).send;
+
+        onPress = {
+            (\instrument: \NodeJS_Button_demo, \note: 1, \sustain: 0.1).play;
+        };
+    }
+
+    stopDemo {
+        onPress = nil;
     }
 }
 
