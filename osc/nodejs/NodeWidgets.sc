@@ -358,6 +358,72 @@ NodeJS_Button : NodeJS_Widget {
     }
 }
 
+NodeJS_TouchButton : NodeJS_Widget {
+    var <x, <y;
+    var <>onClick;
+    var <>onPress;
+    var <>onRelease;
+    var <>onTouch;
+    var demo_synth;
+
+    *new {
+        arg size = 100, label = "", params = [];
+        ^super.new("touchbutton", [\size, size, \label, label] ++ params).initTouchButton;
+    }
+
+    initTouchButton {
+        widgetAction = { |msg|
+            var data_type = msg[1].asString;
+
+            if(data_type == "pos") {
+                x = msg[2].asFloat;
+                y = msg[3].asFloat;
+
+                if(onTouch.notNil) { onTouch.value(x, y) };
+            };
+
+            if(data_type == "press") {
+                var state = msg[2].asInteger;
+                if(onClick.notNil) { onClick.value(state) };
+                if(state == 1 && onPress.notNil) { onPress.value };
+                if(state == 0 && onRelease.notNil) { onRelease.value };
+            };
+        };
+    }
+
+    startDemo {
+        {
+            var name = \NodeJS_TouchButton_demo;
+            SynthDef(name, {
+                var snd = Pulse.ar(Vibrato.kr(440, \rate.kr(6, 0.1), \depth.kr(0.02, 0.1)));
+                Out.ar(0, snd * EnvGate.new(fadeTime: 0.5));
+            }).send;
+
+            Server.default.sync;
+
+            onPress = {
+                demo_synth = Synth(name);
+            };
+
+            onRelease = {
+                demo_synth.release;
+            };
+
+            onTouch = { |x, y|
+                var rate = x.clip(0, 1).linlin(0, 1, 1, 20);
+                var depth = y.clip(0, 1).linlin(0, 1, 0.001, 0.1);
+                demo_synth.set(\rate, rate);
+                demo_synth.set(\depth, depth);
+            };
+        }.fork;
+    }
+
+    stopDemo {
+        onPress = nil;
+        onTouch = nil;
+    }
+}
+
 NodeJS_Pianoroll : NodeJS_Widget {
     var <>onNote;
 
