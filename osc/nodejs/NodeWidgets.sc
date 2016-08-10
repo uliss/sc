@@ -20,6 +20,7 @@ NodeJS_Widget {
 
     init {
         arg t, p = [];
+
         type = t;
         idx = idx_count;
         added = false;
@@ -31,15 +32,21 @@ NodeJS_Widget {
         params[\oscPath] = "/ui";
 
         idx_count = idx_count + 1;
-        osc = OSCFunc({|m|
-            params[\value] = m[1];
-            if(action.notNil) {
-                action.value(m);
-            };
-            if(widgetAction.notNil) {
-                widgetAction.value(m);
-            }
-        }, "/sc/ui/" ++ this.id, nil, NodeJS.outOscPort);
+
+        try {
+            osc = OSCFunc({|m|
+                params[\value] = m[1];
+                if(action.notNil) {
+                    action.value(m);
+                };
+                if(widgetAction.notNil) {
+                    widgetAction.value(m);
+                }
+            }, "/sc/ui/" ++ this.id, nil, NodeJS.outOscPort);
+        } { |error|
+            error.what.error;
+            "Seems that you should restart NodeJS: NodeJS.restart;".error;
+        };
     }
 
     colors_ {
@@ -192,7 +199,7 @@ NodeJS_RotationSensor : NodeJS_Widget {
     var <x, <y, <z;
     var <>onX, <>onY, <>onZ, <>onRotate;
 
-     *new {
+    *new {
         arg size = 100, label = "", params = [];
         ^super.new("tilt", [
             \size, size,
@@ -201,6 +208,33 @@ NodeJS_RotationSensor : NodeJS_Widget {
     }
 
     initRotationSensor {
+        widgetAction = {
+            arg msg;
+            x = msg[1].asFloat;
+            y = msg[2].asFloat;
+            z = msg[3].asFloat;
+
+            if(onX.notNil) { onX.value(x); };
+            if(onY.notNil) { onY.value(y); };
+            if(onZ.notNil) { onZ.value(z); };
+            if(onRotate.notNil) { onRotate.value(x, y, z); };
+        };
+    }
+}
+
+NodeJS_MotionSensor : NodeJS_Widget {
+    var <x, <y, <z;
+    var <>onX, <>onY, <>onZ, <>onRotate;
+
+    *new {
+        arg size = 100, label = "", params = [];
+        ^super.new("motion", [
+            \size, size,
+            \label, label,
+        ] ++ params).initMotionSensor;
+    }
+
+    initMotionSensor {
         widgetAction = {
             arg msg;
             x = msg[1].asFloat;
