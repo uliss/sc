@@ -5,6 +5,7 @@ NodeJS_Widget {
     var <>params;
     var <>action;
     var <>widgetAction;
+    var onRemove;
     var added;
     var osc;
     var auto_add;
@@ -62,6 +63,7 @@ NodeJS_Widget {
     remove {
         added = false;
         this.sendMsg("/widget/remove", this.id);
+        if(onRemove.notNil) { onRemove.value };
     }
 
     update {
@@ -614,11 +616,11 @@ NodeJS_Playcontrol : NodeJS_Widget {
     var play_event;
 
     *new {
-        arg back = true, forward = true, display = true, syncTime = 10, params = [];
+        arg showBack = true, showForward = true, showDisplay = true, syncTime = 10, params = [];
         var p = super.new("playcontrol", [
-            \back, back,
-            \forward, forward,
-            \display, display
+            \back, showBack,
+            \forward, showForward,
+            \display, showDisplay
         ] ++ params);
         ^p.initPlaycontrol(syncTime);
     }
@@ -626,6 +628,7 @@ NodeJS_Playcontrol : NodeJS_Widget {
     initPlaycontrol {
         arg sync_time = 10;
 
+        onRemove = { this.stop };
         syncTime = sync_time;
         currentTime = 0;
         maxTime = 100000;
@@ -716,9 +719,9 @@ NodeJS_Playcontrol : NodeJS_Widget {
         if(onPrev.notNil) { onPrev.value(currentSection) };
     }
 
-    part {
-        arg txt;
-        this.command(\part, txt.asString);
+    section {
+        arg name;
+        this.command(\part, name.asString);
     }
 
     sync {
@@ -726,7 +729,7 @@ NodeJS_Playcontrol : NodeJS_Widget {
     }
 
     bindSoundfile {
-        arg path, begin = 0, end = nil, fadeIn = 0, fadeOut = 0, out = 0;
+        arg path, start = 0, end = nil, fadeIn = 0, fadeOut = 0, out = 0;
 
         if(sound_file.notNil) {sound_file.free};
         sound_file = SoundFile.new;
@@ -734,7 +737,7 @@ NodeJS_Playcontrol : NodeJS_Widget {
         cue_params = (out: out,
             ar: fadeIn,
             dr: fadeOut,
-            begin: begin * sound_file.sampleRate
+            begin: start * sound_file.sampleRate
         );
 
         if(end.notNil) {
@@ -812,13 +815,17 @@ NodeJS_Playcontrol : NodeJS_Widget {
         sections.clear;
         sectionTimes.clear;
 
-        Dictionary.newFrom(*values).keysValuesDo { |k, v|
+        Dictionary.newFrom(values).keysValuesDo { |k, v|
             sections.add(k);
             sectionTimes[k] = v;
         };
 
         currentSection = sections.first;
-        this.part(currentSection);
+        this.section(currentSection);
+    }
+
+    sections {
+        ^sectionTimes;
     }
 }
 

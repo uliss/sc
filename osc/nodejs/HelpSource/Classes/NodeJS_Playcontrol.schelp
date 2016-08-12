@@ -1,0 +1,137 @@
+TITLE:: NodeJS_Playcontrol
+summary:: player control widget
+categories:: GUI>NodeJS>Widgets
+related:: NodeJS_Widget
+
+DESCRIPTION::
+Player control widget with time indication.
+For using with NodeJS UI bridge.
+
+
+CLASSMETHODS::
+
+METHOD:: new
+Creates new instance.
+
+ARGUMENT::
+"<<" and "<" buttons visibility
+
+ARGUMENT::
+">" and ">>" buttons visibility
+
+ARGUMENT::
+show time indication
+
+ARGUMENT::
+interval between syncing server and web client time
+
+ARGUMENT::
+client js params
+
+INSTANCEMETHODS::
+
+METHOD:: play
+play start
+
+METHOD:: pause
+pause playing
+
+METHOD:: stop
+stop playing
+
+METHOD:: sync
+manually sync time between server and web client
+
+METHOD:: section
+sets indication of current section
+
+METHOD:: firstSection
+go to first section
+
+METHOD:: lastSection
+go to last section
+
+METHOD:: prevSection
+go to previous section
+
+METHOD:: nextSection
+go to next section
+
+METHOD:: onFirst
+callback on link::#-firstSection:: call.
+
+METHOD:: onLast
+callback on link::#-lastSection:: call.
+
+METHOD:: onNext
+callback on link::#-nextSection:: call.
+
+METHOD:: onPause
+callback on link::#-pause:: call.
+
+METHOD:: onPlay
+callback on link::#-play:: call.
+
+METHOD:: onPrev
+callback on link::#-prevSection:: call.
+
+METHOD:: onStop
+callback on link::#-stop:: call.
+
+METHOD:: setSections
+set section binding
+
+ARGUMENT::
+'section name' -> 'section time' pairs
+
+code::
+(
+p = NodeJS_Playcontrol.new;
+p.setSections(\A, 1, \B, 3);
+p.sections;
+)
+::
+
+METHOD:: bindSoundfile
+bind soundfile to play with this widget.
+
+ARGUMENT::
+soundfile path
+
+ARGUMENT::
+start position in seconds
+
+ARGUMENT::
+end positon in seconds. if nil, play until the end.
+
+ARGUMENT::
+fade in time in seconds
+
+ARGUMENT::
+fade out time in seconds
+
+ARGUMENT::
+output bus
+
+EXAMPLES::
+
+code::
+s.boot;
+NodeJS.restart;
+
+p = NodeJS_Playcontrol.new()
+p.add
+p.play
+p.pause
+p.stop
+p.setSections(\A, 10)
+p.part("A")
+p.remove
+
+f = Platform.resourceDir +/+ "sounds/a11wlk01.wav";
+p.bindSoundfile(f, 0, nil, 1, 1)
+p.play
+p.pause
+p.stop
+
+::
