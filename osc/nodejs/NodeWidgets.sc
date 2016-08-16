@@ -772,6 +772,7 @@ NodeJS_Playcontrol : NodeJS_Widget {
                 var pos = (currentTime * sound_file.sampleRate) + cue_params[\begin];
                 cue_params[\firstFrame] = pos;
                 play_event = sound_file.cue(cue_params, true, true);
+                play_event.synth.postln;
             };
 
             // resume
@@ -998,7 +999,7 @@ NodeJS_Slideshow : NodeJS_Widget {
 
     *new {
         arg urls = [], params = [];
-        var p = super.new("slideshow", [] ++ params);
+        var p = super.new("slideshow", params);
         ^p.initSlideshow(urls);
     }
 
@@ -1022,6 +1023,7 @@ NodeJS_Slideshow : NodeJS_Widget {
     addImages {
         arg paths, size = nil;
         seq.addImages(paths, size);
+        this.sync;
     }
 
     addUrlPattern {

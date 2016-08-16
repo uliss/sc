@@ -1,6 +1,7 @@
 SP_RehearsalUtils {
     var tone_gen;
     var latency_test;
+    var instr_manager;
 
     *new {
         ^super.new.init;
@@ -9,16 +10,18 @@ SP_RehearsalUtils {
     init {
         tone_gen = NodeUtility_SinOsc.new;
         latency_test = NodeUtility_LatencyTest.new;
+        instr_manager = NodeUtility_PlayerManager.new;
     }
 
     stop {
-        tone_gen.unbindOsc;
-        latency_test.unbindOsc;
+        tone_gen.unbindOscAll;
+        latency_test.unbindOscAll;
+        instr_manager.unbindOscAll;
     }
 }
 
 NodeUtility {
-    var osc;
+    var <osc;
     var <oscPath;
     var is_osc_unique;
 
@@ -30,7 +33,7 @@ NodeUtility {
     init {
         arg path;
         oscPath = path;
-        this.bindOsc;
+        if(path.notNil) { this.bindOsc };
     }
 
     processOsc {
@@ -128,6 +131,128 @@ NodeUtility_Synth : NodeUtility {
     stop {
         synth.free;
         synth = nil;
+    }
+}
+
+NodeUtility_Player : NodeUtility {
+    var <>instr;
+    var <>attackTime;
+    var <>releaseTime;
+    var <>player;
+    var osc;
+    var init_params;
+
+    *new {
+        arg instr, oscPath, attackTime = 0.1, releaseTime = 0.1;
+        ^super.new(oscPath).initPlayer(instr, \attackTime, attackTime, \fadeTime, releaseTime);
+    }
+
+    initPlayer {
+        arg instrument ... params;
+        var params_e = ();
+        instr = instrument;
+
+        if(params.size > 0) { params_e = Event.newFrom(params) };
+        init_params = params_e;
+    }
+
+    play {
+        arg ... args;
+        player = Patch(instr, init_params);
+        this.set(*args);
+        player.play;
+    }
+
+    stop {
+        player.stop;
+    }
+
+    release {
+        player.release(releaseTime);
+    }
+
+    set {
+        arg ... args;
+        var args_e = Event.newFrom(args);
+        // args_e.postln;
+
+        args_e.keysValuesDo { |key, value|
+            try {
+                if(player.argNames.includes(key.asSymbol)) {
+                    player.set(key, value);
+                    "set % = %".format(key, value).postln;
+                } {
+                    "[%] unknown player property: %".format(this.class, key).warn;
+                    ^this;
+                };
+            } {
+                "[%] no player".format(this.class, key).warn;
+            }
+        };
+    }
+
+    gui {
+        player.gui;
+    }
+}
+
+NodeUtility_PlayerManager : NodeUtility {
+    var players;
+
+    *new {
+        arg oscPath = "/sc/utils/instr";
+        ^super.new(oscPath).initManager;
+    }
+
+    initManager {
+        players = Dictionary.new;
+    }
+
+    processOsc {
+        arg msg;
+        var instr_name = msg[1].asString;
+        var action = msg[2].asString;
+        var player = players[instr_name];
+
+        if(player.isNil) { // add new elements
+            var instr = Instr(instr_name);
+            if(instr.isNil) {
+                "[%] invalid instrument name: %".format(this.class, instr_name).warn;
+                ^nil;
+            };
+
+            players[instr_name] = NodeUtility_Player.new(instr);
+            player = players[instr_name];
+        };
+
+        switch(action,
+            "init", {
+                var args = ();
+                if(msg[3..].size != 0) {
+                    args = Event.newFrom(msg[3..]);
+                };
+
+                player.initPlayer(args)
+            },
+            "play", { player.play(*msg[3..]) },
+            "stop", { player.stop },
+            "release", { player.release },
+            "set", {  player.set(*msg[3..]) },
+            "gui", {  player.gui },
+            { "[%] unknown message format: %".format(this.class, msg).postln }
+        )
+    }
+
+    player { |name| ^players[name] }
+
+    playerNames { ^players.keys }
+
+    stopAll {
+        players.do { |p| p.stop }
+    }
+
+    releaseAll {
+        players.do { |p| p.release }
     }
 }
 
