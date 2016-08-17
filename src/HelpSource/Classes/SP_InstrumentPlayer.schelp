@@ -1,0 +1,150 @@
+TITLE:: SP_InstrumentPlayer
+summary:: interface for Instr
+categories:: Libraries>splib
+related:: Classes/NodeJS, Classes/Instr
+
+DESCRIPTION::
+interface for link::Classes/Instr::
+
+
+CLASSMETHODS::
+
+METHOD:: new
+creates new instance
+
+ARGUMENT::
+instrument name or instance of link::Classes/Instr::
+
+ARGUMENT:: attackTime
+attack time when played
+
+ARGUMENT:: releaseTime
+release time on release
+
+returns:: this
+
+
+INSTANCEMETHODS::
+
+METHOD:: release
+release instrument with STRONG::releaseTime:: fadeout.
+
+METHOD:: attackTime
+attack time property.
+
+NOTE::set it STRONG::before:: play::
+
+code::
+n = SP_InstrumentPlayer.new("utils.tone")
+n.attackTime = 2
+n.play
+n.release
+
+n.initArgs
+n.playerGui
+::
+
+METHOD:: set
+sets instrument parameters
+
+code::
+n = SP_InstrumentPlayer.new("utils.tone")
+n.play
+n.set(\amp, 0.5, \freq, 450)
+n.set(\freq, 380)
+n.release
+::
+
+ARGUMENT::
+instrument parameters
+
+returns:: this
+
+METHOD:: instr
+instrument name
+
+METHOD:: instrumentGui
+calls link::Classes/Instr#-gui:: gui
+
+code::
+n = SP_InstrumentPlayer.new("utils.tone")
+n.instrumentGui
+::
+
+METHOD:: playerGui
+calls link::Classes/Patch#-gui:: gui
+
+code::
+n = SP_InstrumentPlayer.new("utils.tone")
+n.playerGui
+::
+
+METHOD:: play
+plays link::Classes/Instr::
+
+code::
+n = SP_InstrumentPlayer.new("utils.tone")
+n.play(\amp, 0.5, \freq, 450)
+n.release
+::
+
+ARGUMENT::
+instrument parameters.
+
+METHOD:: stop
+stops playing
+
+METHOD:: initArgs
+static arguments for instrument, that can not be changed after play start
+
+METHOD:: releaseTime
+release time property
+
+NOTE::set it STRONG::before:: play::
+
+code::
+n = SP_InstrumentPlayer.new("utils.tone")
+n.play(\amp, 0.5, \freq, 450)
+n.release
+
+n.releaseTime = 5
+n.play(\amp, 0.5, \freq, 450)
+n.release
+::
+
+METHOD:: player
+link::Classes/Patch:: player property
+
+METHOD:: outChannel
+audio output channel property
+
+code::
+n = SP_InstrumentPlayer.new("utils.tone")
+n.play
+n.stop
+
+n.outChannel = 0
+n.play
+n.stop
+
+n.outChannel = 1
+n.play
+n.stop
+
+n.outChannel = 2
+n.play
+n.stop
+::
+
+METHOD:: setInitArg
+
+code::
+n = SP_InstrumentPlayer.new("utils.tone")
+n.setInitArg(\attackTime, 5)
+n.initArgs
+
+n.play
+n.stop
+::
+
+PRIVATE:: init

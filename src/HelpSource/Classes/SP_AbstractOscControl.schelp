@@ -1,0 +1,159 @@
+TITLE:: SP_AbstractOscControl
+summary:: abstract OSC control class for NodeJS
+categories:: Libraries>splib
+related:: Classes/NodeJS
+
+DESCRIPTION::
+abstract OSC control class. You should inherit it, rather use it directly.
+
+CLASSMETHODS::
+
+METHOD:: new
+creates new instance
+
+ARGUMENT::
+osc path to listen
+
+returns:: this
+
+METHOD:: enable
+enables OSCFunc, that listens given path
+
+CODE::
+(
+n = NetAddr("localhost", NodeJS.outOscPort);
+a = SP_AbstractOscControl.new("/test/path");
+SP_AbstractOscControl.oscDict;
+)
+
+n.sendMsg("/test/path", "Hi!")
+SP_AbstractOscControl.enable("/test/path")
+SP_AbstractOscControl.disable("/test/path")
+
+SP_AbstractOscControl.freeAll
+SP_AbstractOscControl.oscDict
+::
+
+ARGUMENT::
+OSC path
+
+METHOD:: disable
+disables OSCFunc, that listens given path
+
+CODE::
+(
+n = NetAddr("localhost", NodeJS.outOscPort);
+a = SP_AbstractOscControl.new("/test/path");
+SP_AbstractOscControl.oscDict;
+)
+
+n.sendMsg("/test/path", "Hi!")
+SP_AbstractOscControl.disable("/test/path")
+
+SP_AbstractOscControl.freeAll
+SP_AbstractOscControl.oscDict
+::
+
+ARGUMENT::
+OSC path
+
+METHOD:: free
+
+CODE::
+(
+n = NetAddr("localhost", NodeJS.outOscPort);
+a = SP_AbstractOscControl.new("/test/path");
+SP_AbstractOscControl.oscDict;
+)
+
+n.sendMsg("/test/path", "Hi!")
+
+SP_AbstractOscControl.free("/test/path")
+SP_AbstractOscControl.oscDict
+::
+
+ARGUMENT::
+OSC path
+
+
+METHOD:: freeAll
+
+CODE::
+n = NetAddr("localhost", NodeJS.outOscPort);
+SP_AbstractOscControl.new("/test/path1");
+SP_AbstractOscControl.new("/test/path2");
+SP_AbstractOscControl.oscDict;
+
+SP_AbstractOscControl.freeAll
+SP_AbstractOscControl.oscDict
+::
+
+INSTANCEMETHODS::
+
+METHOD:: osc
+link::Classes/OSCFunc:: property
+
+METHOD:: processOsc
+should be redefined in child classes.
+
+ARGUMENT::
+OSC message
+
+METHOD:: oscPath
+return OSC path, that object listen
+
+
+METHOD:: enable
+enables OSC
+
+CODE::
+(
+SP_AbstractOscControl.freeAll;
+n = NetAddr("localhost", NodeJS.outOscPort);
+a = SP_AbstractOscControl.new("/test/path");
+)
+
+n.sendMsg("/test/path", "Hi!")
+a.enable
+a.disable
+a.free
+::
+
+METHOD:: disable
+disables OSC
+
+CODE::
+(
+SP_AbstractOscControl.freeAll;
+n = NetAddr("localhost", NodeJS.outOscPort);
+a = SP_AbstractOscControl.new("/test/path");
+)
+
+n.sendMsg("/test/path", "Hi!")
+a.disable
+a.enable
+a.free
+::
+
+METHOD:: free
+free OSC
+
+CODE::
+(
+SP_AbstractOscControl.freeAll;
+n = NetAddr("localhost", NodeJS.outOscPort);
+a = SP_AbstractOscControl.new("/test/path");
+)
+
+n.sendMsg("/test/path", "Hi!")
+a.free
+n.sendMsg("/test/path", "Hi!")
+::
+
+PRIVATE:: init oscDict
+
+EXAMPLES::
+
+code::
+(some example code)
+::

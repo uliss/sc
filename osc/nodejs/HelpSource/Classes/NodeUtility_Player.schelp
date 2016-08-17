@@ -1,0 +1,99 @@
+TITLE:: NodeUtility_Player
+summary:: interface for Instr
+categories:: GUI>NodeJS>Utilities
+related:: Classes/NodeJS
+
+DESCRIPTION::
+(put long description here)
+
+
+CLASSMETHODS::
+
+METHOD:: new
+(describe method here)
+
+ARGUMENT:: instr
+(describe argument here)
+
+ARGUMENT:: oscPath
+(describe argument here)
+
+ARGUMENT:: attackTime
+(describe argument here)
+
+ARGUMENT:: releaseTime
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+
+INSTANCEMETHODS::
+
+METHOD:: release
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: attackTime
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: set
+(describe method here)
+
+ARGUMENT::  ... args
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: instr
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: gui
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: play
+(describe method here)
+
+ARGUMENT::  ... args
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: stop
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: releaseTime
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: player
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: initPlayer
+(describe method here)
+
+ARGUMENT:: instrument
+(describe argument here)
+
+ARGUMENT::  ... params
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+
+EXAMPLES::
+
+code::
+(some example code)
+::
