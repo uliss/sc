@@ -28,13 +28,16 @@ SP_InstrumentControl : SP_AbstractOscControl {
         };
 
         switch(action,
-            "init", { player.initPlayer(instr_name, *msg[3..]) },
+            "init", {
+                Dictionary.newFrom(msg[3..]).keysValuesDo { |k, v|
+                    player.setInitArg(k, v);
+                }
+            },
             "play", { player.play(*msg[3..]) },
             "stop", { player.stop },
             "release", { player.release },
             "set", {  player.set(*msg[3..]) },
-            "igui", {  player.instrumentGui },
-            "pgui", {  player.playerGui },
+            "gui", {  {player.playerGui}.defer },
             { "[%] unknown message format: %".format(this.class, msg).postln }
         )
     }

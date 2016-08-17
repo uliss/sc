@@ -33,11 +33,16 @@ SP_InstrumentPlayer {
     setInitArg {
         arg key, value;
         initArgs[key] = value;
+        player.argNames.do { |v, i|
+            var a = initArgs[v];
+            if(a.notNil) {
+                player.setInput(i, a);
+            };
+        }
     }
 
     play {
         arg ... args;
-        player = Patch(instr, initArgs);
         this.set(*args);
         player.play(bus:initArgs[\outChannel]);
     }

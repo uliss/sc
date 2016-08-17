@@ -63,7 +63,7 @@ SP_AbstractOscControl {
             osc_f.disable;
             osc_f.permanent = false;
             osc_f.free;
-            oscDict[path] = nil;
+            oscDict.removeAt(path);
         }
     }
 
@@ -74,7 +74,7 @@ SP_AbstractOscControl {
 
         try {
             if(SP_AbstractOscControl.oscDict.keys.includes(oscPath)) {
-                this.free;
+                SP_AbstractOscControl.free(oscPath);
 
                 "[%] OSC function already exists for this path: %".format(this.class, oscPath).warn;
             };
@@ -100,10 +100,14 @@ SP_AbstractOscControl {
     }
 
     free {
-        osc.disable;
-        osc.permanent = false;
-        osc.free;
-        SP_AbstractOscControl.oscDict[oscPath] = nil;
+        if(osc.notNil) {
+            osc.disable;
+            osc.permanent = false;
+            osc.free;
+            osc = nil;
+        };
+
+        SP_AbstractOscControl.oscDict.removeAt(oscPath);
     }
 
     processOsc {

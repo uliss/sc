@@ -7,7 +7,7 @@ DESCRIPTION::
 Controls playing of Instr via OSC.
 
 
- SUBSECTION:: Typicall usage:
+SUBSECTION:: Typicall usage:
 CODE::
 (
 n = NetAddr("localhost", NodeJS.outOscPort);
@@ -17,13 +17,30 @@ c = SP_InstrumentControl.new("/instr");
 n.sendMsg("/instr", "utils.tone", "play");
 n.sendMsg("/instr", "utils.tone", "set", "freq", 380);
 n.sendMsg("/instr", "utils.tone", "release");
+n.sendMsg("/instr", "utils.tone", "stop");
 n.sendMsg("/instr", "utils.tone", "gui");
+
+n.sendMsg("/instr", "viola.test", "play", "pos", 300);
+n.sendMsg("/instr", "viola.test", "release");
 ::
 
 CLASSMETHODS::
 
 METHOD:: new
 creates new instance
+
+CODE::
+(
+n = NetAddr("localhost", NodeJS.outOscPort);
+c = SP_InstrumentControl.new("/instr");
+)
+
+n.sendMsg("/instr", "viola.test", "init", "pos", 100)
+n.sendMsg("/instr", "viola.test", "play")
+n.sendMsg("/instr", "viola.test", "stop")
+c.playerNames
+
+::
 
 ARGUMENT::
 OSC path to listen
@@ -49,10 +66,8 @@ definitionlist::
 || CODE:: n.sendMsg("/path", "instrument", "stop")::
 ## release
 || CODE:: n.sendMsg("/path", "instrument", "release")::
-## igui
-|| CODE:: n.sendMsg("/path", "instrument", "igui")::
-## pgui
-|| CODE:: n.sendMsg("/path", "instrument", "pgui")::
+## gui
+|| CODE:: n.sendMsg("/path", "instrument", "gui")::
 ::
 
 ARGUMENT:: msg

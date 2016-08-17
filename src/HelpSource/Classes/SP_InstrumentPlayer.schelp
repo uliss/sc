@@ -15,10 +15,10 @@ creates new instance
 ARGUMENT::
 instrument name or instance of link::Classes/Instr::
 
-ARGUMENT:: attackTime
+ARGUMENT::
 attack time when played
 
-ARGUMENT:: releaseTime
+ARGUMENT::
 release time on release
 
 returns:: this
