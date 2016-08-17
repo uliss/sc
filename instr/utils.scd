@@ -23,4 +23,10 @@ Instr("utils.sweep-tone", {
     );
 });
 
+Instr("utils.ding", {
+    arg freq = 1000, amp = 0.2;
+    SinOsc.ar(freq, 0, amp) * EnvGen.kr(Env.perc, doneAction: 2);
+});
+
+
 
