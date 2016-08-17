@@ -15,34 +15,16 @@ creates new instance
 ARGUMENT::
 instrument name or instance of link::Classes/Instr::
 
-ARGUMENT::
-attack time when played
-
-ARGUMENT::
-release time on release
-
 returns:: this
 
 
 INSTANCEMETHODS::
 
 METHOD:: release
-release instrument with STRONG::releaseTime:: fadeout.
+release instrument with fadeout
 
-METHOD:: attackTime
-attack time property.
-
-NOTE::set it STRONG::before:: play::
-
-code::
-n = SP_InstrumentPlayer.new("utils.tone")
-n.attackTime = 2
-n.play
-n.release
-
-n.initArgs
-n.playerGui
-::
+ARGUMENT::
+fadeout time
 
 METHOD:: set
 sets instrument parameters
@@ -97,21 +79,6 @@ stops playing
 METHOD:: initArgs
 static arguments for instrument, that can not be changed after play start
 
-METHOD:: releaseTime
-release time property
-
-NOTE::set it STRONG::before:: play::
-
-code::
-n = SP_InstrumentPlayer.new("utils.tone")
-n.play(\amp, 0.5, \freq, 450)
-n.release
-
-n.releaseTime = 5
-n.play(\amp, 0.5, \freq, 450)
-n.release
-::
-
 METHOD:: player
 link::Classes/Patch:: player property
 
@@ -136,15 +103,7 @@ n.play
 n.stop
 ::
 
-METHOD:: setInitArg
+METHOD:: dumpInfo
+prints instrument information to console
 
-code::
-n = SP_InstrumentPlayer.new("utils.tone")
-n.setInitArg(\attackTime, 5)
-n.initArgs
-
-n.play
-n.stop
-::
-
-PRIVATE:: init
+PRIVATE:: init, setInitArg

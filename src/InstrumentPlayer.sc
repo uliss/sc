@@ -4,22 +4,13 @@ SP_InstrumentPlayer {
     var <>player;
 
     *new {
-        arg instr, attackTime = 0.1, releaseTime = 0.1;
+        arg instr;
         var p = super.new.init(instr);
-        p.attackTime = attackTime;
-        p.releaseTime = releaseTime;
         p.outChannel = nil;
         ^p;
     }
 
-    attackTime { ^initArgs[\attackTime] }
-    attackTime_ { |v| initArgs[\attackTime] = v }
-
-    releaseTime { ^initArgs[\fadeTime] }
-    releaseTime_ { |v| initArgs[\fadeTime] = v }
-
     outChannel { ^initArgs[\outChannel] }
-
     outChannel_ { |v| initArgs[\outChannel] = v }
 
     init {
@@ -52,7 +43,8 @@ SP_InstrumentPlayer {
     }
 
     release {
-        player.release(this.releaseTime);
+        arg time;
+        player.release(time)
     }
 
     set {
@@ -80,5 +72,11 @@ SP_InstrumentPlayer {
 
     playerGui {
         player.gui;
+    }
+
+    dumpInfo {
+        "[%] %:".format(this.class, instr).postln;
+        "init args: %".format(initArgs).padLeft(4).postln;
+        "instr args: %".format(player.argNames).padLeft(4).postln;
     }
 }

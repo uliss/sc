@@ -22,6 +22,7 @@ n.sendMsg("/instr", "utils.tone", "gui");
 
 n.sendMsg("/instr", "viola.test", "play", "pos", 300);
 n.sendMsg("/instr", "viola.test", "release");
+n.sendMsg("/instr", "viola.test", "info");
 ::
 
 CLASSMETHODS::
@@ -68,6 +69,8 @@ definitionlist::
 || CODE:: n.sendMsg("/path", "instrument", "release")::
 ## gui
 || CODE:: n.sendMsg("/path", "instrument", "gui")::
+## info
+|| CODE:: n.sendMsg("/path", "instrument", "info")::
 ::
 
 ARGUMENT:: msg
