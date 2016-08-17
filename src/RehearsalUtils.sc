@@ -144,7 +144,11 @@ NodeUtility_Player : NodeUtility {
 
     *new {
         arg instr, oscPath, attackTime = 0.1, releaseTime = 0.1;
-        ^super.new(oscPath).initPlayer(instr, \attackTime, attackTime, \fadeTime, releaseTime);
+        var p = super.new(oscPath);
+        p.attackTime = attackTime;
+        p.releaseTime = releaseTime;
+        p.initPlayer(instr);
+        ^p;
     }
 
     initPlayer {
@@ -152,13 +156,18 @@ NodeUtility_Player : NodeUtility {
         var params_e = ();
         instr = instrument;
 
-        if(params.size > 0) { params_e = Event.newFrom(params) };
+        if(params.size > 0) { params_e = Event.newFrom(params).collect({|v| v.asFloat }); };
+
+        if(params_e.attackTime.isNil) { params_e.attackTime = attackTime; };
+
         init_params = params_e;
+        init_params.postln;
     }
 
     play {
         arg ... args;
         player = Patch(instr, init_params);
+        this.set(\fadeTime, releaseTime);
         this.set(*args);
         player.play;
     }
@@ -226,14 +235,7 @@ NodeUtility_PlayerManager : NodeUtility {
         };
 
         switch(action,
-            "init", {
-                var args = ();
-                if(msg[3..].size != 0) {
-                    args = Event.newFrom(msg[3..]);
-                };
-
-                player.initPlayer(args)
-            },
+            "init", { player.initPlayer(instr_name, *msg[3..]) },
             "play", { player.play(*msg[3..]) },
             "stop", { player.stop },
             "release", { player.release },

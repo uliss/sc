@@ -17,11 +17,11 @@ Instr("viola.test", {
             1),
         1) * amp * Linen.kr(\gate.kr(1), attackTime, 1, fadeTime, doneAction: 2);
 }, [
-    StaticIntegerSpec(0, 3600, 2, "sec");
+    StaticIntegerSpec(0, 3600, 2, "sec"),
     \loop,
-    [0, 4, \amp, 0],
-    StaticIntegerSpec(0, 20, 0.1, "sec");
-    StaticIntegerSpec(0, 20, 0.1, "sec");
+    [0, 4, \amp, 0, 1],
+    StaticIntegerSpec(0, 20, 0.1, "sec"),
+    StaticIntegerSpec(0, 20, 0.1, "sec")
 ],
 outSpec: AudioSpec(1)
 );

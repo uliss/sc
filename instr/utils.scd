@@ -15,4 +15,12 @@ Instr("utils.pink-noise", {
     PinkNoise.ar(amp) * Linen.kr(\gate.kr(1), attackTime, 1, fadeTime, doneAction: 2);
 });
 
+Instr("utils.sweep-tone", {
+    arg amp = 0.2, attackTime = 0.1, fadeTime = 0.1;
+    /*PinkNoise.ar(amp) * Linen.kr(\gate.kr(1), attackTime, 1, fadeTime, doneAction: 2);*/
+    SinOsc.ar(
+        XLine.kr(20, 20000, 4, amp, doneAction: 2);
+    );
+});
+
 
