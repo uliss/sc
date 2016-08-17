@@ -12,8 +12,8 @@ SP_RehearsalUtils {
     }
 
     stop {
-        latency_test.unbindOscAll;
-        instr_manager.unbindOscAll;
+        latency_test.free;
+        instr_manager.free;
     }
 }
 
