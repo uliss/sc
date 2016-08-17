@@ -33,7 +33,8 @@ SP_InstrumentControl : SP_AbstractOscControl {
             "stop", { player.stop },
             "release", { player.release },
             "set", {  player.set(*msg[3..]) },
-            "gui", {  player.gui },
+            "igui", {  player.instrumentGui },
+            "pgui", {  player.playerGui },
             { "[%] unknown message format: %".format(this.class, msg).postln }
         )
     }
