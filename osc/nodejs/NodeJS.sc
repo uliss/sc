@@ -17,6 +17,7 @@ NodeJS {
     *imageDir { ^NodeJS.htmlRootDir +/+ imageDirPrefix }
     *thumbDir { ^NodeJS.htmlRootDir +/+ thumbDirPrefix }
     *soundDir { ^NodeJS.htmlRootDir +/+ soundDirPrefix }
+    *testAddr { ^NetAddr("localhost", outOscPort) }
 
     *start {
         var dir, res, pid, cmd, node, withScControl = true;
