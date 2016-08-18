@@ -37,7 +37,7 @@ SP_InstrumentControl : SP_AbstractOscControl {
                 }
             },
             "play", { player.play(*msg[3..]) },
-            "stop", { player.stop.defer },
+            "stop", { player.stop },
             "release", { player.release(*msg[3]) },
             "set", {  player.set(*msg[3..]) },
             "gui", {  {player.playerGui}.defer },
