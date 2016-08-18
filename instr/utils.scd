@@ -40,11 +40,11 @@ outSpec: AudioSpec(1)
 
 Instr("utils.click", {
     arg bpm = 60, freq = 1500, amp = 1;
-    LPF.ar(Impulse.ar(bpm / 60), freq) * Linen.kr(\gate.kr(1), 0, 1, 0.5, doneAction: 2);
+    LPF.ar(Impulse.ar(bpm / 60), freq) * amp * Linen.kr(\gate.kr(1), 0, 1, 0.5, doneAction: 2);
 }, [
     [40, 400, \lin, 1, 60, "bpm"],
     \freq,
-    \amp
+    [0, 4, \lin, 0, 1]
 ],
 outSpec: AudioSpec(1)
 );
