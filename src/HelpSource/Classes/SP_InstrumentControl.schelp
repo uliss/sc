@@ -93,4 +93,7 @@ stop all players
 METHOD:: releaseAll
 release all players
 
+METHOD:: free
+stop all player and release resources
+
 PRIVATE:: initManager

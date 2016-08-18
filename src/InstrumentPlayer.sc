@@ -2,6 +2,7 @@ SP_InstrumentPlayer {
     var <>instr;
     var <initArgs;
     var <>player;
+    var play_state;
 
     *new {
         arg instr;
@@ -18,6 +19,7 @@ SP_InstrumentPlayer {
         instr = instrument;
         initArgs = Event.new;
         player = Patch(instr, initArgs);
+        player.respawnOnChange = 0.2;
         ^this;
     }
 
@@ -34,12 +36,29 @@ SP_InstrumentPlayer {
 
     play {
         arg ... args;
-        this.set(*args);
-        player.play(bus:initArgs[\outChannel]);
+
+        fork {
+            if(play_state == 0 && player.isPlaying == true) {
+                play_state = 1;
+                0.5.wait;
+            };
+
+            this.set(*args);
+            player.play(bus:initArgs[\outChannel]);
+            play_state = 1;
+        }
     }
 
     stop {
-        player.stop;
+        fork {
+            if(play_state == 1 && player.isPlaying == false) {
+                play_state = 0;
+                0.5.wait;
+            };
+
+            player.stop;
+            play_state = 0;
+        }
     }
 
     release {

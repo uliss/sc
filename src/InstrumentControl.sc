@@ -29,12 +29,13 @@ SP_InstrumentControl : SP_AbstractOscControl {
 
         switch(action,
             "init", {
+                player.init(instr_name);
                 Dictionary.newFrom(msg[3..]).keysValuesDo { |k, v|
                     player.setInitArg(k, v);
                 }
             },
             "play", { player.play(*msg[3..]) },
-            "stop", { player.stop },
+            "stop", { player.stop.defer },
             "release", { player.release(*msg[3]) },
             "set", {  player.set(*msg[3..]) },
             "gui", {  {player.playerGui}.defer },
@@ -53,6 +54,12 @@ SP_InstrumentControl : SP_AbstractOscControl {
 
     releaseAll {
         players.do { |p| p.release }
+    }
+
+    free {
+        super.free;
+        this.stopAll;
+        players.clear;
     }
 }
 

@@ -42,6 +42,12 @@ SP_SupercolliderControl {
                             var value = m[2] ? true;
                             this.mute(value.asBoolean);
                         },
+                        "stop_all", {
+                            CmdPeriod.run;
+                        },
+                        "free_all", {
+                            Server.default.freeAll;
+                        },
                         "record", {
                             if(m[2] == 1) { this.record } { this.stopRecord };
                         },
