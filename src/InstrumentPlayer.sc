@@ -106,4 +106,9 @@ SP_InstrumentPlayer {
         "init args: %".format(initArgs).padLeft(4).postln;
         "instr args: %".format(player.argNames).padLeft(4).postln;
     }
+
+    reload {
+        Instr.load(instr.dotNotation);
+        this.init(instr.dotNotation);
+    }
 }

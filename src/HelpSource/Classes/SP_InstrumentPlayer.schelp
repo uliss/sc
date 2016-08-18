@@ -111,10 +111,10 @@ n = SP_InstrumentPlayer.new("utils.tone")
 n.numChannels
 ::
 
-RETURNS::
-number of output channels or STRONG::nil::
-
 METHOD:: dumpInfo
 prints instrument information to console
+
+METHOD:: reload
+reloads instrument from disk
 
 PRIVATE:: init, setInitArg
