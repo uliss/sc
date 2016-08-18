@@ -14,19 +14,17 @@ SP_InstrumentPlayer {
     outChannel { ^initArgs[\outChannel] }
     outChannel_ { |v| initArgs[\outChannel] = v }
 
-    numChannels {
-        var i = Instr(instr);
-        if(i.outSpec.notNil) {
-            i.outSpec.postln;
-            if(i.outSpec.class == AudioSpec) { ^i.outSpec.numChannels };
-            ^nil;
-        };
-        ^nil;
-    }
+    numChannels { ^player.numChannels }
 
     init {
         arg instrument;
-        instr = instrument;
+
+        if(instrument.class == String) {
+            instr = Instr(instrument)
+        } {
+            instr = instrument
+        };
+
         initArgs = Event.new;
         player = Patch(instr, initArgs);
         player.respawnOnChange = 0.2;
@@ -96,7 +94,7 @@ SP_InstrumentPlayer {
     }
 
     instrumentGui {
-        Instr(instr).gui;
+        instr.gui;
     }
 
     playerGui {
