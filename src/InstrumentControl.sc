@@ -1,5 +1,6 @@
 SP_InstrumentControl : SP_AbstractOscControl {
     var players;
+    var monitor;
 
     *new {
         arg oscPath = "/sc/utils/instr";
@@ -8,6 +9,7 @@ SP_InstrumentControl : SP_AbstractOscControl {
 
     initManager {
         players = Dictionary.new;
+        monitor = Monitor.new;
     }
 
     processOsc {
@@ -39,6 +41,7 @@ SP_InstrumentControl : SP_AbstractOscControl {
             "release", { player.release(*msg[3]) },
             "set", {  player.set(*msg[3..]) },
             "gui", {  {player.playerGui}.defer },
+            "monitor", { player.monitor(*msg[3..]) },
             "info", { player.dumpInfo },
             { "[%] unknown message format: %".format(this.class, msg).postln }
         )

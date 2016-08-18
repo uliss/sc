@@ -14,6 +14,16 @@ SP_InstrumentPlayer {
     outChannel { ^initArgs[\outChannel] }
     outChannel_ { |v| initArgs[\outChannel] = v }
 
+    numChannels {
+        var i = Instr(instr);
+        if(i.outSpec.notNil) {
+            i.outSpec.postln;
+            if(i.outSpec.class == AudioSpec) { ^i.outSpec.numChannels };
+            ^nil;
+        };
+        ^nil;
+    }
+
     init {
         arg instrument;
         instr = instrument;
