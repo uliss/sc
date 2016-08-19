@@ -111,4 +111,21 @@ SP_InstrumentPlayer {
         Instr.load(instr.dotNotation);
         this.init(instr.dotNotation);
     }
+
+    saveParams {
+        var dir, fname, file;
+        try {
+            dir = Instr.dir +/+ "params";
+            if(dir.pathExists === false) { dir.mkdir };
+            fname = dir +/+ instr.dotNotation ++ ".params.txt";
+            file = File.new(fname, "w");
+            player.storeParamsOn(file);
+            file.close;
+            "[%] store params to file: %".format(this.class, fname.quote).postln;
+            ^this;
+        } { |error|
+            "[%] error while saving to %".format(this.class, fname.quote).error;
+            ^nil;
+        }
+    }
 }
