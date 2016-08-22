@@ -19,8 +19,11 @@ SP_AbstractApp {
 
     sendMsg {
         arg path ... args;
-        path.postln;
         NodeJS.send2Cli(oscPath ++ path, *args);
+    }
+
+    sync {
+
     }
 
     css {
@@ -36,20 +39,13 @@ SP_AppLabel : SP_AbstractApp {
 
     *new {
         arg txt = "DEFAULT";
-        ^super.new("/vlabel", "/vlabel").text_(txt);
+        ^super.new("/vlabel", "/vlabel").text_(txt).color_("black").backgroundColor_("transparent")
     }
 
     text_ {
         arg txt;
         text = txt;
         this.sendMsg("/set", text);
-    }
-
-    setTime {
-        arg seconds, print = false;
-        var txt = seconds.asTimeString.drop(-4);
-        if(print) { txt.postln; };
-        this.text_(txt);
     }
 
     color_ {
@@ -60,29 +56,56 @@ SP_AppLabel : SP_AbstractApp {
 
     backgroundColor_ {
         arg c = "#FFFFFF";
+        if(c.isNil) { c = "transparent" };
         backgroundColor = c;
         this.css("background-color", backgroundColor);
     }
 
     blink {
         arg ms = 100, c = "#FF0000";
+        var prev_color = backgroundColor;
+
         this.backgroundColor_(c);
 
         {
-            this.backgroundColor_("transparent")
+            this.backgroundColor_(prev_color)
         }.defer(ms / 1000);
     }
 
-/*    startClock {
-        arg time = 0, print = false;
-        currentTime = time;
+    invert {
+        var bgcolor = backgroundColor;
+        this.backgroundColor_(color);
+        this.color_(bgcolor);
+    }
+}
 
-        SP_App_Label.stopClock;
+SP_AppLabelClock : SP_AppLabel {
+    var <time;
+    var <>reverse;
+    var timerRoutine;
 
-        timerRoutine = Routine{
+    *new {
+        arg initTime = 0, reverse = false;
+        ^super.new().time_(initTime).reverse_(reverse);
+    }
+
+    time_ {
+        arg seconds;
+        time = seconds.asInteger;
+        this.sync;
+    }
+
+    sync {
+        this.text_(time.asTimeString.drop(-4));
+    }
+
+    start {
+        this.stop;
+
+        timerRoutine = Routine {
             inf.do {
-                SP_App_Label.setTime(currentTime, print);
-                currentTime = currentTime + 1;
+                this.sync;
+                if(reverse) { time = time - 1 } { time = time + 1 };
                 1.wait;
             }
         };
@@ -90,12 +113,11 @@ SP_AppLabel : SP_AbstractApp {
         timerRoutine.play;
     }
 
-    *stopClock {
+    stop {
         if(timerRoutine.notNil) {
             timerRoutine.stop;
             timerRoutine.free;
             timerRoutine = nil;
         }
     }
-*/
 }

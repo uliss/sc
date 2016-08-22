@@ -1,0 +1,88 @@
+TITLE:: SP_AppLabel
+summary:: node js label app
+categories:: Libraries>splib>NodeJS>app
+related:: Classes/NodeJS
+
+DESCRIPTION::
+NodeJS label application, for displaying
+short big messages on connected web clients.
+
+
+CLASSMETHODS::
+
+METHOD:: new
+returns new instance
+
+CODE::
+NodeJS.restart
+l = SP_AppLabel.new("NEW LABEL")
+l.text = "LABEL2"
+::
+
+INSTANCEMETHODS::
+
+METHOD:: backgroundColor
+changes label background color
+
+CODE::
+NodeJS.restart
+l = SP_AppLabel.new
+l.backgroundColor = "#DADD00"
+l.backgroundColor = nil
+::
+
+ARGUMENT:: c
+new color in CSS color format, e.g.: "#A100", "green", "#DDDDAA", "transparent".
+if STRONG::nil:: is given background set to transparent.
+
+METHOD:: blink
+blinks background color
+
+CODE::
+NodeJS.restart
+l = SP_AppLabel.new
+l.backgroundColor = "#DADD00"
+
+{l.blink(100, "blue")}.defer(2)
+::
+
+
+ARGUMENT::
+blink time
+
+ARGUMENT::
+blink color
+
+METHOD:: color
+sets label text color
+
+CODE::
+NodeJS.restart
+l = SP_AppLabel.new
+l.color = "red"
+::
+
+ARGUMENT:: c
+new color in CSS color format, e.g.: "#A100", "green", "#DDDDAA"
+
+METHOD:: text
+label text property
+
+CODE::
+NodeJS.restart
+l = SP_AppLabel.new
+l.text = "SAMPLE"
+l.text = "UTF-8: ТЕСТ"
+::
+
+METHOD:: invert
+swaps text and background colors
+
+CODE::
+NodeJS.restart
+l = SP_AppLabel.new
+l.color = "yellow"
+l.backgroundColor = "blue"
+l.invert
+l.invert
+::

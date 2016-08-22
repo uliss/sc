@@ -1,0 +1,64 @@
+TITLE:: SP_AppLabelClock
+summary:: nodejs clock app
+categories:: Libraries>splib>NodeJS>app
+related:: Classes/NodeJS, Classes/SP_AppLabel
+
+DESCRIPTION::
+NodeJS clock application, controlled by server.
+
+
+CLASSMETHODS::
+
+METHOD:: new
+returns new instance
+
+CODE::
+NodeJS.restart
+c = SP_AppLabelClock.new(10)
+c.start
+c.stop
+::
+
+ARGUMENT::
+initial time in seconds
+
+ARGUMENT::
+sets reverse time moving
+
+
+INSTANCEMETHODS::
+
+METHOD:: stop
+stops clock
+
+METHOD:: start
+starts clock
+
+METHOD:: time
+current time (automatically updated on connected clients)
+
+ARGUMENT::
+new time ins seconds
+
+CODE::
+NodeJS.restart
+c = SP_AppLabelClock.new
+c.time = 90
+c.time = 180
+::
+
+METHOD:: reverse
+if set to STRONG::true:: time moves backwards
+
+CODE::
+NodeJS.restart
+c = SP_AppLabelClock.new
+c.start
+c.reverse = true
+c.reverse = false
+c.stop
+::
+
+
+METHOD:: sync
+manually sync current time with connected web clients
