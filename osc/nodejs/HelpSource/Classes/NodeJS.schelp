@@ -1,0 +1,262 @@
+TITLE:: NodeJS
+summary:: API for communication with NodeJS server
+categories:: Libraries>splib>NodeJS
+
+DESCRIPTION::
+API to control and communicate with NodeJS server
+
+
+CLASSMETHODS::
+
+METHOD:: connected
+connected property
+
+CODE::
+NodeJS.connected
+
+NodeJS.restart
+NodeJS.connected
+::
+
+returns:: true if connected to node js
+
+METHOD:: sendCallback
+callback for link::#*sendMsg:: call
+
+CODE::
+NodeJS.restart
+NodeJS.sendCallback = {|path, args| "send message: % to %".format(args, path.quote).postln }
+NodeJS.sendMsg("/node/echo", "test")
+::
+
+METHOD:: testAddr
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: redirect
+redirects connected to node js web client to given URL
+
+CODE::
+NodeJS.restart
+NodeJS.redirect("/")
+NodeJS.redirect("/ui")
+::
+
+ARGUMENT::
+target url
+
+METHOD:: outOscPort
+port for output OSC messages from node js
+
+METHOD:: reload
+reloads page for connected clients
+
+CODE::
+NodeJS.restart
+NodeJS.redirect("/utils")
+NodeJS.reload()
+::
+
+METHOD:: ping
+testing connection.
+
+CODE::
+NodeJS.ping
+::
+
+if connected you should see aswer from server message in console.
+
+
+METHOD:: css
+set CSS page property directly.
+
+CODE::
+NodeJS.restart
+NodeJS.css("h1", "color", "red")
+NodeJS.css("html, body", "background-color", "magenta")
+// for reset use reload
+NodeJS.reload
+::
+
+ARGUMENT::
+JQuery CSS element selector, e.g.: TELETYPE::"h1.header"::
+
+ARGUMENT:: key
+CSS property, e.g.: TELETYPE::"background-color"::
+
+ARGUMENT:: value
+CSS property value, e.g.: TELETYPE::"100px":: etc.
+
+METHOD:: modalOk
+shows OK modal dialog to connected web clients
+
+CODE::
+NodeJS.restart
+NodeJS.modalOk("Everything is OK", "Good job, man!")
+::
+
+ARGUMENT::
+dialog message
+
+ARGUMENT::
+dialog title
+
+METHOD:: sendMsg
+send message to nodejs server
+
+CODE::
+NodeJS.restart
+NodeJS.sendMsg("/node/echo", "ping")
+::
+
+ARGUMENT::
+message path
+
+ARGUMENT::
+message arguments
+
+METHOD:: serverRootDir
+root directory for http server launched by nodejs
+
+METHOD:: soundDirPrefix
+relative to link::#serverRootDir:: path for sound files
+
+METHOD:: httpPort
+HTTP port of server launched by nodejs
+
+METHOD:: verbose
+Turn on/off verbose output to supercollider console
+
+METHOD:: stop
+stops nodejs server
+
+CODE::
+NodeJS.restart
+NodeJS.stop
+::
+
+METHOD:: restart
+safest method to run nodejs server.
+
+CODE::
+NodeJS.restart
+::
+
+METHOD:: get
+get server value via callback call
+
+CODE::
+NodeJS.restart
+NodeJS.get("verbose", { |msg| msg.postln });
+::
+
+ARGUMENT::
+name of server variable
+
+ARGUMENT::
+callback to call with variable value
+
+
+METHOD:: imageDirPrefix
+relative to link::#serverRootDir:: path for image files
+
+METHOD:: send2Cli
+sends message directly to STRONG::all:: connected web clients
+
+ARGUMENT::
+destination path
+
+ARGUMENT::
+arguments
+
+METHOD:: set
+sets nodejs server internal variable
+
+CODE::
+NodeJS.restart
+NodeJS.set("verbose", true)
+NodeJS.set("verbose", false)
+::
+
+ARGUMENT::
+variable name
+
+ARGUMENT::
+variable value
+
+METHOD:: modalInfo
+shows information modal dialog to connected web clients
+
+CODE::
+NodeJS.restart
+NodeJS.modalInfo("Some important info", "To all clients")
+::
+
+ARGUMENT::
+dialog message
+
+ARGUMENT::
+dialog title
+
+
+METHOD:: thumbDirPrefix
+relative to link::#serverRootDir:: path for image thumbs
+
+METHOD:: soundDir
+full path to HTTP server sound files directory
+
+METHOD:: modalError
+shows error modal dialog to connected web clients
+
+CODE::
+NodeJS.restart
+NodeJS.modalError("Aaaaahhhhhhh!!!!!!", "Danger!")
+::
+
+ARGUMENT::
+dialog message
+
+ARGUMENT::
+dialog title
+
+METHOD:: inOscPort
+nodejs accept connections on this port
+
+METHOD:: htmlRootDir
+full path to HTTP server root directory
+
+CODE::
+NodeJS.htmlRootDir
+::
+
+METHOD:: thumbDir
+full path to HTTP server image thumbs directory
+
+CODE::
+NodeJS.thumbDir
+::
+
+METHOD:: start
+starts nodejs server
+
+METHOD:: open
+opens given url in browser
+
+CODE::
+NodeJS.restart
+NodeJS.open
+NodeJS.open("ui")
+::
+
+ARGUMENT::
+destination path
+
+METHOD:: imageDir
+full path to HTTP server image directory
+
+CODE::
+NodeJS.imageDir
+::
+
+PRIVATE:: lockPath

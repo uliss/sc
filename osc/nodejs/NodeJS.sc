@@ -86,14 +86,14 @@ NodeJS {
     }
 
     *sendMsg {
-        arg addr ... args;
+        arg path ... args;
         var n = NetAddr("localhost", NodeJS.inOscPort);
 
         if(connected.notNil && connected)
         {
-            n.sendMsg(addr, *args);
+            n.sendMsg(path, *args);
             if(sendCallback.notNil) {
-                sendCallback.value(addr, *args);
+                sendCallback.value(path, *args);
             };
             ^true
         }
@@ -101,8 +101,8 @@ NodeJS {
     }
 
     *send2Cli {
-        arg addr ... args;
-        NodeJS.sendMsg("/node/forward", addr, *args);
+        arg path ... args;
+        NodeJS.sendMsg("/node/forward", path, *args);
     }
 
     *css {
@@ -125,22 +125,15 @@ NodeJS {
     }
 
     *get {
-        arg key;
+        arg key, func;
         NodeJS.sendMsg("/node/get", key);
+        OSCFunc({|msg|
+            func.value(msg[2]);
+        }, "/sc/get", nil, NodeJS.outOscPort).oneShot;
     }
 
     *ping {
         NodeJS.sendMsg("/node/echo", "ping -> pong");
-    }
-
-    *subscribe {
-        arg func;
-        if(func.notNil) {
-            ^OSCFunc({|msg|
-                func.value(msg.drop(1));
-            }, "/sc/get", nil, NodeJS.outOscPort);
-        };
-        ^nil;
     }
 
     *verbose {

@@ -1,6 +1,6 @@
 TITLE:: NodeUtility_Player
 summary:: interface for Instr
-categories:: GUI>NodeJS>Utilities
+categories:: Libraries>splib>NodeJS>Utilities
 related:: Classes/NodeJS
 
 DESCRIPTION::
