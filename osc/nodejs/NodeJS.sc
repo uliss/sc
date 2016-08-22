@@ -102,7 +102,7 @@ NodeJS {
 
     *send2Cli {
         arg path ... args;
-        NodeJS.sendMsg("/node/forward", path, *args);
+        NodeJS.sendMsg("/node/forward", "/cli" +/+ path, *args);
     }
 
     *css {
@@ -159,7 +159,7 @@ NodeJS {
     }
 }
 
-NodeJS_Label {
+SP_App_Label {
     classvar currentTime;
     classvar timerRoutine;
     classvar blinkMap;
@@ -176,18 +176,18 @@ NodeJS_Label {
         arg seconds, print = false;
         var txt = seconds.asTimeString.drop(-4);
         if(print) { txt.postln; };
-        NodeJS_Label.set(txt);
+        SP_App_Label.set(txt);
     }
 
     *startClock {
         arg time = 0, print = false;
         currentTime = time;
 
-        NodeJS_Label.stopClock;
+        SP_App_Label.stopClock;
 
         timerRoutine = Routine{
             inf.do {
-                NodeJS_Label.setTime(currentTime, print);
+                SP_App_Label.setTime(currentTime, print);
                 currentTime = currentTime + 1;
                 1.wait;
             }
@@ -206,23 +206,25 @@ NodeJS_Label {
 
     *css {
         arg k, v;
-        NodeJS.sendMsg(NodeJS_Label.path ++ "/css", k, v);
+        NodeJS.sendMsg(SP_App_Label.path ++ "/css", k, v);
     }
 
     *color {
         arg color = "#000000";
-        NodeJS_Label.css("color", color);
+        SP_App_Label.css("color", color);
     }
 
     *backgroundColor {
         arg color = "#FFFFFF";
-        NodeJS_Label.css("background-color", color);
+        SP_App_Label.css("background-color", color);
     }
 
     *blink {
         arg ms = 100, color = "#FF0000";
-        NodeJS_Label.backgroundColor(color);
-        {NodeJS_Label.backgroundColor("transparent")}.defer(ms / 1000);
+        SP_App_Label.backgroundColor(color);
+        {
+            SP_App_Label.backgroundColor("transparent")
+        }.defer(ms / 1000);
     }
 
     *open {

@@ -123,7 +123,7 @@ NodeUtility_LatencyTest : SP_AbstractOscControl {
 
     processOsc {
         arg msg;
-        NodeJS.send2Cli("/cli/utils/latency", msg[1]);
+        NodeJS.send2Cli("/utils/latency", msg[1]);
     }
 }
 
