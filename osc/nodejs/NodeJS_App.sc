@@ -1,16 +1,40 @@
 SP_AbstractApp {
     var <oscPath;
     var <httpPath;
+    var osc;
 
     *new {
-        arg oscPath, httpPath;
-        ^super.new.init(oscPath, httpPath);
+        arg oscPath, httpPath, syncOnConnect = false;
+        ^super.new.init(oscPath, httpPath, syncOnConnect);
+    }
+
+    *registerSync {
+        arg name;
+        NodeJS.sendMsg("/node/app/sync/add", name);
+    }
+
+    *unregisterSync {
+        arg name;
+        NodeJS.sendMsg("/node/app/sync/remove", name);
+    }
+
+    name {
+        ^oscPath.basename;
     }
 
     init {
-        arg osc_path, http_path;
+        arg osc_path, http_path, syncOnConnect;
         oscPath = osc_path;
         httpPath = http_path;
+
+        if(syncOnConnect) {
+            SP_AbstractApp.registerSync(oscPath);
+
+            osc = OSCFunc({|msg|
+                msg.postln;
+                {this.sync}.defer(1);
+            }, "/sc/app/sync" +/+ this.name, nil, NodeJS.outOscPort)
+        }
     }
 
     open {
@@ -38,13 +62,17 @@ SP_AppLabel : SP_AbstractApp {
     var <text;
 
     *new {
-        arg txt = "DEFAULT";
-        ^super.new("/vlabel", "/vlabel").text_(txt).color_("black").backgroundColor_("transparent")
+        arg txt = "DEFAULT", autoSync = true;
+        ^super.new("/vlabel", "/vlabel", autoSync).text_(txt).color_("black").backgroundColor_("transparent")
     }
 
     text_ {
         arg txt;
         text = txt;
+        this.sendMsg("/set", text);
+    }
+
+    sync {
         this.sendMsg("/set", text);
     }
 
@@ -83,20 +111,39 @@ SP_AppLabelClock : SP_AppLabel {
     var <time;
     var <>reverse;
     var timerRoutine;
+    var timeMap;
 
     *new {
         arg initTime = 0, reverse = false;
-        ^super.new().time_(initTime).reverse_(reverse);
+        ^super.new(autoSync: false).initClock.time_(initTime).reverse_(reverse);
+    }
+
+    initClock {
+        timeMap = Dictionary.new
+    }
+
+    schedAt {
+        arg tm, func;
+        timeMap[tm] = func;
+        ^this;
     }
 
     time_ {
         arg seconds;
         time = seconds.asInteger;
-        this.sync;
+        this.updateTime;
     }
 
     sync {
+        this.updateTime;
+    }
+
+    updateTime {
         this.text_(time.asTimeString.drop(-4));
+
+        if(timeMap.notNil && timeMap[time].notNil) {
+            timeMap[time].value(time);
+        }
     }
 
     start {
