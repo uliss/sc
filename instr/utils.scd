@@ -23,7 +23,6 @@ outSpec: AudioSpec(1)
 
 Instr("utils.sweep-tone", {
     arg amp = 0.2, attackTime = 0.1, fadeTime = 0.1;
-    /*PinkNoise.ar(amp) * Linen.kr(\gate.kr(1), attackTime, 1, fadeTime, doneAction: 2);*/
     SinOsc.ar(
         XLine.kr(20, 20000, 4, amp, doneAction: 2);
     );
@@ -45,6 +44,18 @@ Instr("utils.click", {
     [40, 400, \lin, 1, 60, "bpm"],
     \freq,
     [0, 4, \lin, 0, 1]
+],
+outSpec: AudioSpec(1)
+);
+
+Instr("utils.vu", {
+    arg in, rate = 10, rmsPath = "/sc/utils/rms";
+    SendPeakRMS.kr(in, rate, cmdName: path);
+    in;
+}, [
+    AudioSpec(1),
+    [2, 20, \lin, 1, 10],
+    SymbolSpec()
 ],
 outSpec: AudioSpec(1)
 );
