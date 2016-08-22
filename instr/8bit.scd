@@ -10,7 +10,7 @@ Instr("8bit.1", {
             - 3 % 256
         ) / 127-1 * 3
         , 20
-    ).tanh * amp;
+    ).tanh * amp * EnvGate.new;
 }, [
     \amp,
     [3000, 10000, \lin, 1, 8000],
@@ -46,3 +46,21 @@ Instr("8bit.2", {
     [0, 16, \lin, 1, 11],
     [128, 512, \lin, 1, 256]
 ]);
+
+Instr("8bit.ay1", {
+    arg freqa=440, freqb=550, freqc=660, vola=15, volb=0, volc=0, chink=1, wobbly=1, amp=0.1;
+    var chinkenv, wobblyenv;
+
+    chinkenv = if(chink>0, EnvGen.kr(Env.new([2, 2, 1, 1], [0.05, 0, 0.1], 0, 4, 4)), 1);
+    wobblyenv = LFPulse.kr(10, 0.5, mul:wobbly).range(0.5, 1);
+
+    # freqa, freqb, freqc = [freqa, freqb, freqc] * [1, wobblyenv, wobblyenv] * chinkenv;
+    AY.ar(AY.freqtotone(freqa), AY.freqtotone(freqb), AY.freqtotone(freqc),
+                0, 3, vola, volb, volc, mul: amp) * EnvGen.kr(Env.asr(0.01, 1, 0.05), doneAction:2);
+}, [
+    \freq, \freq, \freq,
+    [0, 31, \lin, 1, 15],
+    [0, 31, \lin, 1, 0],
+    [0, 31, \lin, 1, 0]
+]
+)
