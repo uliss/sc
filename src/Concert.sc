@@ -1,4 +1,5 @@
 SP_PieceApp : SP_AbstractApp {
+    classvar <>dir;
     var <>title;
     var <>composer;
     var osc_play_control;
@@ -8,6 +9,10 @@ SP_PieceApp : SP_AbstractApp {
     var <>onStop;
     var <patches;
     var <widgets;
+
+    *initClass {
+        dir = "~/.config/sc".standardizePath;
+    }
 
     *new {
         arg title, composer, oscPath, params = [];
@@ -142,11 +147,53 @@ SP_PieceApp : SP_AbstractApp {
 
         w.onValue = { |v| p.set(controlName.asSymbol, v) };
 
+        // set initial values from patch values
         idx = p.argNames.indexOf(controlName.asSymbol);
         if(p.args[idx].class == KrNumberEditor) {
             w.value = p.args[idx].value;
         };
+    }
 
+    saveParams {
+        arg version = nil;
+        var file, fname, dir;
+        var params = Dictionary.new;
+
+        patches.keysValuesDo { |n, p|
+            var args = p.storeArgs[1];
+            var dict = Dictionary.new;
+            args.do { |control, idx|
+                var name = p.argNames[idx];
+                var value;
+
+                if(name.isNil) { ^nil };
+
+                switch(control.class,
+                    String, { dict[name] = control },
+                    KrNumberEditor, { dict[name] = control.value },
+                    IntegerEditor, { dict[name] = control.value },
+                    { "[%] unsupported control type: %".format(this.class, control.class).postln }
+                );
+            };
+            params[n] = dict;
+        };
+
+        File.mkdir(SP_PieceApp.dir);
+        fname = SP_PieceApp.dir +/+ oscPath;
+        if(version.notNil) { fname = fname ++ "_" ++ version};
+        fname = fname ++ ".params";
+
+        if(File.exists(fname)) {
+            "[%] file exists: %".format(this.class, fname.quote).postln;
+            "overwriting...".postln;
+        };
+
+
+        file = File(fname, "w");
+        file.write(params.asCompileString);
+        file.close;
+
+        ^params;
     }
 
     free {
