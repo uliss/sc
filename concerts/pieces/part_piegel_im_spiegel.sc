@@ -13,6 +13,7 @@ Piece_Part_Spiegel_im_Spiegel : SP_PieceApp {
     resetPatch {
         this.addPatch(\viola, ["viola.in", "viola.compress", "viola.reverb", "common.pan2"]);
         this.addPatch(\piano, ["common.sfplay", "common.reverb"], (path: "/Users/serj/work/music/sounds/pieces/spiegel_im_spiegel_100.wav"));
+        this.patch(\viola).set(\amp, 1.75);
     }
 
     initPatches {

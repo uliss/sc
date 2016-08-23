@@ -209,7 +209,7 @@ NodeJS_ValueWidget : NodeJS_Widget {
     }
 
     sync {
-        var obj = (value: params[\value]);
+        var obj = (value: params[\value], idx: this.id);
         this.sendMsg("/widget/update", JSON.toJSON(obj));
     }
 }

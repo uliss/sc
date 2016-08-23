@@ -131,7 +131,7 @@ SP_PieceApp : SP_AbstractApp {
 
     bindW2P { // bind widget to patch
         arg wName, pName, controlName;
-        var w, p;
+        var w, p, idx;
         w = widgets[wName];
         p = patches[pName];
 
@@ -141,6 +141,12 @@ SP_PieceApp : SP_AbstractApp {
         };
 
         w.onValue = { |v| p.set(controlName.asSymbol, v) };
+
+        idx = p.argNames.indexOf(controlName.asSymbol);
+        if(p.args[idx].class == KrNumberEditor) {
+            w.value = p.args[idx].value;
+        };
+
     }
 
     free {
