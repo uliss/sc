@@ -9,6 +9,7 @@ SP_PieceApp : SP_AbstractApp {
     var <>onStop;
     var <patches;
     var <widgets;
+    var <bindings;
 
     *initClass {
         dir = "~/.config/sc".standardizePath;
@@ -25,6 +26,7 @@ SP_PieceApp : SP_AbstractApp {
         playState = 0;
         patches = Dictionary.new;
         widgets = Dictionary.new;
+        bindings = Dictionary.new;
 
         osc_play_control = OSCFunc({ |msg|
             switch(msg[1].asString,
@@ -136,7 +138,7 @@ SP_PieceApp : SP_AbstractApp {
 
     bindW2P { // bind widget to patch
         arg wName, pName, controlName;
-        var w, p, idx;
+        var w, p, idx, keyName;
         w = widgets[wName];
         p = patches[pName];
 
@@ -152,6 +154,24 @@ SP_PieceApp : SP_AbstractApp {
         if(p.args[idx].class == KrNumberEditor) {
             w.value = p.args[idx].value;
         };
+
+        keyName = pName.asString + controlName.asString;
+        bindings[keyName] = wName.asSymbol;
+    }
+
+    findBindedWidget {
+        arg patch, param;
+        var keyName = patch.asString + param.asString;
+        ^bindings[keyName];
+    }
+
+    findBindedPatch {
+        arg widget;
+        bindings.keysValuesDo { |k, v|
+            if(widget.asSymbol == v) { ^k.split($ ).asAssociations.first };
+        };
+
+        ^nil;
     }
 
     saveParams {
@@ -194,6 +214,84 @@ SP_PieceApp : SP_AbstractApp {
         file.close;
 
         ^params;
+    }
+
+    set {
+        arg patchName, name, value;
+        var p = patches[patchName];
+
+        if(p.notNil) {
+            if(p.argNamesForSynth.includes(name.asSymbol)) {
+                var widgetName = this.findBindedWidget(patchName, name);
+                p.set(name.asSymbol, value);
+                // widget sync
+                if(widgetName.notNil) {
+                    var w = widgets[widgetName];
+                    if(w.isNil) {
+                        "[%] invalid widget name in binding: %".format(this.class, widgetName).warn;
+                        ^nil;
+                    };
+
+                    w.value = value;
+                };
+
+            }
+            {
+                "[%] unknown arg for patch: % -> %".format(this.class, patchName, name).warn;
+            }
+        } {
+            "[%] no patch with name: %".format(this.class, patchName).warn;
+        }
+    }
+
+    loadParamsDict {
+        arg version = nil;
+        var fname, file, data, dict, tmp;
+
+        dict = Dictionary.new;
+
+        fname = SP_PieceApp.dir +/+ oscPath;
+        if(version.notNil) {
+            fname = fname ++ "_" ++ version ++ ".params";
+            if(File.exists(fname).not) {
+                "[%] params not found: %".format(this.class, fname.quote).postln;
+                ^dict;
+            }
+        } {
+            fname = fname ++ "*.params";
+            fname = fname.pathMatch.first;
+            if(fname.isNil) {
+                "[%] params not found: %".format(this.class, fname.quote).postln;
+                ^dict;
+            }
+        };
+
+        file = File.open(fname, "r");
+        "[%] reading params from: %".format(this.class, fname.quote).postln;
+        data = file.readAllString;
+        file.close;
+
+        tmp = data.interpret;
+        if(tmp.notNil && tmp.class == Dictionary) {
+            dict = tmp;
+        };
+
+        ^dict;
+    }
+
+    loadParams {
+        arg version = nil;
+        var dict = this.loadParamsDict(version);
+        dict.keysValuesDo { |name, args|
+            var p = patches[name];
+            if(p.notNil) {
+                args.keysValuesDo { |k, v|
+                    this.set(name, k, v);
+                }
+            } {
+                "[%] no patch with name: %".format(this.class, name).warn;
+            }
+        }
     }
 
     free {

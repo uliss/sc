@@ -99,7 +99,10 @@ NodeJS_Widget {
 
     value_ { |v|
         params[\value] = v;
-        if(added) { this.update }
+        if(added) {
+            var obj = (value: params[\value], idx: this.id);
+            this.sendMsg("/widget/update", JSON.toJSON(obj));
+        }
     }
 
     asJSON {
@@ -310,7 +313,7 @@ NodeJS_Knob : NodeJS_ValueWidget {
 NodeJS_Pan : NodeJS_ValueWidget {
     *new {
         arg value = 0, size = 50, params = [];
-        var p = super.new("pan", value, size: size, params: params);
+        var p = super.new("pan", value, min: -1.0, max: 1.0, size: size, params: params);
         p.label = p.id;
         ^p;
     }
