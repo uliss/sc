@@ -50,7 +50,7 @@ outSpec: AudioSpec(1)
 
 Instr("utils.vu", {
     arg in, rate = 10, rmsPath = "/sc/utils/rms";
-    SendPeakRMS.kr(in, rate, cmdName: path);
+    SendPeakRMS.kr(in, rate, cmdName: rmsPath);
     in;
 }, [
     AudioSpec(1),
@@ -59,6 +59,3 @@ Instr("utils.vu", {
 ],
 outSpec: AudioSpec(1)
 );
-
-
-

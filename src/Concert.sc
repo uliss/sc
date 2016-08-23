@@ -1,20 +1,25 @@
-ConcertPiece {
+SP_PieceApp : SP_AbstractApp {
     var <>title;
     var <>composer;
-    var <>oscPath;
     var osc_play_control;
+    var <playState;
+    var <>onPlay;
+    var <>onPause;
+    var <>onStop;
+    var <patches;
+    var <widgets;
 
     *new {
         arg title, composer, oscPath, params = [];
-        ^super.new.init(title, composer, oscPath, params);
+        ^super.new(oscPath, "/piece", true).title_(title).composer_(composer).initPiece(params);
     }
 
-    init {
-        arg title_, composer_, oscPath_, params;
+    initPiece {
+        arg params;
 
-        title = title_;
-        composer = composer_;
-        oscPath = oscPath_;
+        playState = 0;
+        patches = Dictionary.new;
+        widgets = Dictionary.new;
 
         osc_play_control = OSCFunc({ |msg|
             switch(msg[1].asString,
@@ -30,10 +35,44 @@ ConcertPiece {
 
         this.initOSC(params);
         this.initMIDI(params);
+        this.initPatches(params);
         this.initUI(params);
-        this.initSynths(params);
         this.initFinal(params);
+        ^this;
     }
+
+    isPlaying { ^ playState == 1 }
+    isStopped { ^ playState == 0 }
+    isPaused  { ^ playState == 2 }
+
+    addPatch {
+        arg name, instrumentList, params = ();
+        var instr = instrumentList.collect({|i| Instr(i)}).reduce({|a,b| a <>> b});
+        var patch = Patch(instr, params);
+        patches[name] = patch;
+    }
+
+    removePatch {
+        arg name;
+        patches[name] = nil;
+    }
+
+    patch { |name| ^patches[name] }
+
+    playPatches { patches.do { |p| p.play } }
+    stopPatches { patches.do { |p| p.stop } }
+    freePatches { patches.do { |p| p.free } }
+    releasePatches { |t = 0.5| patches.do { |p| p.release(t) } }
+
+    addWidget {
+        arg name, widget;
+        widgets[name] = widget;
+    }
+
+    widget { |name| ^widgets[name] }
+    createWidgets { widgets.do { |w| w.add } }
+    syncWidgets { widgets.do { |w| w.sync } }
+    removeWidgets { widgets.do { |w| w.remove } }
 
     initUI {
         // "[%:initUI] implement me".format(this.class.name).warn;
@@ -47,7 +86,7 @@ ConcertPiece {
         // "[%:initMIDI] implement me".format(this.class.name).warn;
     }
 
-    initSynths {
+    initPatches {
         // "[%:initSynth] implement me".format(this.class.name).warn;
     }
 
@@ -61,18 +100,46 @@ ConcertPiece {
     }
 
     play {
-        "[%:play] implement me".format(this.class.name).warn;
+        if(playState == 1) {
+            "[%:play] already playing".format(this.class).warn;
+            ^nil;
+        };
+
+        if(onPlay.notNil) { onPlay.value };
+        playState = 1;
     }
 
     pause {
-        "[%:pause] implement me".format(this.class.name).warn;
+        if(playState == 2) {
+            "[%:pause] already paused".format(this.class).warn;
+            ^nil;
+        };
+
+        if(onPause.notNil) { onPause.value };
+        playState = 2;
     }
 
     stop {
-        "[%:stop] implement me".format(this.class.name).warn;
+        if(playState == 0) {
+            "[%:stop] already stopped".format(this.class).warn;
+            ^nil;
+        };
+
+        if(onStop.notNil) { onStop.value };
+        playState = 0;
     }
 
     free {
+        this.stop;
+        this.freePatches;
+        this.patches = nil;
+        this.removeWidgets;
+        this.widgets = nil;
         osc_play_control.free;
+    }
+
+    sync {
+        NodeJS.sendMsg("/node/title", title);
+        this.syncWidgets;
     }
 }

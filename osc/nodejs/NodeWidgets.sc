@@ -134,6 +134,10 @@ NodeJS_Widget {
         }
     }
 
+    sync {
+
+    }
+
     startDemo {
         "[%] startDemo not implemented".format(this.class).warn;
     }
@@ -202,6 +206,11 @@ NodeJS_ValueWidget : NodeJS_Widget {
                 onValue.value(params[\value]);
             }
         }
+    }
+
+    sync {
+        var obj = (value: params[\value]);
+        this.sendMsg("/widget/update", JSON.toJSON(obj));
     }
 }
 
@@ -611,9 +620,9 @@ NodeJS_Playcontrol : NodeJS_Widget {
     var sections;
     var sectionTimes;
     var currentSection;
-    var sound_file;
-    var cue_params;
-    var play_event;
+    var <sound_file;
+    var <cue_params;
+    var <play_event;
 
     *new {
         arg showBack = true, showForward = true, showDisplay = true, syncTime = 10, params = [];
@@ -748,9 +757,8 @@ NodeJS_Playcontrol : NodeJS_Widget {
             maxTime = sound_file.duration;
         };
 
-        maxTime.postln;
-
-        cue_params.postln;
+        // maxTime.postln;
+        // cue_params.postln;
     }
 
     play {
@@ -772,11 +780,9 @@ NodeJS_Playcontrol : NodeJS_Widget {
                 var pos = (currentTime * sound_file.sampleRate) + cue_params[\begin];
                 cue_params[\firstFrame] = pos;
                 play_event = sound_file.cue(cue_params, true, true);
-                play_event.synth.postln;
-            };
-
-            // resume
-            if(play_event.notNil) {
+                play_event.postln;
+            }
+            {
                 play_event.resume
             };
         }

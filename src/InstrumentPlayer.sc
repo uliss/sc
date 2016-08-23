@@ -1,3 +1,26 @@
+PathSpec : NonControlSpec {
+    var <>path;
+
+    *new { arg path;
+		^super.new.path_(path)
+	}
+
+    *initClass {
+        specs.addAll([
+            \path -> PathSpec("")
+        ])
+    }
+
+    storeArgs { ^[path] }
+
+/*    canAccept { arg thing;
+		// could accept 0 or 1 but useless
+		^(thing.isKindOf(AbstractPlayer) and: { thing.spec == this })
+	}*/
+
+    defaultControl { ^"" }
+}
+
 SP_InstrumentPlayer {
     var <>instr;
     var <initArgs;

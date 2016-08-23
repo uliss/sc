@@ -1,48 +1,67 @@
-Piece_Part_Spiegel_im_Spiegel : ConcertPiece {
+Piece_Part_Spiegel_im_Spiegel : SP_PieceApp {
     var <widget_play;
     var <widget_viola_part;
-    var synth_viola;
+    var <widget_viola_amp_slider;
+    var <widget_piano_amp_slider;
+    var <widget_viola_pan_knob;
 
     *new {
         arg out = 0, violaIn = 0;
-        ^super.new("Spigel im Spiegel", "Arvo Part", "/spigel", [\out, out, \violaIn, violaIn]);
+        ^super.new("Spigel im Spiegel", "Arvo Part", "/spiegel", [\out, out]);
     }
 
-    initSynths {
-        arg params;
-        var param_dict = Dictionary.newFrom(params);
+    resetPatch {
+        this.addPatch(\viola, ["viola.in", "viola.compress", "viola.reverb", "common.pan2"]);
+        this.addPatch(\piano, ["common.sfplay", "common.reverb"], (path: "/Users/serj/work/music/sounds/pieces/spiegel_im_spiegel_100.wav"));
+    }
 
-        SynthDef(\violaIn, {
-            var snd = SPU_ViolaInCommon.ar() * \amp.kr(1, 0.1);
-            snd = Pan2.ar(snd, \pos.kr(0, 0.1));
-            Out.ar(param_dict[\out], snd);
-        }).send;
+    initPatches {
+        this.resetPatch;
+        onPlay = { this.playPatches };
+        onStop = { this.releasePatches(2) };
     }
 
     initUI {
+        var w1, w2, w3, w4, w5;
         // sheet music
-        widget_viola_part = NodeJS_Slideshow.new(nil, [\hideButtons, true, \noSwipe, true]);
-        widget_viola_part.addImages(["/Users/serj/work/music/sc/concerts/pieces/scores/Spiegel_im_Spiegel_my_version-Violin.png"], 1600@1600);
+        w1 = NodeJS_Slideshow.new(nil, [\hideButtons, true, \noSwipe, true])
+        .addImages(["/Users/serj/work/music/sc/concerts/pieces/scores/Spiegel_im_Spiegel_my_version-Violin.png"], 1600@1600);
+        this.addWidget(\sheetMusic, w1);
 
-        widget_play = NodeJS_Playcontrol.new(true, true, false, 10);
-        widget_play.bindSoundfile("/Users/serj/work/music/sounds/pieces/spiegel_im_spiegel_100.wav", fadeIn: 0.1, fadeOut: 1);
+        // PLAY CONTROL
+        w2 = NodeJS_Playcontrol.new(false, false, false, 10, params: [\parent, 'ui-piece-toolbar']);
+        w2.onPlay = { this.play };
+        w2.onStop = { this.stop };
+        w2.onPause = { this.pause };
+        this.addWidget(\playControl, w2);
 
+        // VIOLA AMP
+        w3 = NodeJS_Slider.new(1, 0, 2, label: "VLA", params: [\collapse, 1]);
+        w3.onValue = {|v| this.patch(\viola).set(\amp, v) };
+        this.addWidget(\violaAmp, w3);
+
+        // PIANO AMP
+        w4 = NodeJS_Slider.new(1, 0, 2, label: "PNO", params: [\collapse, 1]);
+        w4.onValue = {|v| this.patch(\piano).set(\amp, v) };
+        this.addWidget(\pianoAmp, w4);
+
+        // VIOLA PAN
+        w5 = NodeJS_Pan.new(0, 100, params: [\collapse, 1]);
+        w5.label = "vla pan";
+        w5.onValue = {|v| this.patch(\viola).set(\pan, v) };
+        this.addWidget(\violaPan, w5);
+
+        this.createWidgets;
         this.sync;
     }
 
     sync {
-        widget_viola_part.add;
-        widget_viola_part.sync;
-        widget_play.add;
-
+        super.sync;
+        this.widget(\sheetMusic).sync;
         NodeJS.sendMsg("/node/title", "");
-        widget_play.command("position", "absBottom")
     }
 
     free {
         super.free;
-        widget_play.remove();
-        widget_viola_part.remove();
-        NodeJS.sendMsg("/node/title", "UI");
     }
 }
