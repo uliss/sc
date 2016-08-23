@@ -129,6 +129,20 @@ SP_PieceApp : SP_AbstractApp {
         playState = 0;
     }
 
+    bindW2P { // bind widget to patch
+        arg wName, pName, controlName;
+        var w, p;
+        w = widgets[wName];
+        p = patches[pName];
+
+        if(p.isNil || w.isNil) {
+            "[%:bindWidgetToPatch] invalid object names: %, %".format(this.class, wName, pName).warn;
+            ^nil;
+        };
+
+        w.onValue = { |v| p.set(controlName.asSymbol, v) };
+    }
+
     free {
         this.stop;
         this.freePatches;

@@ -36,20 +36,20 @@ Piece_Part_Spiegel_im_Spiegel : SP_PieceApp {
         this.addWidget(\playControl, w2);
 
         // VIOLA AMP
-        w3 = NodeJS_Slider.new(1, 0, 2, label: "VLA", params: [\collapse, 1]);
-        w3.onValue = {|v| this.patch(\viola).set(\amp, v) };
+        w3 = NodeJS_Slider.new(1, 0, 2, label: "viola", params: [\collapse, 1]);
         this.addWidget(\violaAmp, w3);
+        this.bindW2P(\violaAmp, \viola, \amp);
 
         // PIANO AMP
-        w4 = NodeJS_Slider.new(1, 0, 2, label: "PNO", params: [\collapse, 1]);
-        w4.onValue = {|v| this.patch(\piano).set(\amp, v) };
+        w4 = NodeJS_Slider.new(1, 0, 2, label: "piano", params: [\collapse, 1]);
         this.addWidget(\pianoAmp, w4);
+        this.bindW2P(\pianoAmp, \piano, \amp);
 
         // VIOLA PAN
         w5 = NodeJS_Pan.new(0, 100, params: [\collapse, 1]);
         w5.label = "vla pan";
-        w5.onValue = {|v| this.patch(\viola).set(\pan, v) };
         this.addWidget(\violaPan, w5);
+        this.bindW2P(\violaPan, \viola, \pan);
 
         this.createWidgets;
         this.sync;
