@@ -1,7 +1,8 @@
 SP_AbstractApp {
     var <oscPath;
     var <httpPath;
-    var osc;
+    var <>onConnect;
+    var osc_connect_sync;
 
     *new {
         arg oscPath, httpPath, syncOnConnect = false;
@@ -28,12 +29,13 @@ SP_AbstractApp {
         httpPath = http_path;
 
         if(syncOnConnect) {
-            SP_AbstractApp.registerSync(oscPath);
+            SP_AbstractApp.registerSync(httpPath);
 
-            osc = OSCFunc({|msg|
-                msg.postln;
-                {this.sync}.defer(1);
-            }, "/sc/app/sync" +/+ this.name, nil, NodeJS.outOscPort)
+            osc_connect_sync = OSCFunc({|msg|
+                {
+                    if(onConnect.notNil) { onConnect.value };
+                }.defer(1);
+            }, "/sc/app/sync" +/+ httpPath, nil, NodeJS.outOscPort)
         }
     }
 
@@ -46,13 +48,15 @@ SP_AbstractApp {
         NodeJS.send2Cli(oscPath ++ path, *args);
     }
 
-    sync {
-
-    }
+    sync {}
 
     css {
         arg k, v;
         this.sendMsg("/css", k, v);
+    }
+
+    free {
+        SP_AbstractApp.unregisterSync(httpPath)
     }
 }
 

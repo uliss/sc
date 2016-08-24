@@ -1138,6 +1138,11 @@ NodeJS_Slideshow : NodeJS_Widget {
         }
     }
 
+    add {
+        super.add;
+        this.sync;
+    }
+
     next {
         if(currentImage < (seq.urls.size - 1)) {
             currentImage = currentImage + 1;

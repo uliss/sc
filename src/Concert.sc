@@ -103,6 +103,7 @@ SP_PieceApp : SP_AbstractApp {
 
     initOSC {
         NodeJS.send2Cli("/app/piece/set_osc_path", oscPath);
+        onConnect = { this.createWidgets };
     }
 
     initMIDI {
@@ -311,6 +312,7 @@ SP_PieceApp : SP_AbstractApp {
     }
 
     free {
+        super.free;
         this.stop;
         this.freePatches;
         patches = nil;

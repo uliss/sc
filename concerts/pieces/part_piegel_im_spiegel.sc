@@ -74,7 +74,6 @@ Piece_Part_Spiegel_im_Spiegel : SP_PieceApp {
 
     sync {
         super.sync;
-        this.widget(\sheetMusic).sync;
         NodeJS.sendMsg("/node/title", "");
     }
 
