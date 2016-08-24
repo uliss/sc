@@ -9,6 +9,7 @@ SP_PieceApp : SP_AbstractApp {
     var <>onStop;
     var <patches;
     var <widgets;
+    var widget_name_list;
     var <bindings;
 
     *initClass {
@@ -27,6 +28,7 @@ SP_PieceApp : SP_AbstractApp {
         patches = Dictionary.new;
         widgets = Dictionary.new;
         bindings = Dictionary.new;
+        widget_name_list = List.new;
 
         osc_play_control = OSCFunc({ |msg|
             switch(msg[1].asString,
@@ -76,12 +78,24 @@ SP_PieceApp : SP_AbstractApp {
     addWidget {
         arg name, widget;
         widgets[name] = widget;
+        widget_name_list.add(name);
     }
 
     widget { |name| ^widgets[name] }
-    createWidgets { widgets.do { |w| w.add } }
-    syncWidgets { widgets.do { |w| w.sync } }
-    removeWidgets { widgets.do { |w| w.remove } }
+    createWidgets {
+        widget_name_list.do { |name|
+            widgets[name].add;
+        }
+    }
+    syncWidgets {
+        widget_name_list.do { |name|
+            widgets[name].sync;
+        }
+    }
+    removeWidgets {
+        widget_name_list = [];
+        widgets.do { |w| w.remove }
+    }
 
     initUI {
         // "[%:initUI] implement me".format(this.class.name).warn;
