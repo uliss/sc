@@ -118,6 +118,12 @@ NodeJS_Widget {
     labelSize { ^params[\labelSize] }
     labelSize_ { |sz| params[\labelSize] = sz.asInteger }
 
+    labelColor { ^params[\labelColor] }
+    labelColor_ { |c|
+        if(c.isKindOf(Color)) { c = c.hexString };
+        params[\labelColor] = c;
+    }
+
     css {
         arg k, v;
         NodeJS.css("#" ++ this.id, k, v);
