@@ -88,7 +88,7 @@ SP_PieceApp : SP_AbstractApp {
     }
 
     initOSC {
-        // "[%:initOSC] implement me".format(this.class.name).warn;
+        NodeJS.send2Cli("/app/piece/set_osc_path", oscPath);
     }
 
     initMIDI {
@@ -299,9 +299,9 @@ SP_PieceApp : SP_AbstractApp {
     free {
         this.stop;
         this.freePatches;
-        this.patches = nil;
+        patches = nil;
         this.removeWidgets;
-        this.widgets = nil;
+        widgets = nil;
         osc_play_control.free;
     }
 
