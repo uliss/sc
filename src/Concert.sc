@@ -309,9 +309,10 @@ SP_PieceApp : SP_AbstractApp {
                 ^Dictionary.new;
             }
         } {
-            fname = fname ++ "*.params";
-            if(fname.pathMatch.first.isNil) {
-                "[%] params not found: %".format(this.class, fname.quote).warn;
+            var pattern = fname ++ "*.params";
+            fname = pattern.pathMatch.first;
+            if(fname.isNil) {
+                "[%] params not found: %".format(this.class, pattern.quote).warn;
                 ^Dictionary.new;
             }
         };
@@ -351,8 +352,36 @@ SP_PieceApp : SP_AbstractApp {
 }
 
 SP_SheetMusicPiece : SP_PieceApp {
+    var slideshow;
+
     *new {
         arg title, composer, oscPath, params = [];
-        ^super.new;
+        ^super.new(title, composer, oscPath, params).initSheetMusic;
+    }
+
+    initSheetMusic {
+        slideshow = NodeJS_Slideshow.new(nil, [\hideButtons, true]);
+        this.addWidget(\sheetMusic, slideshow);
+        this.initScore;
+    }
+
+    initScore {
+
+    }
+
+    swipe_ { |v| slideshow.params[\noSwipe] = v.not }
+
+    addPage {
+        arg imagePath, forceCopy = false;
+        slideshow.addImageCopy(imagePath, 1600@1600, forceCopy);
+    }
+
+    addPages {
+        arg lst, forceCopy = false;
+        slideshow.addImagesCopy(lst, 1600@1600, forceCopy);
+    }
+
+    syncTitle {
+        NodeJS.sendMsg("/node/title", "");
     }
 }

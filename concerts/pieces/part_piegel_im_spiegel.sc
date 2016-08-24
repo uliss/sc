@@ -1,12 +1,16 @@
-Piece_Part_Spiegel_im_Spiegel : SP_PieceApp {
+Piece_Part_Spiegel_im_Spiegel : SP_SheetMusicPiece {
     *new {
         arg out = 0, violaIn = 0;
-        ^super.new("Spigel im Spiegel", "Arvo Part", "/sc/spiegel", [\out, out]);
+        ^super.new("Spigel im Spiegel", "Arvo Part", "/sc/spiegel", [\out, out]).swipe_(false);
     }
 
     resetPatch {
         this.addPatch(\viola, ["viola.in", "viola.compress", "viola.reverb", "common.pan2"]);
         this.addPatch(\piano, ["common.sfplay", "common.reverb"], (path: "/Users/serj/work/music/sounds/pieces/spiegel_im_spiegel_100.wav"));
+    }
+
+    initScore {
+        this.addPage("/Users/serj/work/music/sc/concerts/pieces/scores/Spiegel_im_Spiegel_my_version-Violin.png");
     }
 
     initPatches {
@@ -16,11 +20,7 @@ Piece_Part_Spiegel_im_Spiegel : SP_PieceApp {
     }
 
     initUI {
-        var w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11;
-        // sheet music
-        w1 = NodeJS_Slideshow.new(nil, [\hideButtons, true, \noSwipe, true])
-        .addImages(["/Users/serj/work/music/sc/concerts/pieces/scores/Spiegel_im_Spiegel_my_version-Violin.png"], 1600@1600);
-        this.addWidget(\sheetMusic, w1);
+        var w2, w3, w4, w5, w6, w7, w8, w9, w10, w11;
 
         // PLAY CONTROL
         w2 = NodeJS_Playcontrol.new(false, false, false, 10).parent_('ui-piece-toolbar');

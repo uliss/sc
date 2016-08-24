@@ -1004,60 +1004,65 @@ NodeJS_ImageSequence {
     var <>urls;
 
     *new {
-        ^super.new.init();
+        arg lst = [];
+        ^super.new.urls_(List.new).addUrls(lst);
     }
 
-    init {
-        urls = List.new;
-    }
-
-    clear {
-        urls.clear;
-    }
+    clear { urls.clear }
+    imageDir { ^NodeJS.imageDir }
+    imageCount { ^urls.size }
 
     addUrl {
         arg url;
-        urls.add(url);
+        if(urls.includesEqual(url).not) { urls.add(url) }
     }
 
     addUrls {
-        arg urls_;
-        urls = (urls ++ urls_).asList;
+        arg lst;
+        if(lst.isKindOf(String)) { this.addUrl(lst); ^this  };
+        if(lst.isKindOf(Collection)) { lst.do { |u| this.addUrl(u) } ^this };
     }
 
-    addUrlPattern {
+    matchUrls {
         arg pattern = "*.jpg";
-        var files;
-
-        pattern = NodeJS.imageDir +/+ pattern.basename;
-        files = pathMatch(pattern);
-        urls = (urls ++ files.collect({|p| p.basename})).asList;
+        ^pathMatch(this.imageDir +/+ pattern.basename).collect({|p| p.basename }).asList;
     }
 
-    addImage {
-        arg path, size = nil;
+    addUrlsByMatch {
+        arg pattern = "*.jpg";
+        this.addUrls(this.matchUrls(pattern));
+    }
+
+    copyImage {
+        arg path, newSize = nil;
         var img = NodeJS_Image.new(path.basename);
-        img.upload(path, size);
-        urls.add(img.url);
-        "[%] image uploaded: %".format(this.class, NodeJS.imageDirPrefix +/+ img.url).postln;
+        img.upload(path, newSize);
+        this.addUrl(img.url);
+        "[%] image copied: %".format(this.class, NodeJS.imageDirPrefix +/+ img.url).postln;
     }
 
-    addImages {
-        arg paths, size = nil;
-        paths.do { |p|
-            this.addImage(p, size);
-        }
+    copyImages {
+        arg paths, newSize = nil;
+        paths.do { |p| this.copyImage(p, newSize) }
     }
 
-    addImagePattern {
-        arg pattern, size = nil;
-        this.addImages(pathMatch(pattern), size);
+    copyImagesByMatch {
+        arg pattern, newSize = nil;
+        this.copyImages(pathMatch(pattern), newSize);
+    }
+
+    existsOnServer {
+        arg imagePath;
+        ^ this.pathOnServer(imagePath).pathExists !== false;
+    }
+
+    pathOnServer {
+        arg imagePath;
+        ^ this.imageDir +/+ imagePath.basename;
     }
 
     makeThumbs {
-        arg size = nil;
-        size = size ? 100@100;
-
+        arg size = 100@100;
         urls.do { |u|
             var path_name = PathName(u);
             var new_url = path_name.fileNameWithoutExtension ++ "_thumb." ++ path_name.extension;
@@ -1076,15 +1081,13 @@ NodeJS_Slideshow : NodeJS_Widget {
 
     *new {
         arg urls = [], params = [];
-        var p = super.new("slideshow", params);
-        ^p.initSlideshow(urls);
+        ^super.new("slideshow", params).initSlideshow(urls);
     }
 
     initSlideshow {
         arg urls;
+        seq = NodeJS_ImageSequence.new(urls);
         currentImage = 0;
-        seq = NodeJS_ImageSequence.new;
-        seq.urls = urls.asList;
 
         widgetAction = { |msg|
             switch(msg[1].asString,
@@ -1097,38 +1100,64 @@ NodeJS_Slideshow : NodeJS_Widget {
         };
     }
 
-    addImages {
-        arg paths, size = nil;
-        seq.addImages(paths, size);
+    addImageCopy {
+        arg path, newSize = nil, forceCopy = false;
+        var image_on_server;
+
+        if(path.pathExists === false) {
+            "[%] image not exists: %".format(this.class, path.asString.quote).warn;
+            ^nil;
+        };
+
+        if(seq.existsOnServer(path) && forceCopy.not) { // image already exists on server
+            seq.addUrl(path.basename)
+        } {
+            seq.copyImage(path, newSize)
+        };
+
         this.sync;
     }
 
-    addUrlPattern {
+    addImagesCopy {
+        arg paths, size = nil, forceCopy = false;
+        paths.do { |p| this.addImageCopy(p, size, forceCopy) };
+        this.sync;
+    }
+
+    addUrl {
+        arg url;
+        seq.addUrl(url);
+        this.sync;
+    }
+
+    addUrls {
+        arg urls;
+        seq.addUrls(urls);
+        this.sync;
+    }
+
+    addUrlsByMatch {
         arg pattern = "*.jpg";
-        seq.addUrlPattern(pattern);
+        seq.addUrlsByMatch(pattern);
+        this.sync;
     }
 
-    addImagePattern {
-        arg pattern;
-        seq.addImagePattern(pattern);
+    addImageCopyByMatch {
+        arg pattern, size = nil, forceCopy = false;
+        var files = pathMatch(pattern);
+        this.addImagesCopy(files, size, forceCopy);
     }
 
-    imageUrls {
-        ^seq.urls;
-    }
-
-    imageCount {
-        ^seq.urls.size;
-    }
-
-    currentUrl {
-        ^seq.urls[currentImage];
+    imageUrls { ^seq.urls }
+    imageCount { ^seq.imageCount }
+    currentUrl { ^seq.urls[currentImage] }
+    fullCurrentUrl {
+        if(this.currentUrl.isNil) { ^nil };
+        ^ NodeJS.imageDirPrefix +/+ this.currentUrl;
     }
 
     sync {
-        if(this.currentUrl.notNil) {
-            this.command("url", NodeJS.imageDirPrefix +/+ this.currentUrl);
-        }
+        if(this.currentUrl.notNil) { this.command("url", this.fullCurrentUrl) }
     }
 
     add {

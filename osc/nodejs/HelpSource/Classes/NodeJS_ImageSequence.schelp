@@ -150,4 +150,7 @@ i.imageDir.openOS
 ARGUMENT::
 thumbs size or STRONG::nil::
 
+METHOD:: imageCount
+returns number of images in sequence
+
 PRIVATE:: imageDir
