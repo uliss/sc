@@ -34,11 +34,13 @@ SP_PieceApp : SP_AbstractApp {
                 "pause", { this.pause },
                 "stop", { this.stop },
                 "command", { this.command(msg[2..]) },
+                "load", {this.loadParams },
+                "save", {this.saveParams },
                 {
                     "[%] unknown message: %".format(this.class.name, msg).warn;
                 }
             );
-        }, oscPath);
+        }, oscPath, nil, NodeJS.outOscPort);
 
         this.initOSC(params);
         this.initMIDI(params);
@@ -199,7 +201,7 @@ SP_PieceApp : SP_AbstractApp {
         };
 
         File.mkdir(SP_PieceApp.dir);
-        fname = SP_PieceApp.dir +/+ oscPath;
+        fname = SP_PieceApp.dir +/+ (composer + title).replaceSpaces;
         if(version.notNil) { fname = fname ++ "_" ++ version};
         fname = fname ++ ".params";
 
@@ -250,7 +252,7 @@ SP_PieceApp : SP_AbstractApp {
 
         dict = Dictionary.new;
 
-        fname = SP_PieceApp.dir +/+ oscPath;
+        fname = SP_PieceApp.dir +/+ (composer + title).replaceSpaces;
         if(version.notNil) {
             fname = fname ++ "_" ++ version ++ ".params";
             if(File.exists(fname).not) {

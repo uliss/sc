@@ -7,7 +7,7 @@ Piece_Part_Spiegel_im_Spiegel : SP_PieceApp {
 
     *new {
         arg out = 0, violaIn = 0;
-        ^super.new("Spigel im Spiegel", "Arvo Part", "/spiegel", [\out, out]);
+        ^super.new("Spigel im Spiegel", "Arvo Part", "/sc/spiegel", [\out, out]);
     }
 
     resetPatch {
