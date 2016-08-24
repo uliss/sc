@@ -46,7 +46,7 @@ Piece_Part_Spiegel_im_Spiegel : SP_PieceApp {
         this.bindW2P(\pianoAmp, \piano, \amp);
 
         // VIOLA PAN
-        w5 = NodeJS_Pan.new(0, 100, params: [\collapse, 1]).label_("vla pan");
+        w5 = NodeJS_Pan.new(0, 100).label_("vla pan").hidden_(true);
         this.addWidget(\violaPan, w5);
         this.bindW2P(\violaPan, \viola, \pan);
 

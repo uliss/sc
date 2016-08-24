@@ -351,11 +351,23 @@ NodeJS_Pan : NodeJS_ValueWidget {
 
 NodeJS_Slider : NodeJS_ValueWidget {
     *new {
-        arg value = 0.0, min = 0.0, max = 1.0, size = 180, label = "", horizontal = 0, relative = 0, params = [];
-        var p = super.new("slider", value, min, max, size, label, [
-            \horizontal, horizontal,
-            \relative, relative] ++ params);
-        ^p;
+        arg value = 0.0, min = 0.0, max = 1.0, size = 180, params = [];
+        ^super.new("slider", value, min, max, size, params)
+        .horizontal_(false).mode_(nil)
+    }
+
+    horizontal {  ^ params[\horizontal] ? false }
+    horizontal_ { |v| params[\horizontal] = v.not.not }
+    vertical {  ^ this.horizontal.not }
+    vertical_ { |v| params[\horizontal] = v.not }
+
+    mode { ^ params[\mode] ? \relative }
+    mode_ { |m|
+        if([\absolute, \relative].includes(m.asSymbol)) {
+            params[\mode] = m
+        } {
+            params[\mode] = \relative
+        };
     }
 }
 
