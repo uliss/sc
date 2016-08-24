@@ -1,22 +1,38 @@
 SP_AbstractApp {
+    classvar osc_connect_sync_map;
     var <oscPath;
     var <httpPath;
     var <>onConnect;
-    var osc_connect_sync;
 
     *new {
         arg oscPath, httpPath, syncOnConnect = false;
         ^super.new.init(oscPath, httpPath, syncOnConnect);
     }
 
+    *initClass {
+        osc_connect_sync_map = Dictionary.new;
+    }
+
     *registerSync {
-        arg name;
+        arg name, func;
         NodeJS.sendMsg("/node/app/sync/add", name);
+
+        if(osc_connect_sync_map[name].notNil) {
+            osc_connect_sync_map[name].free;
+            osc_connect_sync_map[name] = nil;
+        };
+
+        osc_connect_sync_map[name] = func;
     }
 
     *unregisterSync {
         arg name;
         NodeJS.sendMsg("/node/app/sync/remove", name);
+
+        if(osc_connect_sync_map[name].notNil) {
+            osc_connect_sync_map[name].free;
+            osc_connect_sync_map[name] = nil;
+        }
     }
 
     name {
@@ -29,13 +45,14 @@ SP_AbstractApp {
         httpPath = http_path;
 
         if(syncOnConnect) {
-            SP_AbstractApp.registerSync(httpPath);
-
-            osc_connect_sync = OSCFunc({|msg|
+            var osc_func = OSCFunc({|msg|
                 {
+                    "[%:%] sync on connection".format(this.class, this.identityHash).postln;
                     if(onConnect.notNil) { onConnect.value };
-                }.defer(1);
-            }, "/sc/app/sync" +/+ httpPath, nil, NodeJS.outOscPort)
+                }.defer(2);
+            }, "/sc/app/sync" +/+ httpPath, nil, NodeJS.outOscPort);
+
+            SP_AbstractApp.registerSync(httpPath, osc_func);
         }
     }
 
@@ -56,7 +73,7 @@ SP_AbstractApp {
     }
 
     free {
-        SP_AbstractApp.unregisterSync(httpPath)
+        SP_AbstractApp.unregisterSync(httpPath);
     }
 }
 

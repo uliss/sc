@@ -8,7 +8,6 @@ NodeJS_Widget {
     var onRemove;
     var added;
     var osc;
-    var auto_add;
 
     *toUI {
         NodeJS.sendMsg("/sc/redirect", "/ui");
@@ -68,6 +67,15 @@ NodeJS_Widget {
         added = false;
         this.sendMsg("/widget/remove", this.id);
         if(onRemove.notNil) { onRemove.value };
+    }
+
+    free {
+        osc.free;
+        onRemove = nil;
+        params = nil;
+        action = nil;
+        widgetAction = nil;
+        type = nil;
     }
 
     update {
@@ -168,21 +176,6 @@ NodeJS_Widget {
     css {
         arg k, v;
         NodeJS.css("#" ++ this.id, k, v);
-    }
-
-    autoAdd {
-        arg value = true, interval = 10;
-        if(value) {
-            if(auto_add.isNil) {
-                auto_add = SkipJack.new({this.add}, interval, false, "auto_add");
-            }
-            {
-                auto_add.start;
-            }
-        }
-        {
-            if(auto_add.notNil) { auto_add.stop }
-        }
     }
 
     sync {}

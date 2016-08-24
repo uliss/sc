@@ -1,5 +1,6 @@
 SP_PieceApp : SP_AbstractApp {
     classvar <>dir;
+    classvar <app_pieces;
     var <>title;
     var <>composer;
     var osc_play_control;
@@ -14,11 +15,20 @@ SP_PieceApp : SP_AbstractApp {
 
     *initClass {
         dir = "~/.config/sc".standardizePath;
+        app_pieces = Dictionary.new;
     }
 
     *new {
         arg title, composer, oscPath, params = [];
-        ^super.new(oscPath, "/piece", true).title_(title).composer_(composer).initPiece(params);
+        var key = title + composer;
+        var piece;
+        if(app_pieces[key].notNil) {
+            ^app_pieces[key]
+        } {
+            var p = super.new(oscPath, "/piece", true).title_(title).composer_(composer).initPiece(params);
+            app_pieces[key] = p;
+            ^p;
+        };
     }
 
     initPiece {
@@ -72,7 +82,7 @@ SP_PieceApp : SP_AbstractApp {
 
     playPatches { patches.do { |p| p.play } }
     stopPatches { patches.do { |p| p.stop } }
-    freePatches { patches.do { |p| p.free } }
+    freePatches { patches.do { |p| p.free }; patches = nil; }
     releasePatches { |t = 0.5| patches.do { |p| p.release(t) } }
 
     addWidget {
@@ -94,7 +104,13 @@ SP_PieceApp : SP_AbstractApp {
     }
     removeWidgets {
         widget_name_list = [];
-        widgets.do { |w| w.remove }
+        widgets.do { |w| w.remove };
+        widgets = nil;
+    }
+    freeWidgets {
+        widget_name_list = [];
+        widgets.do { |w| w.free };
+        widgets = nil;
     }
 
     initUI {
@@ -102,8 +118,10 @@ SP_PieceApp : SP_AbstractApp {
     }
 
     initOSC {
-        NodeJS.send2Cli("/app/piece/set_osc_path", oscPath);
-        onConnect = { this.createWidgets };
+        onConnect = {
+            NodeJS.send2Cli("/app/piece/set_osc_path", oscPath);
+            this.createWidgets;
+        };
     }
 
     initMIDI {
@@ -315,9 +333,8 @@ SP_PieceApp : SP_AbstractApp {
         super.free;
         this.stop;
         this.freePatches;
-        patches = nil;
-        this.removeWidgets;
-        widgets = nil;
+        this.freeWidgets;
+        bindings = nil;
         osc_play_control.free;
     }
 

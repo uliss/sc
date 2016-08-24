@@ -11,7 +11,7 @@ Piece_Part_Spiegel_im_Spiegel : SP_PieceApp {
 
     initPatches {
         this.resetPatch;
-        onPlay = { this.playPatches };
+        onPlay = { this.resetPatch; this.playPatches };
         onStop = { this.releasePatches(2) };
     }
 
@@ -23,7 +23,7 @@ Piece_Part_Spiegel_im_Spiegel : SP_PieceApp {
         this.addWidget(\sheetMusic, w1);
 
         // PLAY CONTROL
-        w2 = NodeJS_Playcontrol.new(false, false, false, 10, params: [\parent, 'ui-piece-toolbar']);
+        w2 = NodeJS_Playcontrol.new(false, false, false, 10).parent_('ui-piece-toolbar');
         w2.onPlay = { this.play };
         w2.onStop = { this.stop };
         w2.onPause = { this.pause };
@@ -69,7 +69,7 @@ Piece_Part_Spiegel_im_Spiegel : SP_PieceApp {
         this.bindW2P(\pianoReverbRoom, \piano, \room);
 
         this.createWidgets;
-        this.sync;
+        NodeJS.sendMsg("/node/title", "");
     }
 
     sync {
