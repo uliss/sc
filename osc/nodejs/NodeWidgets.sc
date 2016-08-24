@@ -19,6 +19,10 @@ NodeJS_Widget {
         ^super.new.init(type, params);
     }
 
+    *removeAll {
+        NodeJS.send2Cli("/widget/removeAll");
+    }
+
     init {
         arg t, p = [];
 
