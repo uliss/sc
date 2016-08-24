@@ -265,10 +265,7 @@ SP_PieceApp : SP_AbstractApp {
             "overwriting...".postln;
         };
 
-        file = File(fname, "w");
-        file.write(params.asCompileString);
-        file.close;
-
+        params.writeArchive(fname);
         ^params;
     }
 
@@ -302,37 +299,25 @@ SP_PieceApp : SP_AbstractApp {
 
     loadParamsDict {
         arg version = nil;
-        var fname, file, data, dict, tmp;
-
-        dict = Dictionary.new;
+        var fname;
 
         fname = SP_PieceApp.dir +/+ (composer + title).replaceSpaces;
         if(version.notNil) {
             fname = fname ++ "_" ++ version ++ ".params";
             if(File.exists(fname).not) {
-                "[%] params not found: %".format(this.class, fname.quote).postln;
-                ^dict;
+                "[%] params not found: %".format(this.class, fname.quote).warn;
+                ^Dictionary.new;
             }
         } {
             fname = fname ++ "*.params";
-            fname = fname.pathMatch.first;
-            if(fname.isNil) {
-                "[%] params not found: %".format(this.class, fname.quote).postln;
-                ^dict;
+            if(fname.pathMatch.first.isNil) {
+                "[%] params not found: %".format(this.class, fname.quote).warn;
+                ^Dictionary.new;
             }
         };
 
-        file = File.open(fname, "r");
         "[%] reading params from: %".format(this.class, fname.quote).postln;
-        data = file.readAllString;
-        file.close;
-
-        tmp = data.interpret;
-        if(tmp.notNil && tmp.class == Dictionary) {
-            dict = tmp;
-        };
-
-        ^dict;
+        ^Object.readArchive(fname);
     }
 
     loadParams {
@@ -362,5 +347,12 @@ SP_PieceApp : SP_AbstractApp {
     sync {
         this.syncTitle;
         this.syncWidgets;
+    }
+}
+
+SP_SheetMusicPiece : SP_PieceApp {
+    *new {
+        arg title, composer, oscPath, params = [];
+        ^super.new;
     }
 }
