@@ -1,0 +1,153 @@
+TITLE:: NodeJS_ImageSequence
+summary:: Widget for Sequence on images
+categories:: Libraries>splib>NodeJS>widgets
+related:: NodeJS, NodeJS_Widget
+
+DESCRIPTION::
+Widget for handling image sequences
+
+
+CLASSMETHODS::
+
+METHOD:: new
+returns new instance
+
+
+INSTANCEMETHODS::
+
+METHOD:: urls
+list of image URLs
+
+CODE::
+i = NodeJS_ImageSequence.new
+i.urls
+::
+
+METHOD:: addUrl
+adds single URL
+
+ARGUMENT::
+URL
+
+METHOD:: addUrls
+adds collection of image urls
+
+CODE::
+i = NodeJS_ImageSequence.new
+i.urls
+i.addUrls(["/image1.jpg", "image2.jpg"])
+i.addUrls("/image3.jpg")
+i.addUrls((src: "/image4.jpg"))
+i.clear
+i.urls
+::
+
+ARGUMENT::
+list of URLs
+
+METHOD:: addUrlsByMatch
+adds URL's by matching filename pattern in NodeJS server image directory
+
+CODE::
+i = NodeJS_ImageSequence.new
+i.addUrlsByMatch("*.jpg")
+i.addUrlsByMatch("*.png")
+i.urls
+::
+
+ARGUMENT::
+image name pattern
+
+METHOD:: clear
+removes all URLs
+
+CODE::
+i = NodeJS_ImageSequence.new
+i.urls
+i.addUrls(["/image1.jpg", "image2.jpg"])
+i.clear
+i.urls
+::
+
+METHOD:: copyImage
+copies and resizes given image to NodeJS server image folder
+and adds it to URL list
+
+CODE::
+i = NodeJS_ImageSequence.new
+f = i.class.filenameSymbol.asString.dirname +/+ "test_image.jpg"
+// copy no resize
+i.copyImage(f)
+// or with resize
+i.copyImage(f, 100@100)
+i.urls
+i.matchUrls("*.jpg")
+i.imageDir.openOS
+::
+
+ARGUMENT::
+full image filename
+
+ARGUMENT::
+new image size, if STRONG::nil::, no resize performed
+
+METHOD:: copyImages
+copies and resizes images from given list to NodeJS server image folder
+and adds it to URL list
+
+ARGUMENT::
+image path list
+
+ARGUMENT::
+new image size, if STRONG::nil::, no resize performed
+
+METHOD:: copyImagesByMatch
+copies and resized image matched to given filename pattern and adds them
+to URL list
+
+CODE::
+i = NodeJS_ImageSequence.new
+m = i.class.filenameSymbol.asString.dirname +/+ "test_*.jpg"
+// copy no resize
+i.copyImagesByMatch(m)
+// or with resize
+i.copyImagesByMatch(m, 100@100)
+i.urls
+i.matchUrls("*.jpg")
+i.imageDir.openOS
+::
+
+ARGUMENT::
+iamge filename match pattern
+
+ARGUMENT::
+new image size, if STRONG::nil::, no resize performed
+
+METHOD:: matchUrls
+returns list of matched filenames in NodeJS server image directory
+
+CODE::
+i = NodeJS_ImageSequence.new
+i.matchUrls("*.jpg")
+i.matchUrls("*.png")
+::
+
+ARGUMENT::
+image name pattern
+
+METHOD:: makeThumbs
+makes thumbs for object URL's
+
+CODE::
+i = NodeJS_ImageSequence.new
+i.addUrlsByMatch("*.jpg")
+i.addUrlsByMatch("*.png")
+i.urls
+i.makeThumbs
+i.imageDir.openOS
+::
+
+ARGUMENT::
+thumbs size or STRONG::nil::
+
+PRIVATE:: imageDir
