@@ -67,17 +67,9 @@ Piece_Part_Spiegel_im_Spiegel : SP_PieceApp {
         w11 = NodeJS_Knob.new(0.7, 0, 1).size_(70).label_("room").labelSize_(20).hidden_(true).layout_(w9);
         this.addWidget(\pianoReverbRoom, w11);
         this.bindW2P(\pianoReverbRoom, \piano, \room);
-
-        this.createWidgets;
-        NodeJS.sendMsg("/node/title", "");
     }
 
-    sync {
-        super.sync;
+    syncTitle {
         NodeJS.sendMsg("/node/title", "");
-    }
-
-    free {
-        super.free;
     }
 }

@@ -113,15 +113,22 @@ SP_PieceApp : SP_AbstractApp {
         widgets = nil;
     }
 
+    syncTitle {
+        NodeJS.sendMsg("/node/title", title);
+    }
+
+    add {
+        NodeJS.send2Cli("/app/piece/set_osc_path", oscPath);
+        this.syncTitle;
+        this.createWidgets;
+    }
+
     initUI {
         // "[%:initUI] implement me".format(this.class.name).warn;
     }
 
     initOSC {
-        onConnect = {
-            NodeJS.send2Cli("/app/piece/set_osc_path", oscPath);
-            this.createWidgets;
-        };
+        onConnect = { this.add };
     }
 
     initMIDI {
@@ -209,11 +216,8 @@ SP_PieceApp : SP_AbstractApp {
         ^nil;
     }
 
-    saveParams {
-        arg version = nil;
-        var file, fname, dir;
+    params {
         var params = Dictionary.new;
-
         patches.keysValuesDo { |n, p|
             var args = p.storeArgs[1];
             var dict = Dictionary.new;
@@ -232,6 +236,24 @@ SP_PieceApp : SP_AbstractApp {
             };
             params[n] = dict;
         };
+        ^params;
+    }
+
+    printParams {
+        "% synth params:".format(composer + title).postln;
+
+        this.params.keysValuesDo { |instr, p|
+            "    %:".format(instr.asString.quote).postln;
+            p.keysValuesDo {|k, v|
+                "        % = %".format(k.asString.padRight(14), v).postln;
+            }
+        }
+    }
+
+    saveParams {
+        arg version = nil;
+        var file, fname, dir;
+        var params = this.params;
 
         File.mkdir(SP_PieceApp.dir);
         fname = SP_PieceApp.dir +/+ (composer + title).replaceSpaces;
@@ -242,7 +264,6 @@ SP_PieceApp : SP_AbstractApp {
             "[%] file exists: %".format(this.class, fname.quote).postln;
             "overwriting...".postln;
         };
-
 
         file = File(fname, "w");
         file.write(params.asCompileString);
@@ -339,7 +360,7 @@ SP_PieceApp : SP_AbstractApp {
     }
 
     sync {
-        NodeJS.sendMsg("/node/title", title);
+        this.syncTitle;
         this.syncWidgets;
     }
 }
