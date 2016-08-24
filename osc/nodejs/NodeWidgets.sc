@@ -149,6 +149,22 @@ NodeJS_Widget {
     size { ^params[\size] }
     size_ { |sz| params[\size] = sz.asInteger }
 
+    height { ^ params[\height] }
+    height_ { |h| params[\height] = h.asInteger }
+
+    width { ^ params[\width] }
+    width_ { |w| params[\width] = w.asInteger }
+
+    layout { ^params[\layout] }
+    layout_ { |l|
+        if(l.isKindOf(NodeJS_Layout)) { l = l.id() };
+        params[\layout] = l
+
+    }
+
+    parent { ^params[\parent] }
+    parent_ { |p| params[\parent] = p }
+
     css {
         arg k, v;
         NodeJS.css("#" ++ this.id, k, v);
@@ -177,6 +193,23 @@ NodeJS_Widget {
 
     stopDemo {
         "[%] stopDemo not implemented".format(this.class).warn;
+    }
+}
+
+NodeJS_Layout : NodeJS_Widget {
+    title { ^params[\title] }
+    title_ { |t| params[\title] = t }
+}
+
+NodeJS_HBox : NodeJS_Layout {
+    *new {
+        ^super.new("hbox");
+    }
+}
+
+NodeJS_VBox : NodeJS_Layout {
+    *new {
+        ^super.new("vbox");
     }
 }
 
