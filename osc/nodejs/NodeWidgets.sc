@@ -93,6 +93,11 @@ NodeJS_Widget {
         ^params[\idx];
     }
 
+    hidden { ^params[\hidden] }
+    hidden_ { |v|
+        if(v) { params[\hidden] = true } { params[\hidden] = nil };
+    }
+
     value {
         ^params[\value];
     }
@@ -105,17 +110,13 @@ NodeJS_Widget {
         }
     }
 
-    asJSON {
-        ^JSON.toJSON(params);
-    }
+    asJSON { ^JSON.toJSON(params) }
 
-    label {
-        ^params[\label];
-    }
+    label { ^params[\label] }
+    label_ { |txt| params[\label] = txt }
 
-    label_ { |txt|
-        params[\label] = txt;
-    }
+    labelSize { ^params[\labelSize] }
+    labelSize_ { |sz| params[\labelSize] = sz.asInteger }
 
     css {
         arg k, v;
@@ -137,9 +138,7 @@ NodeJS_Widget {
         }
     }
 
-    sync {
-
-    }
+    sync {}
 
     startDemo {
         "[%] startDemo not implemented".format(this.class).warn;

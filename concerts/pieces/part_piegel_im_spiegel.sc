@@ -36,18 +36,17 @@ Piece_Part_Spiegel_im_Spiegel : SP_PieceApp {
         this.addWidget(\playControl, w2);
 
         // VIOLA AMP
-        w3 = NodeJS_Slider.new(1, 0, 2, label: "viola", params: [\collapse, 1]);
+        w3 = NodeJS_Slider.new(1, 0, 2).label_("viola").labelSize_(20).hidden_(true);
         this.addWidget(\violaAmp, w3);
         this.bindW2P(\violaAmp, \viola, \amp);
 
         // PIANO AMP
-        w4 = NodeJS_Slider.new(1, 0, 2, label: "piano", params: [\collapse, 1]);
+        w4 = NodeJS_Slider.new(1, 0, 2).label_("piano").labelSize_(20).hidden_(true);
         this.addWidget(\pianoAmp, w4);
         this.bindW2P(\pianoAmp, \piano, \amp);
 
         // VIOLA PAN
-        w5 = NodeJS_Pan.new(0, 100, params: [\collapse, 1]);
-        w5.label = "vla pan";
+        w5 = NodeJS_Pan.new(0, 100, params: [\collapse, 1]).label_("vla pan");
         this.addWidget(\violaPan, w5);
         this.bindW2P(\violaPan, \viola, \pan);
 
