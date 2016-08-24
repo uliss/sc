@@ -1,10 +1,4 @@
 Piece_Part_Spiegel_im_Spiegel : SP_PieceApp {
-    var <widget_play;
-    var <widget_viola_part;
-    var <widget_viola_amp_slider;
-    var <widget_piano_amp_slider;
-    var <widget_viola_pan_knob;
-
     *new {
         arg out = 0, violaIn = 0;
         ^super.new("Spigel im Spiegel", "Arvo Part", "/sc/spiegel", [\out, out]);
