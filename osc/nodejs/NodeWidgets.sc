@@ -124,6 +124,27 @@ NodeJS_Widget {
         params[\labelColor] = c;
     }
 
+    color { ^params[\color] }
+    color_ { |c|
+        if(c.isKindOf(Color)) { c = c.hexString };
+        params[\color] = c;
+    }
+
+    borderColor { ^params[\borderColor] }
+    borderColor_ { |c|
+        if(c.isKindOf(Color)) { c = c.hexString };
+        params[\borderColor] = c;
+    }
+
+    backgroundColor { ^params[\backgroundColor] }
+    backgroundColor_ { |c|
+        if(c.isKindOf(Color)) { c = c.hexString };
+        params[\backgroundColor] = c;
+    }
+
+    size { ^params[\size] }
+    size_ { |sz| params[\size] = sz.asInteger }
+
     css {
         arg k, v;
         NodeJS.css("#" ++ this.id, k, v);
