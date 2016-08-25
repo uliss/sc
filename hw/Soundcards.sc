@@ -13,6 +13,8 @@ SoundCard {
         ^super.new.init("Saffire", bufSize, memSize, inCh, outCh, "127.0.0.1", 58009);
     }
 
+    *focuwrite { this.saffire }
+
     *mbox {
         arg bufSize = 256, memSize = (2**10) * 100 /* 100Mb*/, inCh = 6, outCh = 6;
         ^super.new.init("Mbox Pro", bufSize, memSize, inCh, outCh, "127.0.0.1", 58010);
@@ -23,6 +25,11 @@ SoundCard {
         ^super.new.init("BuiltIn", bufSize, memSize, inCh, outCh, "127.0.0.1", 58011);
     }
 
+    *soundflower {
+        arg bufSize = 512, memSize = (2**10) * 100 /* 100Mb*/, inCh = 2, outCh = 16;
+        ^super.new.init("Soundflower (64ch)", bufSize, memSize, inCh, outCh, "127.0.0.1", 58011);
+    }
+
     *default {
         if(SoundCard.defaultCard.isNil) { SoundCard.defaultCard = \builtin };
 
@@ -30,6 +37,7 @@ SoundCard {
             \builtin, {^SoundCard.builtin},
             \mbox,    {^SoundCard.mbox},
             \saffire, {^SoundCard.saffire},
+            \soundflower, {^SoundCard.soundflower},
             {^nil}
         )
     }
