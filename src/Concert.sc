@@ -432,7 +432,8 @@ SP_SheetMusicPiece : SP_PieceApp {
 
 SP_PdfMusicPiece : SP_SheetMusicPiece {
     *new {
-        arg path, params = [];
-        ^super.new("title", "composer", "/sheetmusic", params).addPdf(path);
+        arg pdf, title, composer = "PDF", oscPath = "/sheetmusic", params = [];
+        title = title ? pdf.basename;
+        ^super.new(title, composer, oscPath, params).addPdf(pdf);
     }
 }
