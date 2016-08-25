@@ -1,7 +1,7 @@
-TITLE:: NodeJS
-summary:: Interface to node js server
-categories:: NodeJS
-related:: NodeJS_Label
+TITLE:: NodeUtility_Player
+summary:: interface for Instr
+categories:: Libraries>splib>NodeJS>Utilities
+related:: Classes/NodeJS
 
 DESCRIPTION::
 (put long description here)
@@ -9,17 +9,32 @@ DESCRIPTION::
 
 CLASSMETHODS::
 
-METHOD:: connected
+METHOD:: new
+(describe method here)
+
+ARGUMENT:: instr
+(describe argument here)
+
+ARGUMENT:: oscPath
+(describe argument here)
+
+ARGUMENT:: attackTime
+(describe argument here)
+
+ARGUMENT:: releaseTime
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+
+INSTANCEMETHODS::
+
+METHOD:: release
 (describe method here)
 
 returns:: (describe returnvalue here)
 
-METHOD:: httpPort
-(describe method here)
-
-returns:: (describe returnvalue here)
-
-METHOD:: outOscPort
+METHOD:: attackTime
 (describe method here)
 
 returns:: (describe returnvalue here)
@@ -27,76 +42,54 @@ returns:: (describe returnvalue here)
 METHOD:: set
 (describe method here)
 
-ARGUMENT:: key
-(describe argument here)
-
-ARGUMENT:: val
+ARGUMENT::  ... args
 (describe argument here)
 
 returns:: (describe returnvalue here)
 
-METHOD:: get
+METHOD:: instr
 (describe method here)
 
-ARGUMENT:: key
+returns:: (describe returnvalue here)
+
+METHOD:: gui
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: play
+(describe method here)
+
+ARGUMENT::  ... args
 (describe argument here)
 
 returns:: (describe returnvalue here)
-
-METHOD:: subscribe
-(describe method here)
-
-ARGUMENT:: func
-(describe argument here)
-
-returns:: (describe returnvalue here)
-
-METHOD:: inOscPort
-(describe method here)
-
-returns:: (describe returnvalue here)
-
-METHOD:: lockPath
-(describe method here)
-
-returns:: (describe returnvalue here)
-
-METHOD:: start
-Starts NodeJS server.
-
-returns:: nil if start failed.
 
 METHOD:: stop
 (describe method here)
 
 returns:: (describe returnvalue here)
 
-METHOD:: restart
+METHOD:: releaseTime
 (describe method here)
 
 returns:: (describe returnvalue here)
 
-METHOD:: open
+METHOD:: player
 (describe method here)
-
-ARGUMENT:: url
-(describe argument here)
 
 returns:: (describe returnvalue here)
 
-METHOD:: sendMsg
+METHOD:: initPlayer
 (describe method here)
 
-ARGUMENT:: addr
+ARGUMENT:: instrument
 (describe argument here)
 
-ARGUMENT::  ... args
+ARGUMENT::  ... params
 (describe argument here)
 
 returns:: (describe returnvalue here)
-
-
-INSTANCEMETHODS::
 
 
 EXAMPLES::

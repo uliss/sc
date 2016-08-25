@@ -1,0 +1,99 @@
+TITLE:: SP_InstrumentControl
+summary:: Instrument play control via OSC
+categories:: Libraries>splib
+related:: Classes/NodeJS, Classes/SP_InstrumentPlayer
+
+DESCRIPTION::
+Controls playing of Instr via OSC.
+
+
+SUBSECTION:: Typicall usage:
+CODE::
+(
+n = NetAddr("localhost", NodeJS.outOscPort);
+c = SP_InstrumentControl.new("/instr");
+)
+
+n.sendMsg("/instr", "utils.tone", "play");
+n.sendMsg("/instr", "utils.tone", "set", "freq", 380);
+n.sendMsg("/instr", "utils.tone", "release");
+n.sendMsg("/instr", "utils.tone", "stop");
+n.sendMsg("/instr", "utils.tone", "gui");
+
+n.sendMsg("/instr", "viola.test", "play", "pos", 300);
+n.sendMsg("/instr", "viola.test", "release");
+n.sendMsg("/instr", "viola.test", "info");
+::
+
+CLASSMETHODS::
+
+METHOD:: new
+creates new instance
+
+CODE::
+(
+n = NetAddr("localhost", NodeJS.outOscPort);
+c = SP_InstrumentControl.new("/instr");
+)
+
+n.sendMsg("/instr", "viola.test", "init", "pos", 100)
+n.sendMsg("/instr", "viola.test", "play")
+n.sendMsg("/instr", "viola.test", "stop")
+c.playerNames
+
+::
+
+ARGUMENT::
+OSC path to listen
+
+returns:: this
+
+
+INSTANCEMETHODS::
+
+METHOD:: processOsc
+process OSC messages and do some actions
+
+STRONG:: Supported OSC messages: ::
+
+definitionlist::
+## init
+|| CODE:: n.sendMsg("/path", "instrument", "init", "param1", 1.0, ...)::
+## play
+|| CODE:: n.sendMsg("/path", "instrument", "play", "param1", 2.0, ...)::
+## set
+|| CODE:: n.sendMsg("/path", "instrument", "set", "param1", 2.0, ...)::
+## stop
+|| CODE:: n.sendMsg("/path", "instrument", "stop")::
+## release
+|| CODE:: n.sendMsg("/path", "instrument", "release")::
+## gui
+|| CODE:: n.sendMsg("/path", "instrument", "gui")::
+## info
+|| CODE:: n.sendMsg("/path", "instrument", "info")::
+::
+
+ARGUMENT:: msg
+OSC message
+
+METHOD:: player
+returns player by given instrument name
+
+ARGUMENT::
+instrument name, e.g. TELETYPE:: "utils.tone" ::
+
+returns:: link::Classes/SP_InstrumentPlayer::
+
+METHOD:: playerNames
+returns active players
+
+METHOD:: stopAll
+stop all players
+
+METHOD:: releaseAll
+release all players
+
+METHOD:: free
+stop all player and release resources
+
+PRIVATE:: initManager

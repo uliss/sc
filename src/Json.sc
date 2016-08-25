@@ -42,3 +42,15 @@ JSON {
         ^str;
     }
 }
+
++String{
+	urlEncode{
+		var str="";
+		this.do({|c|
+			if(c.isAlphaNum || "_.-/~".contains(c.asString))
+			{str = str++c}
+			{str=str++"%"++c.ascii.asHexString(2)}
+		})
+		^str;
+	}
+}

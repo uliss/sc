@@ -22,8 +22,8 @@ k.dumpKinect(false);
 /////////////////
 ///    START
 /////////////////
-// k = NYSketches.new(NetAddr("localhost", 10001));
-k = NYSketches.new(NetAddr("alex", 10000));
+k = NYSketches.new(NetAddr("localhost", 10001));
+// k = NYSketches.new(NetAddr("alex", 10000));
 
 //  гаснет свет
 k.gadanie.start; // сделать длинее хвост - в начале тише звуки (!!!)
