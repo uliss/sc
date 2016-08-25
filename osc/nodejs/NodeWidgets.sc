@@ -192,6 +192,9 @@ NodeJS_Widget {
 NodeJS_Layout : NodeJS_Widget {
     title { ^params[\title] }
     title_ { |t| params[\title] = t }
+
+    align { ^params[\align] }
+    align_ { |v| params[\align] = v }
 }
 
 NodeJS_HBox : NodeJS_Layout {
@@ -399,8 +402,8 @@ NodeJS_Slider : NodeJS_ValueWidget {
 
 NodeJS_Toggle : NodeJS_ValueWidget {
     *new {
-        arg value = 0, size = 100, label = "", params = [];
-        ^super.new("toggle", value, size: size, label: label, params: params);
+        arg value = 0, params = [];
+        ^super.new("toggle", value, params: params);
     }
 }
 
