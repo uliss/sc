@@ -17,3 +17,8 @@ Instr("mix.N>1", {
     arg in;
     Mix.ar(in);
 }, [ AudioSpec() ], outSpec: AudioSpec(1));
+
+Instr("mix.toMono", {
+    arg in;
+    Mix.ar(in);
+}, [ AudioSpec() ], outSpec: AudioSpec(1));

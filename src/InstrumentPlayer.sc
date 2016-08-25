@@ -15,7 +15,7 @@ PathSpec : NonControlSpec {
     defaultControl { ^"" }
 }
 
-InOutBusSpec : ScalarSpec {
+InOutBusSpec : ControlSpec {
     *new {
         arg default = 0;
         ^super.new(0, 63, \lin, 1, default, "bus");
