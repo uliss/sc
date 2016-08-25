@@ -2,7 +2,7 @@ Instr("viola.in", {
     arg in = 0, amp = 1;
     SoundIn.ar(in) * amp;
 }, [
-    ScalarSpec(0, 8, \lin, 1),
+    InOutBusSpec(0),
     [0, 2, \amp, 0]
 ],
 outSpec: AudioSpec(1)
