@@ -83,6 +83,6 @@ Piece_Mazzoli_Tooth_and_Nail : SP_PdfMusicPiece {
     }
 
     initPageTurns {
-        this.loadPageTurns("/Users/serj/work/music/sc/concerts/pieces/turns/mazzoli_tooth_and_nail.txt");
+        this.loadPageTurns(this.class.turnsDir +/+ "mazzoli_tooth_and_nail.txt");
     }
 }

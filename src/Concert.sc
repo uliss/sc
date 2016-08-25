@@ -534,6 +534,10 @@ SP_SheetMusicPiece : SP_PieceApp {
     turnNext { slideshow.next }
     turnLast { slideshow.last }
     turnFirst { slideshow.first }
+
+    *turnsDir {
+        ^this.filenameSymbol.asString.dirname +/+ "turns";
+    }
 }
 
 SP_PdfMusicPiece : SP_SheetMusicPiece {
