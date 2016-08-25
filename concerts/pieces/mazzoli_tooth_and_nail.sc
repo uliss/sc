@@ -1,11 +1,14 @@
 Piece_Mazzoli_Tooth_and_Nail : SP_PdfMusicPiece {
     *new {
-        ^super.new("/Users/serj/work/music/sc/concerts/pieces/scores/Missy Mazzoli Tooth and Nail.pdf", "Tooth and Nail", "Missy Mazzoli", "/sc/spiegel");
+        ^super.new("/Users/serj/work/music/sc/concerts/pieces/scores/Missy Mazzoli Tooth and Nail.pdf", "Tooth and Nail", "Missy Mazzoli", "/sc/mazzoli");
     }
 
     resetPatch {
         this.addPatch(\viola, ["viola.in", "viola.compress", "viola.reverb", "common.pan2"]);
-        this.addPatch(\track, ["common.sfplay"], (path: "/Users/serj/work/music/sounds/pieces/mazzoli_tooth_and_nail.wav"));
+        this.addPatch(\track, ["common.sfplayCh", "common.pseudoStereo"],
+            (channel: 0, path: "/Users/serj/work/music/sounds/pieces/mazzoli_tooth_and_nail.wav"));
+        this.addPatch(\click, ["common.sfplayCh", "mix.1<2", "route.->phones|"],
+            (channel: 1, path: "/Users/serj/work/music/sounds/pieces/mazzoli_tooth_and_nail.wav"));
     }
 
     initPatches {
@@ -15,41 +18,64 @@ Piece_Mazzoli_Tooth_and_Nail : SP_PdfMusicPiece {
     }
 
     initUI {
-        var w2, w3, w4, w5, w6, w7, w8;
+        var control;
 
         // PLAY CONTROL
-        w2 = NodeJS_Playcontrol.new(false, false, false, 10).parent_('ui-piece-toolbar');
-        w2.onPlay = { this.play };
-        w2.onStop = { this.stop };
-        w2.onPause = { this.pause };
-        this.addWidget(\playControl, w2);
+        control = NodeJS_Playcontrol.new(false, false, false, 10).parent_('ui-piece-toolbar');
+        control.onPlay = { this.play };
+        control.onStop = { this.stop };
+        control.onPause = { this.pause };
+        this.addWidget(\playControl, control);
 
-        // VIOLA AMP
-        w3 = NodeJS_Slider.new(1, 0, 2).label_("viola").labelSize_(20).hidden_(true);
-        this.addWidget(\violaAmp, w3);
-        this.bindW2P(\violaAmp, \viola, \amp);
+        // TRACK STAFF
+        {
+            var amp;
 
-        // TRACK AMP
-        w4 = NodeJS_Slider.new(1, 0, 2).label_("track").labelSize_(20).hidden_(true);
-        this.addWidget(\trackAmp, w4);
-        this.bindW2P(\trackAmp, \track, \amp);
+            // TRACK AMP
+            amp = NodeJS_Slider.new(1, 0, 2).label_("track").labelSize_(20).hidden_(true);
+            this.addWidget(\trackAmp, amp);
+            this.bindW2P(\trackAmp, \track, \amp);
+        }.value;
 
-        // VIOLA PAN
-        w5 = NodeJS_Pan.new(0, 100).label_("vla pan").hidden_(true);
-        this.addWidget(\violaPan, w5);
-        this.bindW2P(\violaPan, \viola, \pan);
 
-        // VIOLA REVERB
-        w8 = NodeJS_VBox.new.title_("viola reverb").hidden_(true).borderColor_("#AAA");
-        this.addWidget(\violaReverbBox, w8);
+        // VIOLA STAFF
+        {
+            var amp, pan, box, mix, room;
 
-        w6 = NodeJS_Knob.new(0.5, 0, 1).size_(70).label_("mix").labelSize_(20).hidden_(true).layout_(w8);
-        this.addWidget(\violaReverbMix, w6);
-        this.bindW2P(\violaReverbMix, \viola, \mix);
+            // VIOLA AMP
+            amp = NodeJS_Slider.new(1, 0, 2).label_("viola").labelSize_(20).hidden_(true);
+            this.addWidget(\violaAmp, amp);
+            this.bindW2P(\violaAmp, \viola, \amp);
 
-        w7 = NodeJS_Knob.new(0.7, 0, 1).size_(70).label_("room").labelSize_(20).hidden_(true).layout_(w8);
-        this.addWidget(\violaReverbRoom, w7);
-        this.bindW2P(\violaReverbRoom, \viola, \room);
+            // VIOLA PAN
+            amp = NodeJS_Pan.new(0, 100).label_("vla pan").hidden_(true);
+            this.addWidget(\violaPan, amp);
+            this.bindW2P(\violaPan, \viola, \pan);
+
+            // REVERB BOX
+            box = NodeJS_VBox.new.title_("viola reverb").hidden_(true).borderColor_("#AAA").align_("left");
+            this.addWidget(\violaReverbBox, box);
+
+            // REVERB MIX
+            mix = NodeJS_Knob.new(0.5, 0, 1).size_(70).label_("mix").labelSize_(20).hidden_(true).layout_(box);
+            this.addWidget(\violaReverbMix, mix);
+            this.bindW2P(\violaReverbMix, \viola, \mix);
+
+            // REVERB ROOM
+            room = NodeJS_Knob.new(0.7, 0, 1).size_(70).label_("room").labelSize_(20).hidden_(true).layout_(box);
+            this.addWidget(\violaReverbRoom, room);
+            this.bindW2P(\violaReverbRoom, \viola, \room);
+        }.value;
+
+        // CLICK WIDGETS
+        {
+            var amp;
+            amp = NodeJS_Slider.new(1, 0, 4).label_("click").labelSize_(20).hidden_(true);
+            this.addWidget(\clickAmp, amp);
+            this.bindW2P(\clickAmp, \click, \amp);
+        }.value;
+
+        this.addMonitorWidget;
     }
 
     syncTitle {
