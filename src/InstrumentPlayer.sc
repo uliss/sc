@@ -12,13 +12,20 @@ PathSpec : NonControlSpec {
     }
 
     storeArgs { ^[path] }
-
-/*    canAccept { arg thing;
-		// could accept 0 or 1 but useless
-		^(thing.isKindOf(AbstractPlayer) and: { thing.spec == this })
-	}*/
-
     defaultControl { ^"" }
+}
+
+InOutBusSpec : ScalarSpec {
+    *new {
+        arg default = 0;
+        ^super.new(0, 63, \lin, 1, default, "bus");
+    }
+
+    *initClass {
+        specs.addAll([
+            \bus -> InOutBusSpec(0)
+        ])
+    }
 }
 
 SP_InstrumentPlayer {
