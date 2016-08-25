@@ -81,4 +81,8 @@ Piece_Mazzoli_Tooth_and_Nail : SP_PdfMusicPiece {
     syncTitle {
         NodeJS.sendMsg("/node/title", "");
     }
+
+    initPageTurns {
+        this.loadPageTurns("/Users/serj/work/music/sc/concerts/pieces/turns/mazzoli_tooth_and_nail.txt");
+    }
 }
