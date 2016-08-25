@@ -12,6 +12,8 @@ SP_PieceApp : SP_AbstractApp {
     var <widgets;
     var widget_name_list;
     var <bindings;
+    var <monitor;
+    var <>phonesChannel;
 
     *initClass {
         dir = "~/.config/sc".standardizePath;
@@ -31,6 +33,25 @@ SP_PieceApp : SP_AbstractApp {
         };
     }
 
+    addMonitorWidget {
+        var box, toggle, slider;
+        box = NodeJS_VBox.new.title_("monitor").hidden_(true).borderColor_("#AAA").align_("center");
+        this.addWidget(\monitorBox, box);
+
+        toggle = NodeJS_Toggle.new(0).hidden_(true).label_("on").labelSize_(16).size_(40).layout_(box);
+        toggle.onValue = { |v| if(v > 0) {
+            // play to headphones
+            monitor.play(0, 2, phonesChannel, 2, volume: widgets[\monitorAmp].value, fadeTime: 0.5);
+        } {
+            monitor.stop
+        }};
+        this.addWidget(\monitorToggle, toggle);
+
+        slider = NodeJS_Slider.new(0, 0, 1, 150).label_("amp").labelSize_(20).hidden_(true).layout_(box);
+        slider.onValue = { |v| monitor.vol = v };
+        this.addWidget(\monitorAmp, slider);
+    }
+
     initPiece {
         arg params;
 
@@ -39,6 +60,8 @@ SP_PieceApp : SP_AbstractApp {
         widgets = Dictionary.new;
         bindings = Dictionary.new;
         widget_name_list = List.new;
+        monitor = Monitor.new;
+        phonesChannel = 4;
 
         osc_play_control = OSCFunc({ |msg|
             switch(msg[1].asString,
@@ -189,7 +212,7 @@ SP_PieceApp : SP_AbstractApp {
             ^nil;
         };
 
-        w.onValue = { |v| p.set(controlName.asSymbol, v) };
+        w.onValue = { |v| patches[pName].set(controlName.asSymbol, v) };
 
         // set initial values from patch values
         idx = p.argNames.indexOf(controlName.asSymbol);
