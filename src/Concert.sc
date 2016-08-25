@@ -352,11 +352,16 @@ SP_PieceApp : SP_AbstractApp {
 }
 
 SP_SheetMusicPiece : SP_PieceApp {
+    classvar <>gsPath;
     var slideshow;
 
     *new {
         arg title, composer, oscPath, params = [];
         ^super.new(title, composer, oscPath, params).initSheetMusic;
+    }
+
+    *initClass {
+        gsPath = "/usr/local/bin/gs"
     }
 
     initSheetMusic {
@@ -381,7 +386,53 @@ SP_SheetMusicPiece : SP_PieceApp {
         slideshow.addImagesCopy(lst, 1600@1600, forceCopy);
     }
 
+    addPdf {
+        arg path, force = false;
+        var images;
+
+        if(path.pathExists === false) { "[%] file not exists: %".format(this.class, path).warn; ^nil };
+
+        images = this.splitPdf(path, force: force);
+        if(images.isNil) { ^nil };
+
+        slideshow.addImagesCopy(images);
+    }
+
+    uid {
+        ^(composer + title).hash;
+    }
+
+    splitPdf {
+        arg path, resolution = 400, force = false;
+        var dir = PathName.tmp;
+        var out_template = dir +/+ "page_%_%03d.png".format(this.uid, $%);
+        var out_pattern = dir +/+ "page_%_*.png".format(this.uid);
+
+        if(out_pattern.pathMatch.isEmpty || force) {
+            var err = 0;
+            var cmd = gsPath + "-sDEVICE=pnggray" + "-q" + "-dBATCH" + "-dNOPAUSE" + "-r%".format(resolution) + "-sOutputFile=%".format(out_template.quote) + path.quote;
+            cmd.postln;
+            err = cmd.systemCmd;
+            if(err != 0) { ^nil };
+            ^out_pattern.pathMatch;
+        };
+
+        ^out_pattern.pathMatch;
+    }
+
     syncTitle {
         NodeJS.sendMsg("/node/title", "");
+    }
+
+    turnPrev { slideshow.prev }
+    turnNext { slideshow.next }
+    turnLast { slideshow.last }
+    turnFirst { slideshow.first }
+}
+
+SP_PdfMusicPiece : SP_SheetMusicPiece {
+    *new {
+        arg path, params = [];
+        ^super.new("title", "composer", "/sheetmusic", params).addPdf(path);
     }
 }
