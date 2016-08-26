@@ -40,7 +40,7 @@ Piece_Davidson_Message_Ground : SP_PdfMusicPiece {
 
         // VIOLA STAFF
         {
-            var v1_box, v1_amp, v1_pan, v2_box, v2_amp, v2_pan;
+            var v1_box, v1_amp, v1_pan, v2_box, v2_amp, v2_pan, rev_box, rev_mix, rev_room;
 
             // VIOLA1 BOX
             v1_box = NodeJS_VBox.new.title_("viola I").hidden_(true).borderColor_("#AAA").align_("left");
@@ -69,6 +69,20 @@ Piece_Davidson_Message_Ground : SP_PdfMusicPiece {
             v2_pan = NodeJS_Pan.new(-0.3).size_(70).label_("pan").labelSize_(20).hidden_(true).layout_(v2_box);
             this.addWidget(\viola2_pan, v2_pan);
             this.bindW2P(\viola2_pan, \viola, \viola2_pan);
+
+            // REVERB BOX
+            rev_box = NodeJS_VBox.new.title_("viola reverb").hidden_(true).borderColor_("#AAA").align_("left");
+            this.addWidget(\viola_reverb_box, rev_box);
+
+            // REVERB MIX
+            rev_mix = NodeJS_Knob.new(0.5, 0, 1).size_(70).label_("mix").labelSize_(20).hidden_(true).layout_(rev_box);
+            this.addWidget(\viola_reverb_mix, rev_mix);
+            this.bindW2P(\viola_reverb_mix, \viola, \freeverb2_mix);
+
+            // REVERB ROOM
+            rev_room = NodeJS_Knob.new(0.7, 0, 1).size_(70).label_("room").labelSize_(20).hidden_(true).layout_(rev_box);
+            this.addWidget(\viola_reverb_room, rev_room);
+            this.bindW2P(\viola_reverb_room, \viola, \freeverb2_room);
         }.value;
 
         // CLICK WIDGETS

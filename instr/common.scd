@@ -66,8 +66,8 @@ Instr("common.reverb", {
 ]);
 
 Instr("common.freeverb2", {
-    arg in, mix = 0.53, room = 0.75, damp = 0.5;
-    FreeVerb2.ar(in[0], in[1], mix, room, damp);
+    arg in, freeverb2_mix = 0.53, freeverb2_room = 0.75, freeverb2_damp = 0.5;
+    FreeVerb2.ar(in[0], in[1], freeverb2_mix, freeverb2_room, freeverb2_damp);
 }, [
     AudioSpec(2),
     [0, 1, \lin, 0, 0.55],
