@@ -4,9 +4,10 @@ Piece_Davidson_Spiral : SP_PdfMusicPiece {
     }
 
     resetPatch {
-        this.addPatch(\viola, ["viola.test", "viola.compress", "davidson.spiral_viola_canon", "common.freeverb2"], (tempo: 144));
-/*        this.addPatch(\click, ["common.sfplayCh", "common.mute", "mix.1<2", "route.->phones|"],
-            (channel: 0, path: "/Users/serj/work/music/sounds/pieces/davidson_message_ground_nintendo_track.wav"));*/
+        arg tempo = 144;
+        this.addPatch(\viola, ["viola.in", "viola.compress", "davidson.spiral_viola_canon", "common.freeverb2"], (tempo: tempo));
+        this.addPatch(\click, ["utils.click", "mix.1<2", "route.->phones|"],
+            (channel: 0, bpm: tempo));
     }
 
     initPatches {

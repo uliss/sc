@@ -49,17 +49,24 @@ SP_PieceApp : SP_AbstractApp {
         this.addWidget(\monitorBox, box);
 
         toggle = NodeJS_Toggle.new(0).hidden_(true).label_("on").labelSize_(16).size_(40).layout_(box);
-        toggle.onValue = { |v| if(v > 0) {
-            // play to headphones
-            monitor.play(0, 2, phonesChannel, 2, volume: widgets[\monitorAmp].value, fadeTime: 0.5);
-        } {
-            monitor.stop
-        }};
+        toggle.onValue = { |v| if(v > 0) { this.startMonitor(widgets[\monitorAmp].value) } { this.stopMonitor() }};
         this.addWidget(\monitorToggle, toggle);
 
         slider = NodeJS_Slider.new(0, 0, 1, 150).label_("amp").labelSize_(20).hidden_(true).layout_(box);
         slider.onValue = { |v| monitor.vol = v };
         this.addWidget(\monitorAmp, slider);
+    }
+
+    startMonitor {
+        arg amp = 1;
+        monitor.play(0, 2, phonesChannel, 2, volume: amp, fadeTime: 0.5);
+        widgets[\monitorToggle].value = 1;
+        widgets[\monitorAmp].value = amp;
+    }
+
+    stopMonitor {
+        monitor.play(0, 2, phonesChannel, 2, volume: widgets[\monitorAmp].value, fadeTime: 0.5);
+        widgets[\monitorToggle].value = 0;
     }
 
     initPiece {
@@ -122,6 +129,15 @@ SP_PieceApp : SP_AbstractApp {
     }
 
     patch { |name| ^patches[name] }
+
+    syncPatchesParams {
+        widgets.keysValuesDo { |name, widget|
+            var patchBind = this.findBindedPatch(name.asSymbol);
+            if(patchBind.notNil) {
+                this.set(patchBind.key.asSymbol, patchBind.value.asSymbol, widget.value);
+            }
+        }
+    }
 
     playPatches { patches.do { |p| p.play } }
     stopPatches { patches.do { |p| p.stop } }
@@ -457,7 +473,7 @@ SP_SheetMusicPiece : SP_PieceApp {
         gsPath = "/usr/local/bin/gs"
     }
 
-    *initPageTurns {}
+    initPageTurns {}
 
     initSheetMusic {
         slideshow = NodeJS_Slideshow.new(nil, [\hideButtons, true]).swipeDir_(-1);

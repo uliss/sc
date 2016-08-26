@@ -1,7 +1,7 @@
 Piece_Part_Spiegel_im_Spiegel : SP_SheetMusicPiece {
     *new {
         arg out = 0, violaIn = 0;
-        ^super.new("Spigel im Spiegel", "Arvo Part", "/sc/spiegel", [\out, out]).swipe_(false);
+        ^super.new("Spigel im Spiegel", "Arvo Part", "/sc/spiegel", [\out, out]).swipe_(false).loadParams;
     }
 
     resetPatch {
@@ -15,7 +15,7 @@ Piece_Part_Spiegel_im_Spiegel : SP_SheetMusicPiece {
 
     initPatches {
         this.resetPatch;
-        onPlay = { this.resetPatch; this.playPatches };
+        onPlay = { this.resetPatch; this.syncPatchesParams; this.playPatches };
         onPause = { this.stopPatches }; // temporal fix, while no pause support
         onStop = { this.releasePatches(2) };
     }
@@ -31,7 +31,7 @@ Piece_Part_Spiegel_im_Spiegel : SP_SheetMusicPiece {
         this.addWidget(\playControl, w2);
 
         // VIOLA AMP
-        w3 = NodeJS_Slider.new(1, 0, 2).label_("viola").labelSize_(20).hidden_(true);
+        w3 = NodeJS_Slider.new(1, 0, 1).label_("viola").labelSize_(20).hidden_(true);
         this.addWidget(\violaAmp, w3);
         this.bindW2P(\violaAmp, \viola, \amp);
 
@@ -68,6 +68,9 @@ Piece_Part_Spiegel_im_Spiegel : SP_SheetMusicPiece {
         w11 = NodeJS_Knob.new(0.7, 0, 1).size_(70).label_("room").labelSize_(20).hidden_(true).layout_(w9);
         this.addWidget(\pianoReverbRoom, w11);
         this.bindW2P(\pianoReverbRoom, \piano, \room);
+
+        this.addMonitorWidget;
+        this.startMonitor(1);
     }
 
     syncTitle {
