@@ -1,4 +1,6 @@
 Piece_Davidson_Message_Ground : SP_PdfMusicPiece {
+    var mute_button;
+
     *new {
         ^super.new(this.scoresDir +/+ "Robert Davidson Message Ground.pdf", "Message Ground", "Robert Davidson", "/sc/msg_ground").loadParams;
     }
@@ -110,13 +112,19 @@ Piece_Davidson_Message_Ground : SP_PdfMusicPiece {
 
         {
             // ALL MUTE
-            var mute = NodeJS_Toggle.new(0).label_("mute").labelSize_(40).hidden_(true);
-            this.addWidget(\mute_all, mute);
-            mute.onValue = { |v|
+            mute_button = NodeJS_Toggle.new(0)
+                .label_("mute")
+                .labelSize_(40)
+                .labelColor_("#FF5550")
+                .cssStyle_((position: "fixed", left: "10px", bottom: "50%"));
+
+            mute_button.onValue = { |v|
                 this.set(\viola, \mute, v);
                 this.set(\track, \mute, v);
                 this.set(\click, \mute, v);
             };
+
+            this.addTask("0:15", { mute_button.add });
         }.value;
     }
 
