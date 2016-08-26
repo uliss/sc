@@ -65,6 +65,18 @@ Instr("common.reverb", {
     [0, 1, \lin, 0, 0.5]
 ]);
 
+Instr("common.freeverb2", {
+    arg in, mix = 0.53, room = 0.75, damp = 0.5;
+    FreeVerb2.ar(in[0], in[1], mix, room, damp);
+}, [
+    AudioSpec(2),
+    [0, 1, \lin, 0, 0.55],
+    [0, 1, \lin, 0, 0.75],
+    [0, 1, \lin, 0, 0.5]
+],
+outSpec: AudioSpec(2)
+);
+
 Instr("common.pseudoStereo", {
     arg in;
     [
