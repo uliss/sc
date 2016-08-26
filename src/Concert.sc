@@ -474,6 +474,7 @@ SP_SheetMusicPiece : SP_PieceApp {
     classvar <>gsPath;
     var slideshow;
     var <>namedTaskActions;
+    var turns_tmp_file;
 
     *new {
         arg title, composer, oscPath, params = [];
@@ -492,6 +493,26 @@ SP_SheetMusicPiece : SP_PieceApp {
         arg name, func;
         if(namedTaskActions.isNil) { namedTaskActions = Dictionary.new };
         namedTaskActions[name] = func;
+    }
+
+    startTurnsRecord {
+        var path = this.class.filenameSymbol.asString.dirname +/+ "turns.txt";
+        "[%] RECORDING page turns to file: %".format(this.class, path.quote).postln;
+
+        turns_tmp_file = File.new(path, "w");
+        slideshow.onTurn = { |page|
+            var time_at = currentTime.asTimeString.drop(-4).drop(3);
+            "TURN happens at (%) to page: %".format(time_at, page).postln;
+            turns_tmp_file.write("# turn to page:" + page.asString ++ "\n");
+            turns_tmp_file.write(time_at ++ "\n");
+            turns_tmp_file.flush;
+        };
+    }
+
+    stopTurnsRecord {
+        turns_tmp_file.close;
+        slideshow.onTurn = nil;
+        "[%] STOP page turns record".format(this.class).postln;
     }
 
     initPageTurns {}
@@ -528,13 +549,22 @@ SP_SheetMusicPiece : SP_PieceApp {
         slideshow.addImagesCopy(images, 1800@1800);
     }
 
-    schedPageTurn {
+    schedTurnNext {
         arg time;
         this.addTask(time, { |t|
             "[%] page turn at %".format(this.class, t).postln;
             this.turnNext
         });
         "[%] adding page turn at %".format(this.class, time).postln;
+    }
+
+    schedTurnToPage {
+        arg time, page;
+        this.addTask(time, { |t|
+            "[%] page turn to page 2 at (%)".format(this.class, page, t).postln;
+            this.toPage(page);
+        });
+        "[%] adding page turn to page % at (%)".format(this.class, page, time).postln;
     }
 
     loadPageTurns {
@@ -548,8 +578,9 @@ SP_SheetMusicPiece : SP_PieceApp {
             var time, action, argument;
             #time, action, argument = ln.split($ );
             switch(action,
-                "turn", { this.schedPageTurn(time) },
-                nil, { this.schedPageTurn(time) },
+                "turn", { this.schedTurnNext(time) },
+                "page", { this.schedTurnToPage(time, argument.asInteger) },
+                nil, { this.schedTurnNext(time) },
                 {
                     var func = namedTaskActions[action.asSymbol];
                     if(func.notNil) {
