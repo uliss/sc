@@ -8,4 +8,8 @@ ServerBoot.add({NodeJS.restart}, \default);
 ~part = Piece_Part_Spiegel_im_Spiegel.new
 ~part.add
 ~part.loadParams
-~part.add
+
+~myssi = Piece_Mazzoli_Tooth_and_Nail.new
+~myssi.play
+~myssi.loadParams
+~myssi.stop
