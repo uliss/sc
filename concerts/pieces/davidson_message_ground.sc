@@ -4,7 +4,7 @@ Piece_Davidson_Message_Ground : SP_PdfMusicPiece {
     }
 
     resetPatch {
-        this.addPatch(\viola, ["viola.test", "viola.compress", "davidson.msg_ground_viola", "common.mute", "common.freeverb2"], (tempo: 144));
+        this.addPatch(\viola, ["viola.in", "viola.compress", "davidson.msg_ground_viola", "common.mute", "common.freeverb2"], (tempo: 144));
         this.addPatch(\track, ["common.sfplayCh", "common.pan2", "common.mute"],
             (channel: 1, path: "/Users/serj/work/music/sounds/pieces/davidson_message_ground_nintendo_track.wav"));
         this.addPatch(\click, ["common.sfplayCh", "common.mute", "mix.1<2", "route.->phones|"],
