@@ -13,3 +13,8 @@ ServerBoot.add({NodeJS.restart}, \default);
 ~myssi.play
 ~myssi.loadParams
 ~myssi.stop
+
+~ground = Piece_Davidson_Message_Ground.new.toPage(2)
+~ground.play
+~ground.stop
+

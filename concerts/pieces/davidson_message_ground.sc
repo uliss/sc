@@ -1,10 +1,10 @@
 Piece_Davidson_Message_Ground : SP_PdfMusicPiece {
     *new {
-        ^super.new(this.scoresDir +/+ "Robert Davidson Message Ground.pdf", "Message Ground", "Robert Davidson", "/sc/msg_ground");
+        ^super.new(this.scoresDir +/+ "Robert Davidson Message Ground.pdf", "Message Ground", "Robert Davidson", "/sc/msg_ground").loadParams;
     }
 
     resetPatch {
-        this.addPatch(\viola, ["viola.in", "viola.compress", "davidson.msg_ground_viola", "common.mute", "common.freeverb2"], (tempo: 144));
+        this.addPatch(\viola, ["viola.in", "viola.compress", "davidson.msg_ground_viola", "common.mute", "common.freeverb2"], (tempo: 140));
         this.addPatch(\track, ["common.sfplayCh", "common.pan2", "common.mute"],
             (channel: 1, path: "/Users/serj/work/music/sounds/pieces/davidson_message_ground_nintendo_track.wav"));
         this.addPatch(\click, ["common.sfplayCh", "common.mute", "mix.1<2", "route.->phones|"],
@@ -13,8 +13,21 @@ Piece_Davidson_Message_Ground : SP_PdfMusicPiece {
 
     initPatches {
         this.resetPatch;
-        onPlay = { this.resetPatch; this.playPatches };
-        onStop = { this.releasePatches(2) };
+        onPlay = {
+            this.resetPatch;
+            this.syncPatchesParams;
+            this.playPatches;
+            this.startMonitor(0.2);
+        };
+        onPause = {
+            this.stopPatches;
+            this.stopMonitor;
+
+        };
+        onStop = {
+            this.releasePatches(2);
+            { this.stopMonitor }.defer(2);
+        };
     }
 
     initUI {
@@ -32,7 +45,7 @@ Piece_Davidson_Message_Ground : SP_PdfMusicPiece {
             var amp;
 
             // TRACK AMP
-            amp = NodeJS_Slider.new(1, 0, 2).label_("track").labelSize_(20).hidden_(true);
+            amp = NodeJS_Slider.new(0.3, 0, 1).label_("track").labelSize_(20).hidden_(true);
             this.addWidget(\trackAmp, amp);
             this.bindW2P(\trackAmp, \track, \amp);
         }.value;
@@ -88,7 +101,7 @@ Piece_Davidson_Message_Ground : SP_PdfMusicPiece {
         // CLICK WIDGETS
         {
             var amp;
-            amp = NodeJS_Slider.new(1, 0, 4).label_("click").labelSize_(20).hidden_(true);
+            amp = NodeJS_Slider.new(0.2, 0, 0.5).label_("click").labelSize_(20).hidden_(true);
             this.addWidget(\clickAmp, amp);
             this.bindW2P(\clickAmp, \click, \amp);
         }.value;
