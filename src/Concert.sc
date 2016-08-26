@@ -527,11 +527,12 @@ SP_SheetMusicPiece : SP_PieceApp {
     loadPageTurns {
         arg path;
         var f = File.new(path, "r");
-        f.readAllString.split(Char.nl).do { |ln|
-            ln = ln.trim;
-            if(ln.isEmpty.not) {
-                this.schedPageTurn(ln);
-            }
+        f.readAllString.split(Char.nl)
+          .collect({|l| l.trim }) // trim all whitespaces
+          .reject({|l| l.isEmpty })  // skip empty lines
+          .reject({|l| l[0] == $# }) // skip comment
+          .do { |ln|
+            this.schedPageTurn(ln);
         };
         f.close;
     }
