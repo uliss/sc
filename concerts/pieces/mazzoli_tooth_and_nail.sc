@@ -81,4 +81,8 @@ Piece_Mazzoli_Tooth_and_Nail : SP_PdfMusicPiece {
     syncTitle {
         NodeJS.sendMsg("/node/title", "");
     }
+
+    initPageTurns {
+        this.loadPageTurns(this.class.turnsDir +/+ "mazzoli_tooth_and_nail.txt");
+    }
 }

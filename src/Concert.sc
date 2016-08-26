@@ -14,6 +14,10 @@ SP_PieceApp : SP_AbstractApp {
     var <bindings;
     var <monitor;
     var <>phonesChannel;
+    var <>onTimer;
+    var timerTask;
+    var currentTime;
+    var taskDict;
 
     *initClass {
         dir = "~/.config/sc".standardizePath;
@@ -24,6 +28,12 @@ SP_PieceApp : SP_AbstractApp {
         arg title, composer, oscPath, params = [];
         var key = title + composer;
         var piece;
+
+        if(NodeJS.isRunning.not) {
+            "NodeJS is not running".error;
+            ^nil;
+        };
+
         if(app_pieces[key].notNil) {
             ^app_pieces[key]
         } {
@@ -35,7 +45,7 @@ SP_PieceApp : SP_AbstractApp {
 
     addMonitorWidget {
         var box, toggle, slider;
-        box = NodeJS_VBox.new.title_("monitor").hidden_(true).borderColor_("#AAA").align_("center");
+        box = NodeJS_VBox.new.title_("monitor").hidden_(true).borderColor_("#AAA").align_("center").titleIcon_("headphones");
         this.addWidget(\monitorBox, box);
 
         toggle = NodeJS_Toggle.new(0).hidden_(true).label_("on").labelSize_(16).size_(40).layout_(box);
@@ -62,6 +72,16 @@ SP_PieceApp : SP_AbstractApp {
         widget_name_list = List.new;
         monitor = Monitor.new;
         phonesChannel = 4;
+        currentTime = 0;
+        timerTask = Task {
+            loop {
+                if(onTimer.notNil) { onTimer.value(currentTime) };
+                this.runTasks;
+                1.wait;
+                currentTime = currentTime + 1;
+            }
+        };
+        taskDict = Dictionary.new;
 
         osc_play_control = OSCFunc({ |msg|
             switch(msg[1].asString,
@@ -177,6 +197,9 @@ SP_PieceApp : SP_AbstractApp {
             ^nil;
         };
 
+        if(this.isStopped) { timerTask.start };
+        if(this.isPaused)  { timerTask.resume };
+
         if(onPlay.notNil) { onPlay.value };
         playState = 1;
     }
@@ -187,6 +210,8 @@ SP_PieceApp : SP_AbstractApp {
             ^nil;
         };
 
+        if(this.isPlaying) { timerTask.pause };
+
         if(onPause.notNil) { onPause.value };
         playState = 2;
     }
@@ -196,6 +221,10 @@ SP_PieceApp : SP_AbstractApp {
             "[%:stop] already stopped".format(this.class).warn;
             ^nil;
         };
+
+        timerTask.stop;
+        timerTask.reset;
+        currentTime = 0;
 
         if(onStop.notNil) { onStop.value };
         playState = 0;
@@ -364,6 +393,7 @@ SP_PieceApp : SP_AbstractApp {
         this.stop;
         this.freePatches;
         this.freeWidgets;
+        timerTask.free;
         bindings = nil;
         osc_play_control.free;
     }
@@ -371,6 +401,44 @@ SP_PieceApp : SP_AbstractApp {
     sync {
         this.syncTitle;
         this.syncWidgets;
+    }
+
+    addTask {
+        arg time, func;
+        if(time.isKindOf(Float)) { time = time.asInteger };
+        if(time.isKindOf(String)) { time = time.toSeconds };
+
+        if(taskDict[time].isNil) { taskDict[time] = List.new(2) };
+        taskDict[time].add(func);
+    }
+
+    addReplaceTask {
+        arg time, func;
+        this.removeTask(time);
+        this.addTask(time, func);
+    }
+
+    removeTask {
+        arg time;
+        if(time.isKindOf(Float)) { time = time.asInteger };
+        if(time.isKindOf(String)) { time = time.toSeconds };
+
+        taskDict[time] = nil;
+    }
+
+    hasTask {
+        arg time;
+        if(time.isKindOf(Float)) { time = time.asInteger };
+        if(time.isKindOf(String)) { time = time.toSeconds };
+
+        ^taskDict[time].notNil;
+    }
+
+    runTasks {
+        var task_list = taskDict[currentTime];
+        if(task_list.notNil) {
+            task_list.do { |f| f.value(currentTime) }
+        }
     }
 }
 
@@ -380,22 +448,24 @@ SP_SheetMusicPiece : SP_PieceApp {
 
     *new {
         arg title, composer, oscPath, params = [];
-        ^super.new(title, composer, oscPath, params).initSheetMusic;
+        var instance = super.new(title, composer, oscPath, params);
+        if(instance.notNil) { instance.initSheetMusic.initPageTurns };
+        ^instance;
     }
 
     *initClass {
         gsPath = "/usr/local/bin/gs"
     }
 
+    *initPageTurns {}
+
     initSheetMusic {
-        slideshow = NodeJS_Slideshow.new(nil, [\hideButtons, true]);
+        slideshow = NodeJS_Slideshow.new(nil, [\hideButtons, true]).swipeDir_(-1);
         this.addWidget(\sheetMusic, slideshow);
         this.initScore;
     }
 
-    initScore {
-
-    }
+    initScore {}
 
     swipe_ { |v| slideshow.params[\noSwipe] = v.not }
 
@@ -418,7 +488,28 @@ SP_SheetMusicPiece : SP_PieceApp {
         images = this.splitPdf(path, force: force);
         if(images.isNil) { ^nil };
 
-        slideshow.addImagesCopy(images);
+        slideshow.addImagesCopy(images, 1800@1800);
+    }
+
+    schedPageTurn {
+        arg time;
+        this.addTask(time, { |t|
+            "[%] page turn at %".format(this.class, t).postln;
+            this.turnNext
+        });
+        "[%] adding page turn at %".format(this.class, time).postln;
+    }
+
+    loadPageTurns {
+        arg path;
+        var f = File.new(path, "r");
+        f.readAllString.split(Char.nl).do { |ln|
+            ln = ln.trim;
+            if(ln.isEmpty.not) {
+                this.schedPageTurn(ln);
+            }
+        };
+        f.close;
     }
 
     uid {
@@ -451,12 +542,25 @@ SP_SheetMusicPiece : SP_PieceApp {
     turnNext { slideshow.next }
     turnLast { slideshow.last }
     turnFirst { slideshow.first }
+    toPage { |n| slideshow.toImage(n) }
+
+    *turnsDir {
+        ^this.filenameSymbol.asString.dirname +/+ "turns";
+    }
+
+    *scoresDir {
+        ^this.filenameSymbol.asString.dirname +/+ "scores";
+    }
 }
 
 SP_PdfMusicPiece : SP_SheetMusicPiece {
     *new {
         arg pdf, title, composer = "PDF", oscPath = "/sheetmusic", params = [];
+        var instance;
         title = title ? pdf.basename;
-        ^super.new(title, composer, oscPath, params).addPdf(pdf);
+
+        instance = super.new(title, composer, oscPath, params);
+        if(instance.notNil) { instance.addPdf(pdf) };
+        ^instance;
     }
 }

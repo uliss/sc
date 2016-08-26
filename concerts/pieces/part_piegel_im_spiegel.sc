@@ -16,6 +16,7 @@ Piece_Part_Spiegel_im_Spiegel : SP_SheetMusicPiece {
     initPatches {
         this.resetPatch;
         onPlay = { this.resetPatch; this.playPatches };
+        onPause = { this.stopPatches }; // temporal fix, while no pause support
         onStop = { this.releasePatches(2) };
     }
 

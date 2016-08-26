@@ -1,33 +1,3 @@
-PathSpec : NonControlSpec {
-    var <>path;
-
-    *new { arg path;
-		^super.new.path_(path)
-	}
-
-    *initClass {
-        specs.addAll([
-            \path -> PathSpec("")
-        ])
-    }
-
-    storeArgs { ^[path] }
-    defaultControl { ^"" }
-}
-
-InOutBusSpec : ControlSpec {
-    *new {
-        arg default = 0;
-        ^super.new(0, 63, \lin, 1, default, "bus");
-    }
-
-    *initClass {
-        specs.addAll([
-            \bus -> InOutBusSpec(0)
-        ])
-    }
-}
-
 SP_InstrumentPlayer {
     var <>instr;
     var <initArgs;

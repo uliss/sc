@@ -8,6 +8,14 @@ Instr("common.pan2", {
 outSpec: AudioSpec(2)
 );
 
+Instr("common.mute", {
+    arg in, mute = 0;
+    in * Linen.kr((1 - mute), 0.005, 1, 0.005);
+}, [
+    AudioSpec(),
+    [0, 1, \lin, 1, 0];
+], AudioSpec(1));
+
 Instr("common.sfplay", {
     arg path, numChannels = 2, pos = 0, amp = 1, attackTime = 0.1, fadeTime = 0.1;
     DiskIn.ar(numChannels,
@@ -56,6 +64,18 @@ Instr("common.reverb", {
     [0, 1, \lin, 0, 0.75],
     [0, 1, \lin, 0, 0.5]
 ]);
+
+Instr("common.freeverb2", {
+    arg in, freeverb2_mix = 0.53, freeverb2_room = 0.75, freeverb2_damp = 0.5;
+    FreeVerb2.ar(in[0], in[1], freeverb2_mix, freeverb2_room, freeverb2_damp);
+}, [
+    AudioSpec(2),
+    [0, 1, \lin, 0, 0.55],
+    [0, 1, \lin, 0, 0.75],
+    [0, 1, \lin, 0, 0.5]
+],
+outSpec: AudioSpec(2)
+);
 
 Instr("common.pseudoStereo", {
     arg in;
