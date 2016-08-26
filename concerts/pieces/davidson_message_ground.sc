@@ -113,10 +113,10 @@ Piece_Davidson_Message_Ground : SP_PdfMusicPiece {
         {
             // ALL MUTE
             mute_button = NodeJS_Toggle.new(0)
+                .size_(300)
                 .label_("mute")
-                .labelSize_(40)
-                .labelColor_("#FF5550")
-                .cssStyle_((position: "fixed", left: "10px", bottom: "50%"));
+                .labelSize_(60)
+                .labelColor_("#FF5550");
 
             mute_button.onValue = { |v|
                 this.set(\viola, \mute, v);
