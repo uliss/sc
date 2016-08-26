@@ -1157,13 +1157,26 @@ NodeJS_Slideshow : NodeJS_Widget {
     imageUrls { ^seq.urls }
     imageCount { ^seq.imageCount }
     currentUrl { ^seq.urls[currentImage] }
-    fullCurrentUrl {
-        if(this.currentUrl.isNil) { ^nil };
-        ^ NodeJS.imageDirPrefix +/+ this.currentUrl;
+    fullCurrentUrl { ^this.fullUrl(currentImage) }
+
+    fullUrl {
+        arg idx;
+        if(seq.urls[idx].isNil) { ^nil };
+        ^ NodeJS.imageDirPrefix +/+ seq.urls[idx];
     }
 
     sync {
-        if(this.currentUrl.notNil) { this.command("url", this.fullCurrentUrl) }
+        if(this.currentUrl.notNil) {
+            this.command("url", this.fullCurrentUrl);
+
+            if(currentImage < (seq.urls.size - 1)) {
+                this.command("preload", this.fullUrl(currentImage + 1));
+            };
+
+            if(currentImage > 0) {
+                this.command("preload", this.fullUrl(currentImage - 1));
+            };
+        }
     }
 
     add {
@@ -1172,7 +1185,8 @@ NodeJS_Slideshow : NodeJS_Widget {
     }
 
     next {
-        if(currentImage < (seq.urls.size - 1)) {
+        var max = seq.urls.size - 1;
+        if(currentImage < max) {
             currentImage = currentImage + 1;
             this.sync;
         }
