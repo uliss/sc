@@ -193,6 +193,9 @@ NodeJS_Layout : NodeJS_Widget {
     title { ^params[\title] }
     title_ { |t| params[\title] = t }
 
+    titleIcon { ^params[\titleIcon ] }
+    titleIcon_ { |icon| params[\titleIcon] = icon }
+
     align { ^params[\align] }
     align_ { |v| params[\align] = v }
 }
