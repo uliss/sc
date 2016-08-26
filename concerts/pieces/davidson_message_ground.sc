@@ -2,7 +2,8 @@ Piece_Davidson_Message_Ground : SP_PdfMusicPiece {
     var mute_button;
 
     *new {
-        ^super.new(this.scoresDir +/+ "Robert Davidson Message Ground.pdf", "Message Ground", "Robert Davidson", "/sc/msg_ground").loadParams;
+        arg options = [];
+        ^super.new(this.scoresDir +/+ "Robert Davidson Message Ground.pdf", "Message Ground", "Robert Davidson", "/sc/msg_ground", options).loadParams;
     }
 
     resetPatch {
