@@ -1106,6 +1106,10 @@ NodeJS_Slideshow : NodeJS_Widget {
         };
     }
 
+    swipeDir { ^params[\swipeDir] }
+    // dir == (1 | -1)
+    swipeDir_ { |dir| params[\swipeDir] = dir }
+
     addImageCopy {
         arg path, newSize = nil, forceCopy = false;
         var image_on_server;

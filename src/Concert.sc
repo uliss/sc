@@ -460,7 +460,7 @@ SP_SheetMusicPiece : SP_PieceApp {
     *initPageTurns {}
 
     initSheetMusic {
-        slideshow = NodeJS_Slideshow.new(nil, [\hideButtons, true]);
+        slideshow = NodeJS_Slideshow.new(nil, [\hideButtons, true]).swipeDir_(-1);
         this.addWidget(\sheetMusic, slideshow);
         this.initScore;
     }
