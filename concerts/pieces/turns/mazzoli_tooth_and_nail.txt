@@ -1,3 +1,9 @@
-#00:10
-#00:30
-00:45
+# Missy Mazzoli Tooth and Nail page turns and actions
+00:00 page 0
+01:01 page 1
+02:07 page 2
+03:11 page 3
+04:56 page 4
+06:01 page 5
+07:12 page 6
+08:54 page 7
