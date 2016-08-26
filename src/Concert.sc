@@ -488,7 +488,7 @@ SP_SheetMusicPiece : SP_PieceApp {
         images = this.splitPdf(path, force: force);
         if(images.isNil) { ^nil };
 
-        slideshow.addImagesCopy(images);
+        slideshow.addImagesCopy(images, 1800@1800);
     }
 
     schedPageTurn {
