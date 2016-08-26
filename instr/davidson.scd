@@ -8,6 +8,12 @@ Instr("davidson.msg_ground_viola", {
     [0, 1, \amp, 0, 1],
     BpmTempoSpec(144)
 ],
-outSpec: AudioSpec(2)
-);
+outSpec: AudioSpec(2));
 
+Instr("davidson.spiral_viola", {
+    arg in;
+    Pan2.ar(in);
+}, [
+    AudioSpec(1)
+],
+outSpec: AudioSpec(2));
