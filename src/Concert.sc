@@ -28,6 +28,12 @@ SP_PieceApp : SP_AbstractApp {
         arg title, composer, oscPath, params = [];
         var key = title + composer;
         var piece;
+
+        if(NodeJS.isRunning.not) {
+            "NodeJS is not running".error;
+            ^nil;
+        };
+
         if(app_pieces[key].notNil) {
             ^app_pieces[key]
         } {
@@ -442,7 +448,9 @@ SP_SheetMusicPiece : SP_PieceApp {
 
     *new {
         arg title, composer, oscPath, params = [];
-        ^super.new(title, composer, oscPath, params).initSheetMusic.initPageTurns;
+        var instance = super.new(title, composer, oscPath, params);
+        if(instance.notNil) { instance.initSheetMusic.initPageTurns };
+        ^instance;
     }
 
     *initClass {
@@ -538,12 +546,20 @@ SP_SheetMusicPiece : SP_PieceApp {
     *turnsDir {
         ^this.filenameSymbol.asString.dirname +/+ "turns";
     }
+
+    *scoresDir {
+        ^this.filenameSymbol.asString.dirname +/+ "scores";
+    }
 }
 
 SP_PdfMusicPiece : SP_SheetMusicPiece {
     *new {
         arg pdf, title, composer = "PDF", oscPath = "/sheetmusic", params = [];
+        var instance;
         title = title ? pdf.basename;
-        ^super.new(title, composer, oscPath, params).addPdf(pdf);
+
+        instance = super.new(title, composer, oscPath, params);
+        if(instance.notNil) { instance.addPdf(pdf) };
+        ^instance;
     }
 }

@@ -157,6 +157,10 @@ NodeJS {
         arg msg, title = "Information";
         NodeJS.sendMsg("/node/alert", "info", title, msg);
     }
+
+    *isRunning {
+        ^ connected ? false;
+    }
 }
 
 
