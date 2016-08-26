@@ -1090,6 +1090,11 @@ NodeJS_ImageSequence {
 NodeJS_Slideshow : NodeJS_Widget {
     var <seq;
     var currentImage;
+    var <>onTurn; // called on every turn
+    var <>onNext; // called on turn next
+    var <>onPrev; // called on turn back
+    var <>onFirst;
+    var <>onLast;
 
     *new {
         arg urls = [], params = [];
@@ -1199,6 +1204,9 @@ NodeJS_Slideshow : NodeJS_Widget {
         if(currentImage < max) {
             currentImage = currentImage + 1;
             this.sync;
+
+            if(onNext.notNil) { onNext.value(currentImage) };
+            if(onTurn.notNil) { onTurn.value(currentImage) };
         }
     }
 
@@ -1206,6 +1214,8 @@ NodeJS_Slideshow : NodeJS_Widget {
         if(currentImage > 0) {
             currentImage = currentImage - 1;
             this.sync;
+            if(onPrev.notNil) { onPrev.value(currentImage) };
+            if(onTurn.notNil) { onTurn.value(currentImage) };
         }
     }
 
@@ -1213,6 +1223,8 @@ NodeJS_Slideshow : NodeJS_Widget {
         if(this.imageCount > 0) {
             currentImage = 0;
             this.sync;
+            if(onFirst.notNil) { onFirst.value(currentImage) };
+            if(onTurn.notNil) { onTurn.value(currentImage) };
         }
     }
 
@@ -1220,6 +1232,8 @@ NodeJS_Slideshow : NodeJS_Widget {
         if(this.imageCount > 0) {
             currentImage = this.imageCount - 1;
             this.sync;
+            if(onLast.notNil) { onLast.value(currentImage) };
+            if(onTurn.notNil) { onTurn.value(currentImage) };
         }
     }
 
