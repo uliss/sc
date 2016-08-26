@@ -34,3 +34,17 @@ InOutBusSpec : ControlSpec {
         ])
     }
 }
+
+PanSpec : ControlSpec {
+    *new {
+        arg pos = 0;
+        ^super.new(-1.0, 1.0, \lin, 0, pos);
+    }
+}
+
+AmpSpec : ControlSpec {
+    *new {
+        arg amp = 1;
+        ^super.new(0, 1, \amp, 0, amp);
+    }
+}
