@@ -45,7 +45,7 @@ SP_PieceApp : SP_AbstractApp {
 
     addMonitorWidget {
         var box, toggle, slider;
-        box = NodeJS_VBox.new.title_("monitor").hidden_(true).borderColor_("#AAA").align_("center");
+        box = NodeJS_VBox.new.title_("monitor").hidden_(true).borderColor_("#AAA").align_("center").titleIcon_("headphones");
         this.addWidget(\monitorBox, box);
 
         toggle = NodeJS_Toggle.new(0).hidden_(true).label_("on").labelSize_(16).size_(40).layout_(box);
