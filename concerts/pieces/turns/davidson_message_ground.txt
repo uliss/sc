@@ -1,4 +1,10 @@
-# this is a comment
-0:10 turn
-0:15
-0:10 showMuteToggle
+# Robert Davidson Message Ground page turns and actions
+# start page - not first)
+0:00 page 2
+# turn to page 3
+01:21 page 3
+# turn to page 4
+02:42 page 4
+# turn to page 5
+03:45 page 5
+04:48 showMuteToggle
