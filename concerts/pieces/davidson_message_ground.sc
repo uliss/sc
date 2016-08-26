@@ -24,11 +24,11 @@ Piece_Davidson_Message_Ground : SP_PdfMusicPiece {
         onPause = {
             this.stopPatches;
             this.stopMonitor;
-
+            mute_button.remove;
         };
         onStop = {
             this.releasePatches(2);
-            { this.stopMonitor }.defer(2);
+            { mute_button.remove; this.stopMonitor }.defer(2);
         };
     }
 
