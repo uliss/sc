@@ -542,6 +542,7 @@ SP_SheetMusicPiece : SP_PieceApp {
     turnNext { slideshow.next }
     turnLast { slideshow.last }
     turnFirst { slideshow.first }
+    toPage { |n| slideshow.toImage(n) }
 
     *turnsDir {
         ^this.filenameSymbol.asString.dirname +/+ "turns";
