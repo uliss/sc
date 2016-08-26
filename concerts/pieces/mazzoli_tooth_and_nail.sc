@@ -1,6 +1,6 @@
 Piece_Mazzoli_Tooth_and_Nail : SP_PdfMusicPiece {
     *new {
-        ^super.new("/Users/serj/work/music/sc/concerts/pieces/scores/Missy Mazzoli Tooth and Nail.pdf", "Tooth and Nail", "Missy Mazzoli", "/sc/mazzoli");
+        ^super.new("/Users/serj/work/music/sc/concerts/pieces/scores/Missy Mazzoli Tooth and Nail.pdf", "Tooth and Nail", "Missy Mazzoli", "/sc/mazzoli").loadParams;
     }
 
     resetPatch {
@@ -13,8 +13,22 @@ Piece_Mazzoli_Tooth_and_Nail : SP_PdfMusicPiece {
 
     initPatches {
         this.resetPatch;
-        onPlay = { this.resetPatch; this.playPatches };
-        onStop = { this.releasePatches(2) };
+        onPlay = {
+            this.resetPatch;
+            this.syncPatchesParams;
+            this.startMonitor(0.4);
+            this.playPatches;
+        };
+
+        onPause = {
+            this.stopMonitor;
+            this.stopPatches;
+        };
+
+        onStop = {
+            this.releasePatches(2);
+            { this.stopMonitor }.defer(2);
+        };
     }
 
     initUI {
@@ -70,7 +84,7 @@ Piece_Mazzoli_Tooth_and_Nail : SP_PdfMusicPiece {
         // CLICK WIDGETS
         {
             var amp;
-            amp = NodeJS_Slider.new(1, 0, 4).label_("click").labelSize_(20).hidden_(true);
+            amp = NodeJS_Slider.new(1, 0, 1).label_("click").labelSize_(20).hidden_(true);
             this.addWidget(\clickAmp, amp);
             this.bindW2P(\clickAmp, \click, \amp);
         }.value;
