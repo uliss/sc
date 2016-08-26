@@ -154,6 +154,12 @@ NodeJS_Widget {
         params[\backgroundColor] = c;
     }
 
+    cssClass { ^params[\cssClass] }
+    cssClass_ { |c| params[\cssClass] = c }
+
+    cssStyle { ^params[\cssStyle] }
+    cssStyle_ { |st| params[\cssStyle] = st }
+
     size { ^params[\size] }
     size_ { |sz| params[\size] = sz.asInteger }
 
