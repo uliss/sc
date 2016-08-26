@@ -1,11 +1,13 @@
 (
 SoundCard.saffire;
 ServerBoot.add({NodeJS.restart}, \default);
-{s.boot; NodeJS.verbose(false);}.defer(2);
+{s.boot}.defer(2);
 )
 
 NodeJS.redirect("/piece")
 NodeJS.reload
+NodeJS.verbose(true)
+NodeJS.verbose(false)
 
 ~part = Piece_Part_Spiegel_im_Spiegel.new
 ~part.add
@@ -18,4 +20,5 @@ NodeJS.reload
 
 ~ground = Piece_Davidson_Message_Ground.new.toPage(2)
 ~ground.play
+~ground.add
 ~ground.stop
