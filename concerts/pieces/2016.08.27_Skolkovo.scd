@@ -1,7 +1,7 @@
 (
 SoundCard.saffire;
 ServerBoot.add({NodeJS.restart}, \default);
-{s.boot}.defer(2);
+{s.boot; NodeJS.verbose(false);}.defer(2);
 )
 
 NodeJS.redirect("/piece")
