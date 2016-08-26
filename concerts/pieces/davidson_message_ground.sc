@@ -124,7 +124,7 @@ Piece_Davidson_Message_Ground : SP_PdfMusicPiece {
                 this.set(\click, \mute, v);
             };
 
-            this.addTask("0:15", { mute_button.add });
+            this.addNamedTaskAction(\showMuteToggle, { mute_button.add });
         }.value;
     }
 

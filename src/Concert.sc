@@ -17,7 +17,7 @@ SP_PieceApp : SP_AbstractApp {
     var <>onTimer;
     var timerTask;
     var currentTime;
-    var taskDict;
+    var <taskDict;
 
     *initClass {
         dir = "~/.config/sc".standardizePath;
@@ -464,21 +464,34 @@ SP_PieceApp : SP_AbstractApp {
             task_list.do { |f| f.value(currentTime) }
         }
     }
+
+    clearAllTasks {
+        taskDict = Dictionary.new;
+    }
 }
 
 SP_SheetMusicPiece : SP_PieceApp {
     classvar <>gsPath;
     var slideshow;
+    var <>namedTaskActions;
 
     *new {
         arg title, composer, oscPath, params = [];
         var instance = super.new(title, composer, oscPath, params);
-        if(instance.notNil) { instance.initSheetMusic.initPageTurns };
+        if(instance.notNil) {
+            instance.initSheetMusic.initPageTurns;
+        };
         ^instance;
     }
 
     *initClass {
         gsPath = "/usr/local/bin/gs"
+    }
+
+    addNamedTaskAction {
+        arg name, func;
+        if(namedTaskActions.isNil) { namedTaskActions = Dictionary.new };
+        namedTaskActions[name] = func;
     }
 
     initPageTurns {}
@@ -532,7 +545,22 @@ SP_SheetMusicPiece : SP_PieceApp {
           .reject({|l| l.isEmpty })  // skip empty lines
           .reject({|l| l[0] == $# }) // skip comment
           .do { |ln|
-            this.schedPageTurn(ln);
+            var time, action, argument;
+            #time, action, argument = ln.split($ );
+            switch(action,
+                "turn", { this.schedPageTurn(time) },
+                nil, { this.schedPageTurn(time) },
+                {
+                    var func = namedTaskActions[action.asSymbol];
+                    if(func.notNil) {
+                        "[%] adding action % at (%)".format(this.class, action.quote, time).postln;
+                        this.addTask(time, { func.value(time, argument) });
+
+                    } {
+                        "[%] unknown action % at (%)".format(this.class, action.quote, time).warn
+                    }
+                };
+            );
         };
         f.close;
     }
