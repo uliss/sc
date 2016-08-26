@@ -15,9 +15,23 @@ Piece_Part_Spiegel_im_Spiegel : SP_SheetMusicPiece {
 
     initPatches {
         this.resetPatch;
-        onPlay = { this.resetPatch; this.syncPatchesParams; this.playPatches };
-        onPause = { this.stopPatches }; // temporal fix, while no pause support
-        onStop = { this.releasePatches(2) };
+        onPlay = {
+            this.resetPatch;
+            this.syncPatchesParams;
+            this.startMonitor(1);
+            this.playPatches;
+        };
+
+        // temporal fix, while no pause support
+        onPause = {
+            this.stopPatches;
+            this.stopMonitor;
+        };
+
+        onStop = {
+            this.releasePatches(2);
+            this.stopMonitor;
+        };
     }
 
     initUI {
@@ -70,7 +84,6 @@ Piece_Part_Spiegel_im_Spiegel : SP_SheetMusicPiece {
         this.bindW2P(\pianoReverbRoom, \piano, \room);
 
         this.addMonitorWidget;
-        this.startMonitor(1);
     }
 
     syncTitle {

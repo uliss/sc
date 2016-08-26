@@ -49,7 +49,15 @@ SP_PieceApp : SP_AbstractApp {
         this.addWidget(\monitorBox, box);
 
         toggle = NodeJS_Toggle.new(0).hidden_(true).label_("on").labelSize_(16).size_(40).layout_(box);
-        toggle.onValue = { |v| if(v > 0) { this.startMonitor(widgets[\monitorAmp].value) } { this.stopMonitor() }};
+        toggle.onValue = { |v|
+            if(v > 0) {
+                this.startMonitor(widgets[\monitorAmp].value);
+                "[%] monitor ON".format(this.class).postln;
+            } {
+                this.stopMonitor;
+                "[%] monitor OFF".format(this.class).postln;
+            }
+        };
         this.addWidget(\monitorToggle, toggle);
 
         slider = NodeJS_Slider.new(0, 0, 1, 150).label_("amp").labelSize_(20).hidden_(true).layout_(box);
@@ -65,7 +73,7 @@ SP_PieceApp : SP_AbstractApp {
     }
 
     stopMonitor {
-        monitor.play(0, 2, phonesChannel, 2, volume: widgets[\monitorAmp].value, fadeTime: 0.5);
+        monitor.stop;
         widgets[\monitorToggle].value = 0;
     }
 
