@@ -24,8 +24,14 @@ NodeJS.verbose(false)
 ~ground.stop
 
 ~spiral = Piece_Davidson_Spiral.new.toPage(2)
-~spiral.startTurnsRecord
-~spiral.stopTurnsRecord
-~ground.play
-~ground.add
-~ground.stop
+~spiral.add
+~spiral.play
+~spiral.stop
+
+
+i = Instr("8bit.1")
+i.gui
+i.play
+p = Patch(i)
+p.play
+p.stop

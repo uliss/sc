@@ -27,7 +27,7 @@ Piece_Davidson_Spiral : SP_PdfMusicPiece {
             patches[\click].release(5);
             this.set(\viola, \echo_times, 40);
             this.releasePatches(40);
-            { this.stopMonitor }.defer(10);
+            { this.stopMonitor }.defer(40);
         };
     }
 

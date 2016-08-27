@@ -21,7 +21,7 @@ Instr("davidson.spiral_viola_canon", {
     var delay_time_short = (60.0/tempo) * 16;
     var delay_time_long = delay_time_short * 2;
 
-    Pan2.ar((in * (1 - freeze)), viola1_pan, viola1_amp)
+    Pan2.ar(in, viola1_pan, viola1_amp)
     + Pan2.ar(
         DelayL.ar(
             AllpassL.ar((in * (1 - freeze)), 16, delay_time_long, delay_time_long * echo_times),
