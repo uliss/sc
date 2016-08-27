@@ -1,20 +1,20 @@
 Piece_Davidson_Spiral : SP_PdfMusicPiece {
     *new {
-        ^super.new(this.scoresDir +/+ "Robert Davidson Spiral.pdf", "Spiral", "Robert Davidson", "/sc/spiral");
+        ^super.new(this.scoresDir +/+ "Robert Davidson Spiral.pdf", "Spiral", "Robert Davidson", "/sc/spiral").loadParams;
     }
 
     resetPatch {
-        arg tempo = 144;
+        arg tempo = 140;
         this.addPatch(\viola, ["viola.in", "viola.compress", "davidson.spiral_viola_canon", "common.freeverb2"], (tempo: tempo));
         this.addPatch(\click, ["utils.click", "mix.1<2", "route.->phones|"],
             (channel: 0, bpm: tempo));
+        this.syncPatchesParams;
     }
 
     initPatches {
         this.resetPatch;
         onPlay = {
             this.resetPatch;
-            this.syncPatchesParams;
             this.playPatches;
             this.startMonitor(1);
         };
@@ -23,8 +23,10 @@ Piece_Davidson_Spiral : SP_PdfMusicPiece {
             this.stopMonitor
         };
         onStop = {
-            this.set(\viola, \freeze, 1);
-            this.releasePatches(10);
+            {this.set(\viola, \freeze, 1)}.defer(5);
+            patches[\click].release(5);
+            this.set(\viola, \echo_times, 40);
+            this.releasePatches(40);
             { this.stopMonitor }.defer(10);
         };
     }
@@ -128,7 +130,17 @@ Piece_Davidson_Spiral : SP_PdfMusicPiece {
         {
             var freeze = NodeJS_Toggle.new(0).size_(100).label_("freeze").labelSize_(20).cssStyle_((position:"fixed",left:0,bottom:"50px"));
             freeze.onValue = { |v|
-                this.set(\viola, \freeze, v);
+                if(v == 1) {
+                    patches[\click].stop;
+                    this.set(\viola, \freeze, 1);
+                    {this.set(\viola, \echo_times, 40)}.defer(3);
+                    timerTask.pause;
+                } {
+                    patches[\click].play;
+                    timerTask.resume;
+                    this.set(\viola, \echo_times, 5);
+                    this.set(\viola, \freeze, 0);
+                };
             };
             this.addWidget(\freeze, freeze);
         }.value;

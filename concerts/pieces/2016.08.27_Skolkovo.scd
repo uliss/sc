@@ -24,6 +24,8 @@ NodeJS.verbose(false)
 ~ground.stop
 
 ~spiral = Piece_Davidson_Spiral.new.toPage(2)
+~spiral.startTurnsRecord
+~spiral.stopTurnsRecord
 ~ground.play
 ~ground.add
 ~ground.stop
