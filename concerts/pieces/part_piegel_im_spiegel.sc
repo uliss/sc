@@ -50,7 +50,7 @@ Piece_Part_Spiegel_im_Spiegel : SP_SheetMusicPiece {
         this.bindW2P(\violaAmp, \viola, \amp);
 
         // PIANO AMP
-        w4 = NodeJS_Slider.new(1, 0, 2).label_("piano").labelSize_(20).hidden_(true);
+        w4 = NodeJS_Slider.new(1, 0, 4).label_("piano").labelSize_(20).hidden_(true);
         this.addWidget(\pianoAmp, w4);
         this.bindW2P(\pianoAmp, \piano, \amp);
 
