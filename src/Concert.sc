@@ -569,7 +569,11 @@ SP_SheetMusicPiece : SP_PieceApp {
 
     loadPageTurns {
         arg path;
-        var f = File.new(path, "r");
+        var f;
+
+        if(path.pathExists === false) { ^nil };
+
+        f = File.new(path, "r");
         f.readAllString.split(Char.nl)
           .collect({|l| l.trim }) // trim all whitespaces
           .reject({|l| l.isEmpty })  // skip empty lines
