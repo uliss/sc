@@ -1,5 +1,5 @@
 (
-SoundCard.saffire;
+s.quit;
 ServerBoot.add({NodeJS.restart}, \default);
 {s.boot}.defer(2);
 )
@@ -28,10 +28,29 @@ NodeJS.verbose(false)
 ~spiral.play
 ~spiral.stop
 
+-20.dbamp
 
-i = Instr("8bit.1")
-i.gui
-i.play
-p = Patch(i)
-p.play
-p.stop
+~vsolo = Piece_Viola_Solo.new
+~vsolo.add
+
+Instr("oct", {
+    arg in;
+    PitchShift.ar(in, 0.1, 0.5);
+});
+
+
+(
+Instr("boost", {
+    arg in;
+    in * 4;
+}, [AudioSpec(1)], AudioSpec(1));
+i = Instr("viola.in") <>> Instr("viola.compress") <>> Instr("boost") <>> Instr("viola.reverb") <>> Instr("common.pan2");
+p = Patch(i);
+p.gui
+)
+
+
+
+
+
+
