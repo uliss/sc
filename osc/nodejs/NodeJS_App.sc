@@ -89,7 +89,7 @@ SP_AppLabel : SP_AbstractApp {
 
     text_ {
         arg txt;
-        text = txt;
+        text = txt.urlEncode;
         this.sendMsg("/set", text);
     }
 
