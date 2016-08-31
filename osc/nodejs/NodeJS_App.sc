@@ -75,6 +75,15 @@ SP_AbstractApp {
     free {
         SP_AbstractApp.unregisterSync(httpPath);
     }
+
+    title_ {
+        arg pageTitle, windowTitle;
+        if(windowTitle.notNil) { // set both
+            NodeJS.send2Cli("/guido/module/client/broadcast", "title", pageTitle.urlEncode, windowTitle.urlEncode);
+        } {
+            NodeJS.send2Cli("/guido/module/client/broadcast", "title", pageTitle.urlEncode);
+        };
+    }
 }
 
 SP_AppLabel : SP_AbstractApp {
