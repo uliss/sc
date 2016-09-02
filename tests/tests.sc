@@ -38,7 +38,7 @@
 	report {
 		var name = if(testMethod.notNil) { testMethod.name } { "unit test result" };
         Post << "  [" << name << "]";
-        message !? ( Post << " " << message.quote);
+        message !? ( Post << " " << (message !? (_.quote) ?? ""));
         Post << Char.nl;
 	}
 }
