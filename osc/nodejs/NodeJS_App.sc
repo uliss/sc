@@ -1,38 +1,31 @@
 SP_AbstractApp {
-    classvar osc_connect_sync_map;
     var <oscPath;
     var <httpPath;
     var <>onConnect;
 
     *new {
         arg oscPath, httpPath, syncOnConnect = false;
-        ^super.new.init(oscPath, httpPath, syncOnConnect);
+        ^super.newCopyArgs(oscPath, httpPath).init(syncOnConnect);
     }
 
-    *initClass {
-        osc_connect_sync_map = Dictionary.new;
+    *hasSync {
+        arg url;
+        ^Library.at(\guido, \app, \sync, url.asSymbol).notNil;
     }
 
     *registerSync {
         arg name, func;
         NodeJS.sendMsg("/guido/module/server", "sync_add", name);
 
-        if(osc_connect_sync_map[name].notNil) {
-            osc_connect_sync_map[name].free;
-            osc_connect_sync_map[name] = nil;
-        };
-
-        osc_connect_sync_map[name] = func;
+        Library.at(\guido, \app, \sync, name.asSymbol) !? ( _.free );
+        Library.put(\guido, \app, \sync, name.asSymbol, func);
     }
 
     *unregisterSync {
         arg name;
         NodeJS.sendMsg("/guido/module/server", "sync_remove", name);
-
-        if(osc_connect_sync_map[name].notNil) {
-            osc_connect_sync_map[name].free;
-            osc_connect_sync_map[name] = nil;
-        }
+        Library.at(\guido, \app, \sync, name.asSymbol) !? ( _.free );
+        Library.global.removeAt(\guido, \app, \sync, name.asSymbol);
     }
 
     name {
@@ -40,19 +33,17 @@ SP_AbstractApp {
     }
 
     init {
-        arg osc_path, http_path, syncOnConnect;
-        oscPath = osc_path;
-        httpPath = http_path;
+        arg syncOnConnect;
 
         if(syncOnConnect) {
-            var osc_func = OSCFunc({|msg|
+            var fn = OSCFunc({|msg|
                 {
                     "[%:%] sync on connection".format(this.class, this.identityHash).postln;
                     if(onConnect.notNil) { onConnect.value };
                 }.defer(2);
             }, "/sc/app/sync" +/+ httpPath, nil, NodeJS.outOscPort);
 
-            SP_AbstractApp.registerSync(httpPath, osc_func);
+            SP_AbstractApp.registerSync(httpPath, fn);
         }
     }
 
