@@ -1,6 +1,5 @@
 SP_PieceApp : SP_AbstractApp {
     classvar <>dir;
-    classvar <app_pieces;
     var <>title;
     var <>composer;
     var osc_play_control;
@@ -19,27 +18,21 @@ SP_PieceApp : SP_AbstractApp {
     var currentTime;
     var <taskDict;
 
-    *initClass {
-        dir = "~/.config/sc".standardizePath;
-        app_pieces = Dictionary.new;
-    }
+    *initClass { dir = "~/.config/sc".standardizePath }
 
     *new {
         arg title, composer, oscPath, params = [];
-        var key = title + composer;
+        var instance;
 
-        if(NodeJS.isRunning.not) {
-            "NodeJS is not running".error;
-            ^nil;
-        };
+        if(NodeJS.isRunning.not) { Error("NodeJS is not running").throw };
 
-        if(app_pieces[key].notNil) {
-            ^app_pieces[key]
-        } {
-            var p = super.new(oscPath, "/piece", true).title_(title).composer_(composer).initPiece(params);
-            app_pieces[key] = p;
-            ^p;
-        };
+        instance = Library.at(\piece, composer.asSymbol, title.asSymbol);
+        if(instance.notNil)
+        { ^instance }
+        {
+            var new_p = super.new(oscPath, "/piece", true).title_(title).composer_(composer).initPiece(params);
+            Library.put(\piece, composer.asSymbol, title.asSymbol, new_p);
+        }
     }
 
     addMonitorWidget {

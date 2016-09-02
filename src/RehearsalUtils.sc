@@ -1,6 +1,7 @@
 SP_RehearsalUtils {
     var latency_test;
     var instr_manager;
+    var guido_ping;
 
     *new {
         ^super.new.init;
@@ -9,11 +10,13 @@ SP_RehearsalUtils {
     init {
         latency_test = NodeUtility_LatencyTest.new;
         instr_manager = SP_InstrumentControl.new;
+        guido_ping = GuidoPing.new;
     }
 
     stop {
         latency_test.free;
         instr_manager.free;
+        guido_ping.free;
     }
 }
 

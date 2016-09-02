@@ -3,7 +3,7 @@ SP_InstrumentControl : SP_AbstractOscControl {
     var monitor;
 
     *new {
-        arg oscPath = "/sc/utils/instr";
+        arg oscPath = "/utils/instr";
         ^super.new(oscPath).initManager;
     }
 

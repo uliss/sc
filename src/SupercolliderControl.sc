@@ -49,14 +49,14 @@ SP_SupercolliderControl {
                             Server.default.freeAll;
                         },
                         "record", {
-                            if(m[2] == 1) { this.record } { this.stopRecord };
+                            if(m[2] == 1) { this.record } { this.stopRecord }
                         },
                         {
                             "[%] unknown command: %".format(this.class, m[1..]).error;
                         }
                     );
                 }.defer;
-            }, "/sc/control", nil, port);
+            }, "/guido/supercollider", nil, port);
             osc.permanent = true;
         };
 

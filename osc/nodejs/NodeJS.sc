@@ -1,51 +1,72 @@
 NodeJS {
     classvar <>connected;
-    classvar osc_funcs;
     classvar <>outOscPort = 5001;
-    classvar <>sendCallback = nil;
-    classvar <serverRootDir = "/Users/serj/work/music/nodejs/supercollider_ui";
+    classvar <inOscPort   = 5000;
+    classvar <httpPort    = 3000;
+    classvar <>nodeExec = "/usr/local/bin/node";
+    classvar <>serverRoot;
     classvar <imageDirPrefix = "/img";
     classvar <thumbDirPrefix = "/img/thumb";
     classvar <soundDirPrefix = "/sound";
     classvar serverControl;
     classvar rehearsalUtils;
+    classvar <connectionManager;
 
-    *inOscPort { ^5000 }
-    *httpPort { ^3000 }
-    *lockPath { ^"/var/tmp/sc-node.lock" }
-    *htmlRootDir { ^serverRootDir +/+ "build" }
-    *imageDir { ^NodeJS.htmlRootDir +/+ imageDirPrefix }
-    *thumbDir { ^NodeJS.htmlRootDir +/+ thumbDirPrefix }
-    *soundDir { ^NodeJS.htmlRootDir +/+ soundDirPrefix }
+    *initClass {
+        this.connected = false;
+        this.serverRoot = "~/work/music/nodejs/guidosc".standardizePath;
+    }
+
+    *htmlRootDir { ^serverRoot +/+ "build" }
+    *imageDir { ^this.htmlRootDir +/+ imageDirPrefix }
+    *thumbDir { ^this.htmlRootDir +/+ thumbDirPrefix }
+    *soundDir { ^this.htmlRootDir +/+ soundDirPrefix }
     *testAddr { ^NetAddr("localhost", outOscPort) }
 
+    *cmdString { |debugLevel = "verbose" |
+        ^"STDOUT=1 DEBUG_LEVEL=% NOCOLOR=1 % %/index.js 2>&1 &".format(debugLevel, nodeExec, serverRoot) }
+
     *start {
-        var dir, res, pid, cmd, node, withScControl = true;
-        node = "/usr/local/bin/node";
-        // check lock file
-        res = ("lockfile -r 0" + NodeJS.lockPath).systemCmd;
-        if(res != 0) {
-            "nodejs server already running".error;
-            ^nil;
+        arg onBoot = {}, debugLevel;
+        var res, cmd;
+
+        if(connected) { ^true };
+
+        try {
+            NetAddr("localhost", httpPort).connect();
+            connected = true;
+            this.prInitControl;
+        } {
+            {
+                var boot_cond = Condition.new;
+                // check for root directory
+                if(serverRoot.pathExists == false) {
+                    Error("directory not exits: %".format(serverRoot.quote)).throw;
+                };
+
+                boot_cond.test = false;
+                this.on("/guido/module/server", {
+                    boot_cond.test = true;
+                    boot_cond.signal;
+                    onBoot.value;
+                }).oneShot;
+                this.cmdString(debugLevel).unixCmd;
+                boot_cond.wait;
+                "GuidoOSC started".postln;
+                connected = true;
+                this.prInitControl;
+            }.fork;
         };
+    }
 
-        dir = "~/work/music/nodejs/supercollider_ui".standardizePath;
-        if(dir.pathExists == false) {
-            "directory not exits: %".format(dir.quote).error;
-            ^nil;
-        };
-
-        cmd = "% %/index.js &".format(node, dir);
-        cmd.unixCmd;
-        connected = true;
-
-        if(serverControl.isNil && withScControl == true) {
+    *prInitControl {
+        if(serverControl.isNil) {
             var sendState;
             serverControl = SP_SupercolliderControl.new(NodeJS.outOscPort);
             serverControl.init(Server.default);
 
             sendState = {
-                NodeJS.sendMsg("/node/supercollider", "state", JSON.convert(serverControl.state));
+                NodeJS.sendMsg("/guido/forward", "/guido/supercollider", "state", JSON.convert(serverControl.state));
             };
 
             serverControl.onMute = sendState;
@@ -54,17 +75,21 @@ NodeJS {
             serverControl.onStateRequest = sendState;
             ServerBoot.add(sendState, \default);
             ServerQuit.add(sendState, \default);
-            "[NodeJS] starting server control".postln;
+            "[Guido] starting server control".postln;
         };
 
-        if(rehearsalUtils.isNil) { rehearsalUtils = SP_RehearsalUtils.new };
+        if(rehearsalUtils.isNil) { rehearsalUtils =  .new };
 
-        ^true;
+        if(connectionManager.isNil) { connectionManager = GuidoConnectionManager.new };
+    }
+
+    *on {
+        arg path, func;
+        ^OSCFunc(func, path, nil, outOscPort);
     }
 
     *stop {
-        ("rm -f >/dev/null 2>&1" + NodeJS.lockPath).unixCmd(nil, false);
-        "killall node index.js >/dev/null 2>&1".unixCmd(nil, false);
+        NetAddr("localhost", NodeJS.inOscPort).sendMsg("/guido/module/server", "quit");
         connected = false;
         if(serverControl.notNil) {
             serverControl.stop;
@@ -76,8 +101,9 @@ NodeJS {
     }
 
     *restart {
+        arg onBoot = {}, debugLevel;
         {NodeJS.stop}.defer(0);
-        {NodeJS.start}.defer(1);
+        {NodeJS.start(onBoot, debugLevel)}.defer(0.1);
     }
 
     *open {
@@ -89,73 +115,58 @@ NodeJS {
         arg path ... args;
         var n = NetAddr("localhost", NodeJS.inOscPort);
 
-        if(connected.notNil && connected)
-        {
-            n.sendMsg(path, *args);
-            if(sendCallback.notNil) {
-                sendCallback.value(path, *args);
-            };
-            ^true
-        }
+        if(connected) { n.sendMsg(path, *args); ^true }
         { "NodeJS is not running".error; ^false; };
     }
 
     *send2Cli {
         arg path ... args;
-        NodeJS.sendMsg("/node/forward", "/cli" +/+ path, *args);
+        this.sendMsg("/guido/forward", path, *args);
     }
 
     *css {
         arg selector, key, value;
-        NodeJS.sendMsg("/node/css", selector, key, value);
+        if(key.isKindOf(Dictionary)) {
+            this.sendMsg("/guido/module/client", "css", selector, JSON.convert(key));
+        } {
+            this.sendMsg("/guido/module/client", "css", selector, key, value);
+        }
     }
 
     *redirect {
         arg path;
-        NodeJS.sendMsg("/node/redirect", path);
+        this.sendMsg("/guido/module/client", "redirect", path);
     }
 
     *reload {
-        NodeJS.sendMsg("/node/reload");
-    }
-
-    *set {
-        arg key, val;
-        NodeJS.sendMsg("/node/set", key, val);
-    }
-
-    *get {
-        arg key, func;
-        NodeJS.sendMsg("/node/get", key);
-        OSCFunc({|msg|
-            func.value(msg[2]);
-        }, "/sc/get", nil, NodeJS.outOscPort).oneShot;
+        this.sendMsg("/guido/module/client", "reload");
     }
 
     *ping {
-        NodeJS.sendMsg("/node/echo", "ping -> pong");
+        arg func;
+        var id = 1000.rand;
+        this.on("/guido/module/ping", {|m| if(id == m[2].asInteger) { func.value } }).oneShot;
+        this.sendMsg("/guido/module/ping", "ping", id, ":back");
     }
 
-    *verbose {
-        arg v = true;
-        var on = 0;
-        if(v) {on = 1};
-        NodeJS.sendMsg("/node/set", "verbose", on);
+    *modal {
+        arg type, msg, title;
+        this.sendMsg("/guido/module/client", "alert", type, title, msg);
     }
 
     *modalOk {
         arg msg, title = "Success";
-        NodeJS.sendMsg("/node/alert", "ok", title, msg);
+        this.modal("ok", msg, title);
     }
 
     *modalError {
         arg msg, title = "Error";
-        NodeJS.sendMsg("/node/alert", "error", title, msg);
+        this.modal("error", msg, title);
     }
 
     *modalInfo {
         arg msg, title = "Information";
-        NodeJS.sendMsg("/node/alert", "info", title, msg);
+        this.modal("info", msg, title);
     }
 
     *isRunning {
