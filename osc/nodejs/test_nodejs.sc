@@ -4,7 +4,7 @@ TestNodeJS : UnitTest {
     }
 
     tearDown {
-        NodeJS.sendCallback = nil;
+        // NodeJS.stop;
     }
 
     test_Init {
@@ -43,7 +43,7 @@ TestNodeJS : UnitTest {
             msg = msg ++ args;
         };
         NodeJS.redirect("/ui");
-        this.assertEquals(msg, ["/sc/redirect", "/ui"]);
+        this.assertEquals(msg, ["/guido/module/client", "redirect", "/ui"]);
         NodeJS.connected = false;
     }
 
@@ -56,7 +56,7 @@ TestNodeJS : UnitTest {
             msg = msg ++ args;
         };
         NodeJS.reload;
-        this.assertEquals(msg, ["/sc/reload"]);
+        this.assertEquals(msg, ["/guido/module/client", "reload"]);
         NodeJS.connected = false;
     }
 
@@ -69,7 +69,20 @@ TestNodeJS : UnitTest {
             msg = msg ++ args;
         };
         NodeJS.css("html", "color", "red");
-        this.assertEquals(msg, ["/sc/css", "html", "color", "red"]);
+        this.assertEquals(msg, ["/guido/module/client", "css", "html", "color", "red"]);
+        NodeJS.connected = false;
+    }
+
+    test_Send2Cli {
+        var msg = List.new;
+        NodeJS.connected = true;
+        NodeJS.sendCallback = {
+            arg addr ... args;
+            msg.add(addr);
+            msg = msg ++ args;
+        };
+        NodeJS.send2Cli("/ui", "arg1", 2);
+        this.assertEquals(msg, ["/guido/forward", "/ui", "arg1", 2]);
         NodeJS.connected = false;
     }
 }

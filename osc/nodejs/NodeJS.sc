@@ -11,6 +11,7 @@ NodeJS {
     classvar serverControl;
     classvar rehearsalUtils;
     classvar <connectionManager;
+    classvar <>sendCallback;
 
     *initClass {
         this.connected = false;
@@ -115,7 +116,11 @@ NodeJS {
         arg path ... args;
         var n = NetAddr("localhost", NodeJS.inOscPort);
 
-        if(connected) { n.sendMsg(path, *args); ^true }
+        if(connected) {
+            n.sendMsg(path, *args);
+            if(sendCallback.notNil) { sendCallback.value(path, *args) };
+            ^true
+        }
         { "NodeJS is not running".error; ^false; };
     }
 

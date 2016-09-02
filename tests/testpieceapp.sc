@@ -1,24 +1,4 @@
-NodeJS_Test : UnitTest {
-    startNodeJS {
-        var condition = Condition.new;
-		condition.test = false;
-		this.waitForBoot({
-			// Setting func to true indicates that our condition has become true and we can go when signaled.
-			condition.test = true;
-			condition.signal
-		});
-		condition.wait;
-        if(NodeJS.isRunning) { ^this };
-        {
-            NodeJS.restart;
-            20.do {
-                if(NodeJS.isRunning.not) { 0.5.wait } { ^nil };
-            }
-        }.fork;
-    }
-}
-
-TestSP_PieceApp : NodeJS_Test {
+TestSP_PieceApp : UnitTest {
     test_new {
         var n;
         try {
