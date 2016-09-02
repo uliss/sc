@@ -78,7 +78,7 @@ NodeJS {
             "[Guido] starting server control".postln;
         };
 
-        if(rehearsalUtils.isNil) { rehearsalUtils =  .new };
+        if(rehearsalUtils.isNil) { rehearsalUtils = SP_RehearsalUtils.new };
 
         if(connectionManager.isNil) { connectionManager = GuidoConnectionManager.new };
     }

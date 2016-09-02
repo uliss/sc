@@ -46,7 +46,7 @@ NodeJS_Widget {
                 if(widgetAction.notNil) {
                     widgetAction.value(m);
                 }
-            }, "/sc/ui/" ++ this.id, nil, NodeJS.outOscPort);
+            }, "/guido/ui/" ++ this.id, nil, NodeJS.outOscPort);
         } { |error|
             error.what.error;
             "Seems that you should restart NodeJS: NodeJS.restart;".error;
@@ -97,7 +97,7 @@ NodeJS_Widget {
 
     sendMsg {
         arg path, msg;
-        NodeJS.sendMsg("/node" ++ path, msg);
+        NodeJS.send2Cli("/guido" ++ path, msg);
         ^this;
     }
 

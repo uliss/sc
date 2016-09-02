@@ -173,7 +173,7 @@ SP_PieceApp : SP_AbstractApp {
     }
 
     syncTitle {
-        NodeJS.sendMsg("/node/title", title);
+        NodeJS.sendMsg("/guido/module/client", "title", title);
     }
 
     add {
