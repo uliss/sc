@@ -15,7 +15,7 @@ SP_AbstractApp {
 
     *registerSync {
         arg name, func;
-        NodeJS.sendMsg("/node/app/sync/add", name);
+        NodeJS.sendMsg("/guido/module/server", "sync_add", name);
 
         if(osc_connect_sync_map[name].notNil) {
             osc_connect_sync_map[name].free;
@@ -27,7 +27,7 @@ SP_AbstractApp {
 
     *unregisterSync {
         arg name;
-        NodeJS.sendMsg("/node/app/sync/remove", name);
+        NodeJS.sendMsg("/guido/module/server", "sync_remove", name);
 
         if(osc_connect_sync_map[name].notNil) {
             osc_connect_sync_map[name].free;

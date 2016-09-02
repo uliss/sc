@@ -9,7 +9,7 @@ Piece_Part_Spiegel_im_Spiegel : SP_SheetMusicPiece {
         this.addPatch(\piano, ["common.sfplay", "common.reverb"], (path: "/Users/serj/work/music/sounds/pieces/spiegel_im_spiegel_100.wav"));
     }
 
-    initScore {
+    initSheetMusic {
         this.addPage("/Users/serj/work/music/sc/concerts/pieces/scores/Spiegel_im_Spiegel_my_version-Violin.png");
     }
 
