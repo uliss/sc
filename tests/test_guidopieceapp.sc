@@ -178,6 +178,10 @@ TestGuidoPieceApp : GuidoTest {
 
         p.free;
     }
+
+    test_osc {
+
+    }
 }
 
 // TestGuidoPieceApp.run

@@ -37,13 +37,14 @@ GuidoAbstractApp : GuidoAbstractModule {
         httpPath = path;
 
         if(syncOnConnect) {
-            var fn = OSCFunc({|msg|
+            var fn = NodeJS.on("/guido/sync" +/+ httpPath, { |msg|
                 {
                     "[%:%] sync on connection".format(this.class, this.identityHash).postln;
                     this.sync;
                     if(onConnect.notNil) { onConnect.value };
                 }.defer(2);
-            }, "/guido/sync" +/+ httpPath, nil, NodeJS.outOscPort);
+            });
+
             // set permanent
             fn.permanent = true;
 
