@@ -318,8 +318,8 @@ GuidoPieceApp : GuidoAbstractApp {
         var file, fname, dir;
         var params = this.params;
 
-        File.mkdir(SP_PieceApp.dir);
-        fname = SP_PieceApp.dir +/+ (composer + title).replaceSpaces;
+        File.mkdir(GuidoAbstractApp.dir);
+        fname = GuidoAbstractApp.dir +/+ (composer + title).replaceSpaces;
         if(version.notNil) { fname = fname ++ "_" ++ version};
         fname = fname ++ ".params";
 
@@ -364,7 +364,7 @@ GuidoPieceApp : GuidoAbstractApp {
         arg version = nil;
         var fname;
 
-        fname = SP_PieceApp.dir +/+ (composer + title).replaceSpaces;
+        fname = GuidoAbstractApp.dir +/+ (composer + title).replaceSpaces;
         if(version.notNil) {
             fname = fname ++ "_" ++ version ++ ".params";
             if(File.exists(fname).not) {

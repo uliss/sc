@@ -82,6 +82,12 @@ SP_Test : UnitTest {
         ^this.assertResult("size of %".format(n));
     }
 
+    identical_ {
+        arg obj;
+        expect_result = (checked_value === obj);
+        ^this.assertResult("identical to %".format(obj));
+    }
+
     throw_ {
         arg class = Error;
         if(thrown.notNil) {

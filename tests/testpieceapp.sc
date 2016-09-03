@@ -6,6 +6,7 @@ TestGuidoPieceApp : GuidoTest {
         this.expect(p.composer).to.be.equal_("J.S.Bach");
         this.expect(p.oscPath).to.be.equal_("/partita");
         this.expect(p.httpPath).to.be.equal_("/piece");
+        this.expect(p).to.be.identical_(GuidoPieceApp.new("Partita", "J.S.Bach", "/partita"));
     }
 }
 
