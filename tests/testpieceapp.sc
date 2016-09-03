@@ -57,7 +57,7 @@ TestGuidoPieceApp : GuidoTest {
         var p = GuidoPieceApp.new("Partita", "J.S.Bach", "/partita");
         p.addWidget(\knob1, NodeJS_Knob.new);
         this.expect(p.widget("knob1")).to.be.not.nil_;
-        p.createWidgets;
+        p.showWidgets;
         this.expect(p).to.sendOSC_(
             "/guido/forward",
             "/guido/widget/add",
@@ -65,10 +65,13 @@ TestGuidoPieceApp : GuidoTest {
 
         this.expect(p).listen.osc_("/guido/ui/knob1");
 
+        p.hideWidgets;
+        this.expect(p).listen.osc_("/guido/ui/knob1");
+        this.expect(p).to.sendOSC_("/guido/forward", "/guido/widget/remove", "knob1");
+
         p.removeWidget("knob1");
-        this.expect(p).to.sendOSC_("/guido/forward",
-            "/guido/widget/remove", "knob1");
         this.expect(p).not.listen.osc_("/guido/ui/knob1");
+        this.expect(p).to.sendOSC_("/guido/forward", "/guido/widget/remove", "knob1");
         this.expect(p.widget("knob1")).to.be.nil_;
         p.free;
 

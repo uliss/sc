@@ -152,12 +152,12 @@ GuidoPieceApp : GuidoAbstractApp {
     freePatches { patches.do { |p| p.free }; patches = nil; }
     releasePatches { |t = 0.5| patches.do { |p| p.release(t) } }
 
+    widget { |name| ^widgets[name.asSymbol] }
+
     addWidget {
         arg name, widget;
         widgets[name.asSymbol] = widget;
     }
-
-    widget { |name| ^widgets[name.asSymbol] }
 
     removeWidget {
         arg name;
@@ -167,12 +167,13 @@ GuidoPieceApp : GuidoAbstractApp {
         widgets[name] = nil;
     }
 
-    createWidgets { widgets.do { |w| w.add } }
+    showWidgets { widgets.do { |w| w.add } }
+    hideWidgets { widgets.do { |w| w.remove } }
 
     syncWidgets { widgets.do { |w| w.sync } }
 
     removeWidgets {
-        widgets.do { |w| w.remove; w.free };
+        widgets.keys.do { |name| this.removeWidget(name) };
         widgets = nil;
     }
 
@@ -183,7 +184,7 @@ GuidoPieceApp : GuidoAbstractApp {
     add {
         NodeJS.send2Cli("/app/piece/set_osc_path", oscPath);
         this.syncTitle;
-        this.createWidgets;
+        this.showWidgets;
     }
 
     initUI {
