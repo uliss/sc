@@ -5,10 +5,12 @@ SP_Test : UnitTest {
     var value_descr;
     var flag_not;
     var flag_throw;
+    var msg_chain;
 
     expect {
         arg v;
         try {
+            msg_chain = List.new;
             thrown = nil;
             flag_not = false;
             flag_throw = false;
@@ -22,16 +24,24 @@ SP_Test : UnitTest {
         }
     }
 
-    to {}
-    be {}
-    is {}
-    have {}
+    to { msg_chain.add("to") }
+    be { msg_chain.add("be") }
+    is { msg_chain.add("is") }
+    have { msg_chain.add("have") }
 
-    not { flag_not = flag_not.not }
+    not {
+        msg_chain.add("not");
+        flag_not = flag_not.not
+    }
 
     size {
         value_descr = "size of" + checked_value.asString;
         checked_value = checked_value.size;
+    }
+
+    keys {
+        value_descr = "keys of" + checked_value.asString;
+        checked_value = checked_value.keys;
     }
 
     processFlags {
@@ -40,7 +50,7 @@ SP_Test : UnitTest {
 
     equal_ { |v|
         expect_result = (checked_value == v);
-        ^this.assertResult("equal to %".format(v));
+        ^this.assertResult("equal %".format(v));
     }
 
     empty_ {
@@ -88,6 +98,24 @@ SP_Test : UnitTest {
         ^this.assertResult("identical to %".format(obj));
     }
 
+    includes_ {
+        arg v;
+        expect_result = (checked_value.includes(v));
+        ^this.assertResult("includes %".format(v));
+    }
+
+    contains_ {
+        arg v;
+        expect_result = (checked_value.includes(v));
+        ^this.assertResult("contains %".format(v));
+    }
+
+    containsAny_ {
+        arg ...args;
+        expect_result = (checked_value.includesAny(args));
+        ^this.assertResult("contains any of %".format(args));
+    }
+
     throw_ {
         arg class = Error;
         if(thrown.notNil) {
@@ -114,9 +142,8 @@ SP_Test : UnitTest {
     assertResult {
         arg msg;
         var error_msg;
-        error_msg = value_descr + "should";
-        if(flag_not == true) { error_msg = error_msg + "not"};
-        error_msg = error_msg + "be" + msg;
+
+        error_msg = (["expect", value_descr] ++ msg_chain ++ [msg]).join(" ");
 
         this.processFlags;
         // this.assert(expect_result, error_msg);

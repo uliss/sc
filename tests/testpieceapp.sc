@@ -25,6 +25,12 @@ TestGuidoPieceApp : GuidoTest {
         p.removePatch(\test);
         this.expect(p.patch(\test)).to.be.nil_;
     }
+
+    test_params {
+        var p = GuidoPieceApp.new("Partita", "J.S.Bach", "/partita");
+        p.addPatch(\test, ["utils.tone"]);
+        this.expect(p.params[\test]).keys.containsAny_(\amp, \freq);
+    }
 }
 
 // TestGuidoPieceApp.run
