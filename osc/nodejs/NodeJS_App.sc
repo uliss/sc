@@ -136,8 +136,8 @@ SP_AppLabelClock : SP_AppLabel {
     var timeMap;
 
     *new {
-        arg initTime = 0, reverse = false;
-        ^super.new(autoSync: false).initClock.time_(initTime).reverse_(reverse);
+        arg initTime = 0, reverse = false, autoSync = false;
+        ^super.new(autoSync: autoSync).initClock.time_(initTime).reverse_(reverse);
     }
 
     initClock {
