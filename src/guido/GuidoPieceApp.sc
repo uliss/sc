@@ -134,6 +134,7 @@ GuidoPieceApp : GuidoAbstractApp {
     removePatch {
         arg name;
         patches[name.asSymbol] = nil;
+        this.removeAllPatchBindings(name);
     }
 
     patch { |name| ^patches[name.asSymbol] }
@@ -165,6 +166,7 @@ GuidoPieceApp : GuidoAbstractApp {
         widgets[name].remove;
         widgets[name].free;
         widgets[name] = nil;
+        this.removeWidgetBinding(name);
     }
 
     showWidgets { widgets.do { |w| w.add } }
@@ -272,6 +274,38 @@ GuidoPieceApp : GuidoAbstractApp {
 
         keyName = pName.asString + controlName.asString;
         bindings[keyName] = wName.asSymbol;
+    }
+
+    removeAllPatchBindings {
+        arg patchName;
+        bindings.keysValuesDo { |k, v|
+            var pname = k.split($ ).first;
+            if(pname == patchName.asString) {
+                bindings[k] = nil;
+            }
+        }
+    }
+
+    removePatchBinding {
+       arg patchName, controlName;
+       var keyName = patchName.asString + controlName.asString;
+       bindings[keyName] = nil;
+    }
+
+    removeWidgetBinding {
+        arg widgetName;
+        var p = this.findBindedPatch(widgetName);
+        p !? { |name| this.removePatchBinding(name.key, name.value)};
+    }
+
+    hasPatchBinding {
+        arg patchName, controlName;
+        ^this.findBindedWidget(patchName, controlName).notNil;
+    }
+
+    hasWidgetBinding {
+        arg wName;
+        ^this.findBindedPatch(wName).notNil;
     }
 
     findBindedWidget {

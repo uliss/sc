@@ -1,4 +1,9 @@
 TestGuidoPieceApp : GuidoTest {
+    beforeEach {
+        super.beforeEach;
+        NodeJS_Widget.idx_count = 1;
+    }
+
     test_new {
         var p = GuidoPieceApp.new("Partita", "J.S.Bach", "/partita");
         this.expect(p).to.be.a_(GuidoPieceApp);
@@ -75,6 +80,54 @@ TestGuidoPieceApp : GuidoTest {
         this.expect(p.widget("knob1")).to.be.nil_;
         p.free;
 
+        this.expect(listeners).to.be.equal_(this.oscListeners);
+    }
+
+    test_binding {
+        var tmp;
+        var listeners = this.oscListeners;
+        var p = GuidoPieceApp.new("Partita", "J.S.Bach", "/partita");
+        p.addWidget(\knob1, NodeJS_Knob.new);
+        p.addPatch(\tone, ["utils.tone"]);
+        p.set(\tone, \amp, 0.7);
+        p.bindW2P(\knob1, \tone, \amp);
+        this.expect(p.hasWidgetBinding(\knob1)).to.be.true_;
+        this.expect(p.hasPatchBinding(\tone, \amp)).to.be.true_;
+        this.expect(p.findBindedPatch(\knob1)).to.be.equal_(("tone" -> "amp"));
+        this.expect(p.findBindedWidget(\tone, \amp)).to.be.equal_(\knob1);
+
+        this.expect(p.widget(\knob1).value).to.be.equal_(0.7);
+
+        p.removePatchBinding(\tone, \freq);
+        this.expect(p.hasWidgetBinding(\knob1)).to.be.true_;
+        p.removePatchBinding(\tone, \amp);
+        this.expect(p.hasWidgetBinding(\knob1)).to.be.false_;
+        p.bindW2P(\knob1, \tone, \amp);
+        p.addWidget(\knob2, NodeJS_Knob.new(440, 20, 20000));
+        p.bindW2P(\knob2, \tone, \freq);
+
+        this.expect(p.hasWidgetBinding(\knob1)).to.be.true_;
+        this.expect(p.hasWidgetBinding(\knob2)).to.be.true_;
+
+        p.removeAllPatchBindings(\tone);
+        this.expect(p.hasWidgetBinding(\knob1)).to.be.false_;
+        this.expect(p.hasWidgetBinding(\knob2)).to.be.false_;
+
+        p.bindW2P(\knob1, \tone, \amp);
+        p.bindW2P(\knob2, \tone, \freq);
+
+        this.expect(p.hasWidgetBinding(\knob1)).to.be.true_;
+        this.expect(p.hasWidgetBinding(\knob2)).to.be.true_;
+
+        this.expect(p.findBindedPatch(\knob2).key).to.be.equal_("tone");
+        p.removeWidgetBinding(\knob2);
+        this.expect(p.hasWidgetBinding(\knob1)).to.be.true_;
+        this.expect(p.hasWidgetBinding(\knob2)).to.be.false_;
+
+        p.removeWidget(\knob1);
+        this.expect(p.hasWidgetBinding(\knob1)).to.be.false_;
+
+        p.free;
         this.expect(listeners).to.be.equal_(this.oscListeners);
     }
 }

@@ -1,5 +1,5 @@
 NodeJS_Widget {
-    classvar idx_count = 1;
+    classvar <>idx_count = 1;
     var <idx;
     var <>type;
     var <>params;
