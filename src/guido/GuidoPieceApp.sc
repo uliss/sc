@@ -23,7 +23,8 @@ GuidoPieceApp : GuidoAbstractApp {
     *new {
         arg title, composer, oscPath, params = [];
         var instance = Library.at(\piece, composer.asSymbol, title.asSymbol);
-        instance !? {|obj| ^obj };
+
+        if(instance.notNil) { ^instance };
 
         instance = super.new(oscPath, "/piece", true).title_(title).composer_(composer).initPiece(params);
         Library.put(\piece, composer.asSymbol, title.asSymbol, instance);
@@ -113,8 +114,22 @@ GuidoPieceApp : GuidoAbstractApp {
 
     addPatch {
         arg name, instrumentList, params = ();
-        var instr = instrumentList.collect({|i| Instr(i)}).reduce({|a,b| a <>> b});
-        var patch = Patch(instr, params);
+        var instr, patch;
+
+        if(name.isNil) {
+            "[%] invalid patch name: %".format(thisMethod, name).error;
+            ^nil
+        };
+
+        name = name.asSymbol;
+
+        if(instrumentList.isNil || (instrumentList !? (_.isEmpty))) {
+            "[%] instrument list is empty".format(thisMethod).error;
+            ^nil
+        };
+
+        instr = instrumentList.collect({|i| Instr(i)}).reduce({|a,b| a <>> b});
+        patch = Patch(instr, params);
         patches[name] = patch;
     }
 
@@ -123,7 +138,7 @@ GuidoPieceApp : GuidoAbstractApp {
         patches[name] = nil;
     }
 
-    patch { |name| ^patches[name] }
+    patch { |name| ^patches[name.asSymbol] }
 
     syncPatchesParams {
         widgets.keysValuesDo { |name, widget|

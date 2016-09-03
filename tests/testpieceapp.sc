@@ -12,6 +12,17 @@ TestGuidoPieceApp : GuidoTest {
         this.expect(p.isPaused).to.be.false_;
         this.expect(p.isStopped).to.be.true_;
     }
+
+    test_patches {
+        var p = GuidoPieceApp.new("Partita", "J.S.Bach", "/partita");
+        this.expect(p.addPatch()).to.be.nil_;
+        this.expect(p.addPatch(\test)).to.be.nil_;
+        this.expect(p.addPatch(\test, [])).to.be.nil_;
+        this.expect(p.addPatch(\test, ["utils.tone"])).to.be.not.nil_;
+        this.expect(p.patch(\test)).to.be.not.nil_;
+        this.expect(p.patch("test")).to.be.not.nil_;
+        this.expect(p.patch(\test)).to.be.a_(Patch);
+    }
 }
 
 // TestGuidoPieceApp.run
