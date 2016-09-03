@@ -172,6 +172,10 @@ TestGuidoPieceApp : GuidoTest {
 
         }.value;
 
+        this.expect(p.hasTask(85)).to.be.true_;
+        p.removeTask(85);
+        this.expect(p.hasTask(85)).to.be.false_;
+
         p.free;
     }
 }
