@@ -39,9 +39,10 @@ SP_AbstractApp {
             var fn = OSCFunc({|msg|
                 {
                     "[%:%] sync on connection".format(this.class, this.identityHash).postln;
+                    this.sync;
                     if(onConnect.notNil) { onConnect.value };
                 }.defer(2);
-            }, "/sc/app/sync" +/+ httpPath, nil, NodeJS.outOscPort);
+            }, "/guido/sync" +/+ httpPath, nil, NodeJS.outOscPort);
 
             SP_AbstractApp.registerSync(httpPath, fn);
         }
