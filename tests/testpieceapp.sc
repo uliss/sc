@@ -63,6 +63,8 @@ TestGuidoPieceApp : GuidoTest {
             "{\"max\": 1,\"size\": 100,\"min\": 0,\"parent\": \"ui-elements\",\"oscPath\": \"/ui\",\"value\": 0,\"idx\": \"knob1\",\"label\": \"\",\"type\": \"knob\"}");
 
         p.removeWidget("knob1");
+        this.expect(p).to.sendOSC_("/guido/forward",
+            "/guido/widget/remove", "knob1");
         this.expect(p.widget("knob1")).to.be.nil_;
         p.free;
     }
