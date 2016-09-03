@@ -135,7 +135,7 @@ GuidoPieceApp : GuidoAbstractApp {
 
     removePatch {
         arg name;
-        patches[name] = nil;
+        patches[name.asSymbol] = nil;
     }
 
     patch { |name| ^patches[name.asSymbol] }

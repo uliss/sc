@@ -22,6 +22,8 @@ TestGuidoPieceApp : GuidoTest {
         this.expect(p.patch(\test)).to.be.not.nil_;
         this.expect(p.patch("test")).to.be.not.nil_;
         this.expect(p.patch(\test)).to.be.a_(Patch);
+        p.removePatch(\test);
+        this.expect(p.patch(\test)).to.be.nil_;
     }
 }
 
