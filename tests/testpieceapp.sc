@@ -7,6 +7,7 @@ TestGuidoPieceApp : GuidoTest {
         this.expect(p.oscPath).to.be.equal_("/partita");
         this.expect(p.httpPath).to.be.equal_("/piece");
         this.expect(p).to.be.identical_(GuidoPieceApp.new("Partita", "J.S.Bach", "/partita"));
+        this.expect(p.phonesChannel).to.be.equal_(4);
     }
 }
 
