@@ -11,6 +11,11 @@ TestGuidoPieceApp : GuidoTest {
         this.expect(p.isPlaying).to.be.false_;
         this.expect(p.isPaused).to.be.false_;
         this.expect(p.isStopped).to.be.true_;
+        this.expect(p).listen.osc_("/partita");
+        this.expect(p).listen.osc_("/guido/sync/partita");
+        p.free;
+        this.expect(p).not.listen.osc_("/partita");
+        this.expect(p).not.listen.osc_("/guido/sync/partita");
     }
 
     test_patches {
@@ -42,7 +47,6 @@ TestGuidoPieceApp : GuidoTest {
             this.expect(opts).to.be.equal_(p.loadParamsDict);
             p.loadParams;
             this.expect(p.params).to.be.equal_(opts);
-
         }.value
     }
 }

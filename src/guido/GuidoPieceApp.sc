@@ -419,6 +419,7 @@ GuidoPieceApp : GuidoAbstractApp {
         this.stop;
         this.freePatches;
         this.freeWidgets;
+        Library.put(\piece, composer.asSymbol, title.asSymbol, nil);
         timerTask.free;
         bindings = nil;
         osc_play_control.free;

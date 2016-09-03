@@ -9,6 +9,7 @@ GuidoAbstractModule {
 
     init {
         oscf = NodeJS.on(oscPath, { |m| this.processOsc(m) });
+        oscf.permanent = true;
     }
 
     processOsc {

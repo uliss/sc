@@ -44,6 +44,8 @@ GuidoAbstractApp : GuidoAbstractModule {
                     if(onConnect.notNil) { onConnect.value };
                 }.defer(2);
             }, "/guido/sync" +/+ httpPath, nil, NodeJS.outOscPort);
+            // set permanent
+            fn.permanent = true;
 
             GuidoAbstractApp.registerSync(httpPath, fn);
         }
@@ -66,6 +68,7 @@ GuidoAbstractApp : GuidoAbstractModule {
     }
 
     free {
+        super.free;
         GuidoAbstractApp.unregisterSync(httpPath);
     }
 

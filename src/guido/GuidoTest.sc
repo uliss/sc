@@ -2,6 +2,10 @@ GuidoTest : SP_Test {
     var osc_args;
     classvar <>debugLevel;
 
+    listen {
+        msg_chain.add("listen");
+    }
+
     *initClass {
         debugLevel = "error";
     }
@@ -17,13 +21,29 @@ GuidoTest : SP_Test {
         }
     }
 
+    beforeEach {
+        osc_args = []
+    }
+
     after {
         // NodeJS.stop;
         NodeJS.sendCallback = nil;
     }
 
-    sendOsc_ {
+    sendOSC_ {
         arg ...args;
-        this.equal_(args, osc_args);
+        expect_result = (osc_args == args);
+        this.assertResult("send OSC message:")
+    }
+
+    osc_ {
+        arg path;
+        expect_result = AbstractResponderFunc.allFuncProxies["OSC unmatched".asSymbol].select({|fn| fn.path.asSymbol == path.asSymbol}).isEmpty.not;
+        this.assertResult("OSC addr:" + path);
+    }
+
+    sendOSC {
+        arg path ... args;
+        NodeJS.sendMsg(path, *args);
     }
 }
