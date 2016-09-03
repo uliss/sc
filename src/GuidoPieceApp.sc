@@ -1,4 +1,4 @@
-SP_PieceApp : GuidoAbstractApp {
+GuidoPieceApp : GuidoAbstractApp {
     classvar <>dir;
     var <>title;
     var <>composer;

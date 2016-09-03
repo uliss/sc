@@ -1,4 +1,4 @@
-Piece_Viola_Solo : SP_PieceApp {
+Piece_Viola_Solo : GuidoPieceApp {
     *new {
         arg out = 0;
         ^super.new("Viola Solo", "", "/sc/viola_solo", [\out, out]);

@@ -1,4 +1,4 @@
-SP_SheetMusicPiece : SP_PieceApp {
+SP_SheetMusicPiece : GuidoPieceApp {
     classvar <>gsPath;
     var slideshow;
     var <>namedTaskActions;
