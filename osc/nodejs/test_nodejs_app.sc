@@ -33,6 +33,7 @@ TestSP_AbstractApp : SP_Test {
         var app = SP_AbstractApp.new("/osc", "/http");
         this.expect(app.oscPath).to.be.equal_("/osc");
         this.expect(app.httpPath).to.be.equal_("/http");
+        this.expect(app.name).to.be.equal_("osc");
         this.expect(SP_AbstractApp.hasSync("test")).to.be.false_;
         app.free;
     }
@@ -44,6 +45,12 @@ TestSP_AbstractApp : SP_Test {
         this.expect(SP_AbstractApp.hasSync("/http")).to.be.true_;
         app.free;
         this.expect(SP_AbstractApp.hasSync("/http")).to.be.false_;
+    }
+
+    test_SendMsg {
+        var app = SP_AbstractApp.new("/osc", "/http", true);
+        app.sendMsg("/path", 1, 2, 3, [4, 5]);
+        this.expect(osc_msg).equal_(["/guido/forward", "/osc/path", 1, 2, 3, [4, 5]]);
     }
 }
 
