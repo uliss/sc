@@ -1,4 +1,4 @@
-TestSP_AbstractApp : SP_Test {
+TestGuidoAbstractApp : SP_Test {
     var osc_msg;
 
     before {
@@ -54,4 +54,4 @@ TestSP_AbstractApp : SP_Test {
     }
 }
 
-// SP_AbstractApp.test
+// GuidoAbstractApp.test
