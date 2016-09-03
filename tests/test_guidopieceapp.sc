@@ -180,6 +180,16 @@ TestGuidoPieceApp : GuidoTest {
     }
 
     test_osc {
+        var p = GuidoPieceApp.new("Partita", "J.S.Bach", "/partita");
+        this.receiveOSC("/partita", "play");
+        this.expect(p.isPlaying).to.be.true_;
+        this.receiveOSC("/partita", "pause");
+        this.expect(p.isPaused).to.be.true_;
+        p.currentTime = 120;
+        this.receiveOSC("/partita", "stop");
+        this.expect(p.isStopped).to.be.true_;
+        this.expect(p.currentTime).to.be.equal_(0);
+        p.free;
 
     }
 }

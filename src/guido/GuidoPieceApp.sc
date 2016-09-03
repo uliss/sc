@@ -2,7 +2,6 @@ GuidoPieceApp : GuidoAbstractApp {
     classvar <>dir;
     var <>title;
     var <>composer;
-    var osc_play_control;
     var <playState;
     var <>onPlay;
     var <>onPause;
@@ -64,6 +63,20 @@ GuidoPieceApp : GuidoAbstractApp {
         widgets[\monitorToggle].value = 0;
     }
 
+    processOsc { |msg|
+        switch(msg[1].asString,
+            "play", { this.play },
+            "pause", { this.pause },
+            "stop", { this.stop },
+            "command", { this.command(msg[2..]) },
+            "load", {this.loadParams },
+            "save", {this.saveParams },
+            {
+                "[%] unknown message: %".format(this.class.name, msg).warn;
+            }
+        );
+    }
+
     initPiece {
         arg params;
 
@@ -83,20 +96,6 @@ GuidoPieceApp : GuidoAbstractApp {
             }
         };
         taskDict = Dictionary.new;
-
-        osc_play_control = OSCFunc({ |msg|
-            switch(msg[1].asString,
-                "play", { this.play },
-                "pause", { this.pause },
-                "stop", { this.stop },
-                "command", { this.command(msg[2..]) },
-                "load", {this.loadParams },
-                "save", {this.saveParams },
-                {
-                    "[%] unknown message: %".format(this.class.name, msg).warn;
-                }
-            );
-        }, oscPath, nil, NodeJS.outOscPort);
 
         this.initOSC(params);
         this.initMIDI(params);
@@ -287,9 +286,9 @@ GuidoPieceApp : GuidoAbstractApp {
     }
 
     removePatchBinding {
-       arg patchName, controlName;
-       var keyName = patchName.asString + controlName.asString;
-       bindings[keyName] = nil;
+        arg patchName, controlName;
+        var keyName = patchName.asString + controlName.asString;
+        bindings[keyName] = nil;
     }
 
     removeWidgetBinding {
@@ -451,7 +450,6 @@ GuidoPieceApp : GuidoAbstractApp {
         Library.put(\piece, composer.asSymbol, title.asSymbol, nil);
         timerTask.free;
         bindings = nil;
-        osc_play_control.free;
     }
 
     sync {

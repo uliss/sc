@@ -54,4 +54,13 @@ GuidoTest : SP_Test {
         arg path ... args;
         NodeJS.sendMsg(path, *args);
     }
+
+    // emulate incoming message
+    receiveOSC {
+        arg path ... args;
+        AbstractResponderFunc.allFuncProxies["OSC unmatched".asSymbol].select({|fn| fn.path.asSymbol == path.asSymbol}).do { |osc_fn|
+            var fn_args = List.new;
+            osc_fn.func.value([path] ++ args);
+        }
+    }
 }
