@@ -1,4 +1,4 @@
-SP_PieceApp : SP_AbstractApp {
+SP_PieceApp : GuidoAbstractApp {
     classvar <>dir;
     var <>title;
     var <>composer;
@@ -415,6 +415,7 @@ SP_PieceApp : SP_AbstractApp {
     }
 
     sync {
+        super.sync;
         this.syncTitle;
         this.syncWidgets;
     }
