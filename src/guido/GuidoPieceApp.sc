@@ -333,8 +333,8 @@ GuidoPieceApp : GuidoAbstractApp {
         var file, fname, dir;
         var params = this.params;
 
-        File.mkdir(GuidoAbstractApp.dir);
-        fname = GuidoAbstractApp.dir +/+ (composer + title).replaceSpaces;
+        File.mkdir(GuidoPieceApp.dir);
+        fname = GuidoPieceApp.dir +/+ (composer + title).replaceSpaces;
         if(version.notNil) { fname = fname ++ "_" ++ version};
         fname = fname ++ ".params";
 
@@ -379,7 +379,7 @@ GuidoPieceApp : GuidoAbstractApp {
         arg version = nil;
         var fname;
 
-        fname = GuidoAbstractApp.dir +/+ (composer + title).replaceSpaces;
+        fname = GuidoPieceApp.dir +/+ (composer + title).replaceSpaces;
         if(version.notNil) {
             fname = fname ++ "_" ++ version ++ ".params";
             if(File.exists(fname).not) {

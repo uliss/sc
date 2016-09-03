@@ -27,9 +27,23 @@ TestGuidoPieceApp : GuidoTest {
     }
 
     test_params {
-        var p = GuidoPieceApp.new("Partita", "J.S.Bach", "/partita");
+        var p, dict;
+        p = GuidoPieceApp.new("Partita", "J.S.Bach", "/partita");
         p.addPatch(\test, ["utils.tone"]);
         this.expect(p.params[\test]).keys.containsAny_(\amp, \freq);
+
+        {
+            var opts;
+            opts = p.params;
+
+            this.expect(p.saveParams).to.be.equal_(opts);
+            p.set(\test, \amp, 1);
+            this.expect(p.params).to.be.not.equal_(opts);
+            this.expect(opts).to.be.equal_(p.loadParamsDict);
+            p.loadParams;
+            this.expect(p.params).to.be.equal_(opts);
+
+        }.value
     }
 }
 
