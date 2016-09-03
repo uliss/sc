@@ -1,4 +1,4 @@
-SP_AbstractApp {
+GuidoAbstractApp {
     var <oscPath;
     var <httpPath;
     var <>onConnect;
@@ -44,7 +44,7 @@ SP_AbstractApp {
                 }.defer(2);
             }, "/guido/sync" +/+ httpPath, nil, NodeJS.outOscPort);
 
-            SP_AbstractApp.registerSync(httpPath, fn);
+            GuidoAbstractApp.registerSync(httpPath, fn);
         }
     }
 
@@ -65,7 +65,7 @@ SP_AbstractApp {
     }
 
     free {
-        SP_AbstractApp.unregisterSync(httpPath);
+        GuidoAbstractApp.unregisterSync(httpPath);
     }
 
     title_ {
