@@ -16,6 +16,12 @@ NodeJS {
     *initClass {
         this.connected = false;
         this.serverRoot = "~/work/music/nodejs/guidosc".standardizePath;
+        ShutDown.add({
+            if(this.connected == true) {
+                "[GuidOSC] quit".postln;
+                this.stop;
+            }
+        });
     }
 
     *htmlRootDir { ^serverRoot +/+ "build" }

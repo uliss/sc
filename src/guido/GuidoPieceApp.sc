@@ -22,17 +22,12 @@ GuidoPieceApp : GuidoAbstractApp {
 
     *new {
         arg title, composer, oscPath, params = [];
-        var instance;
+        var instance = Library.at(\piece, composer.asSymbol, title.asSymbol);
+        instance !? {|obj| ^obj };
 
-        if(NodeJS.isRunning.not) { Error("NodeJS is not running").throw };
-
-        instance = Library.at(\piece, composer.asSymbol, title.asSymbol);
-        if(instance.notNil)
-        { ^instance }
-        {
-            var new_p = super.new(oscPath, "/piece", true).title_(title).composer_(composer).initPiece(params);
-            Library.put(\piece, composer.asSymbol, title.asSymbol, new_p);
-        }
+        instance = super.new(oscPath, "/piece", true).title_(title).composer_(composer).initPiece(params);
+        Library.put(\piece, composer.asSymbol, title.asSymbol, instance);
+        ^instance;
     }
 
     addMonitorWidget {

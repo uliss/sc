@@ -4,7 +4,7 @@
     beforeEach {}
     afterEach {}
 
-    run { | reset = true, report = true|
+    run { | reset = true, report = true, call_state = false|
         var function;
         if(reset) { this.class.reset };
         if(report) { ("RUNNING UNIT TEST" + this).inform };
@@ -20,8 +20,8 @@
                     this.perform(method.name);
                     // unfortunately this removes the interesting part of the call stack
                 }.try({ |err|
-                    ("ERROR during test"+method).postln;
-                    // err.throw;
+                    var err_msg = "exception was thrown - %: %".format(err.class, err.errorString[7..]);
+                    this.failed(method, err_msg);
                 });
 
                 this.afterEach;
@@ -44,18 +44,18 @@
     }
 
     *report {
-		Post.nl;
-		"UNIT TEST.............".warn;
-		if(failures.size > 0) {
-			"There were failures:".error;
-			failures.do {
+        Post.nl;
+        "UNIT TEST.............".warn;
+        if(failures.size > 0) {
+            "There were failures:".error;
+            failures.do {
                 arg results;
-				results.report
-			};
-		} {
-			"There were no failures".inform;
-		}
-	}
+                results.report
+            };
+        } {
+            "There were no failures".inform;
+        }
+    }
 }
 
 + UnitTestResult {

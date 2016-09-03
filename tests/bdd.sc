@@ -65,6 +65,7 @@ SP_Test : UnitTest {
 
     a_ {
         arg class;
+        value_descr = "% (instance of %)".format(checked_value, checked_value.class);
         expect_result = checked_value.class == class;
         ^this.assertResult("instance of %".format(class));
     }

@@ -1,16 +1,12 @@
-TestSP_PieceApp : UnitTest {
+TestGuidoPieceApp : GuidoTest {
     test_new {
-        var n;
-        try {
-            NodeJS.stop;
-            n = SP_PieceApp.new;
-            this.assert(false, "Should throw exception");
-        } { |e|
-            this.assert(true, "ok");
-        };
-
-        this.startNodeJS;
-        this.assert(NodeJS.isRunning, "ok");
-        // this.wait(NodeJS.isRunning, "", 10);
+        var p = GuidoPieceApp.new("Partita", "J.S.Bach", "/partita");
+        this.expect(p).to.be.a_(GuidoPieceApp);
+        this.expect(p.title).to.be.equal_("Partita");
+        this.expect(p.composer).to.be.equal_("J.S.Bach");
+        this.expect(p.oscPath).to.be.equal_("/partita");
+        this.expect(p.httpPath).to.be.equal_("/piece");
     }
 }
+
+// TestGuidoPieceApp.run
