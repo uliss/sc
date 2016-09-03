@@ -130,6 +130,21 @@ TestGuidoPieceApp : GuidoTest {
         p.free;
         this.expect(listeners).to.be.equal_(this.oscListeners);
     }
+
+    test_set {
+        var listeners = this.oscListeners;
+        var p = GuidoPieceApp.new("Partita", "J.S.Bach", "/partita");
+        p.addWidget(\knob1, NodeJS_Knob.new);
+        p.addPatch(\tone, ["utils.tone"]);
+        p.bindW2P(\knob1, \tone, \amp);
+
+        p.set(\tone, \amp, 0.7);
+        this.expect(p.widget(\knob1).value).to.be.equal_(0.7);
+        this.expect(p.patch(\tone).argFromName(\amp).value).to.be.equal_(0.7);
+
+        p.free;
+        this.expect(listeners).to.be.equal_(this.oscListeners);
+    }
 }
 
 // TestGuidoPieceApp.run
