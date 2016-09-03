@@ -4,7 +4,7 @@ GuidoAbstractApp : GuidoAbstractModule {
 
     *new {
         arg oscPath, httpPath, syncOnConnect = false;
-        ^super.newCopyArgs(oscPath).initApp(httpPath, syncOnConnect);
+        ^super.new(oscPath).initApp(httpPath, syncOnConnect);
     }
 
     *hasSync {

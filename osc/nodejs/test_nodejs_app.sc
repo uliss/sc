@@ -18,8 +18,10 @@ TestGuidoAbstractApp : GuidoTest {
         this.expect(app.oscPath).to.be.equal_("/osc");
         this.expect(app.httpPath).to.be.equal_("/http");
         this.expect(app.name).to.be.equal_("osc");
+        this.expect(app).listen.osc_("/osc");
         this.expect(GuidoAbstractApp.hasSync("/http")).to.be.false_;
         app.free;
+        this.expect(app).not.listen.osc_("/osc");
     }
 
     test_NewSynced {
@@ -28,15 +30,18 @@ TestGuidoAbstractApp : GuidoTest {
         this.expect(app.httpPath).to.be.equal_("/http");
         this.expect(GuidoAbstractApp.hasSync("/http")).to.be.true_;
         this.expect(app).listen.osc_("/guido/sync/http");
+        this.expect(app).listen.osc_("/osc");
         app.free;
         this.expect(GuidoAbstractApp.hasSync("/http")).to.be.false_;
         this.expect(app).not.listen.osc_("/guido/sync/http");
+        this.expect(app).not.listen.osc_("/osc");
     }
 
     test_SendMsg {
         var app = GuidoAbstractApp.new("/osc", "/http", true);
         app.sendMsg("/path", 1, 2, 3, [4, 5]);
         this.expect(app).to.sendOSC_("/guido/forward", "/osc/path", 1, 2, 3, [4, 5]);
+        app.free;
     }
 }
 

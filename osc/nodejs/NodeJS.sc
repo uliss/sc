@@ -37,7 +37,10 @@ NodeJS {
         arg onBoot = {}, debugLevel;
         var res, cmd;
 
-        if(connected) { ^true };
+        if(connected) {
+            onBoot.value;
+            ^true
+        };
 
         try {
             NetAddr("localhost", httpPort).connect();

@@ -12,10 +12,10 @@ TestGuidoPieceApp : GuidoTest {
         this.expect(p.isPaused).to.be.false_;
         this.expect(p.isStopped).to.be.true_;
         this.expect(p).listen.osc_("/partita");
-        this.expect(p).listen.osc_("/guido/sync/partita");
+        this.expect(p).listen.osc_("/guido/sync/piece");
         p.free;
         this.expect(p).not.listen.osc_("/partita");
-        this.expect(p).not.listen.osc_("/guido/sync/partita");
+        this.expect(p).not.listen.osc_("/guido/sync/piece");
     }
 
     test_patches {
