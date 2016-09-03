@@ -42,6 +42,14 @@ GuidoTest : SP_Test {
         this.assertResult("OSC addr:" + path);
     }
 
+    oscListeners {
+        ^AbstractResponderFunc.allFuncProxies["OSC unmatched".asSymbol].collect({|fn| fn.path}).asSet;
+    }
+
+    numOscListeners {
+        ^ this.oscListeners.size;
+    }
+
     sendOSC {
         arg path ... args;
         NodeJS.sendMsg(path, *args);

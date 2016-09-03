@@ -163,17 +163,16 @@ GuidoPieceApp : GuidoAbstractApp {
         arg name;
         name = name.asSymbol;
         widgets[name].remove;
+        widgets[name].free;
         widgets[name] = nil;
     }
 
     createWidgets { widgets.do { |w| w.add } }
+
     syncWidgets { widgets.do { |w| w.sync } }
+
     removeWidgets {
-        widgets.do { |w| w.remove };
-        widgets = nil;
-    }
-    freeWidgets {
-        widgets.do { |w| w.free };
+        widgets.do { |w| w.remove; w.free };
         widgets = nil;
     }
 
@@ -413,7 +412,7 @@ GuidoPieceApp : GuidoAbstractApp {
         super.free;
         this.stop;
         this.freePatches;
-        this.freeWidgets;
+        this.removeWidgets;
         Library.put(\piece, composer.asSymbol, title.asSymbol, nil);
         timerTask.free;
         bindings = nil;

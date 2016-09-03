@@ -53,6 +53,7 @@ TestGuidoPieceApp : GuidoTest {
     }
 
     test_widgets {
+        var listeners = this.oscListeners;
         var p = GuidoPieceApp.new("Partita", "J.S.Bach", "/partita");
         p.addWidget(\knob1, NodeJS_Knob.new);
         this.expect(p.widget("knob1")).to.be.not.nil_;
@@ -62,11 +63,16 @@ TestGuidoPieceApp : GuidoTest {
             "/guido/widget/add",
             "{\"max\": 1,\"size\": 100,\"min\": 0,\"parent\": \"ui-elements\",\"oscPath\": \"/ui\",\"value\": 0,\"idx\": \"knob1\",\"label\": \"\",\"type\": \"knob\"}");
 
+        this.expect(p).listen.osc_("/guido/ui/knob1");
+
         p.removeWidget("knob1");
         this.expect(p).to.sendOSC_("/guido/forward",
             "/guido/widget/remove", "knob1");
+        this.expect(p).not.listen.osc_("/guido/ui/knob1");
         this.expect(p.widget("knob1")).to.be.nil_;
         p.free;
+
+        this.expect(listeners).to.be.equal_(this.oscListeners);
     }
 }
 
