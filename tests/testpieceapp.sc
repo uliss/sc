@@ -29,6 +29,7 @@ TestGuidoPieceApp : GuidoTest {
         this.expect(p.patch(\test)).to.be.a_(Patch);
         p.removePatch(\test);
         this.expect(p.patch(\test)).to.be.nil_;
+        p.free
     }
 
     test_params {
@@ -47,7 +48,17 @@ TestGuidoPieceApp : GuidoTest {
             this.expect(opts).to.be.equal_(p.loadParamsDict);
             p.loadParams;
             this.expect(p.params).to.be.equal_(opts);
-        }.value
+        }.value;
+        p.free
+    }
+
+    test_widgets {
+        var p = GuidoPieceApp.new("Partita", "J.S.Bach", "/partita");
+        p.addWidget(\knob1, NodeJS_Knob.new);
+        this.expect(p.widget("knob1")).to.be.not.nil_;
+        p.removeWidget("knob1");
+        this.expect(p.widget("knob1")).to.be.nil_;
+        p.free;
     }
 }
 

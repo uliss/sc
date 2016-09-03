@@ -9,7 +9,6 @@ GuidoPieceApp : GuidoAbstractApp {
     var <>onStop;
     var <patches;
     var <widgets;
-    var widget_name_list;
     var <bindings;
     var <monitor;
     var <>phonesChannel;
@@ -72,7 +71,6 @@ GuidoPieceApp : GuidoAbstractApp {
         patches = Dictionary.new;
         widgets = Dictionary.new;
         bindings = Dictionary.new;
-        widget_name_list = List.new;
         monitor = Monitor.new;
         phonesChannel = 4;
         currentTime = 0;
@@ -156,28 +154,26 @@ GuidoPieceApp : GuidoAbstractApp {
 
     addWidget {
         arg name, widget;
+        name = name.asSymbol;
         widgets[name] = widget;
-        widget_name_list.add(name);
     }
 
-    widget { |name| ^widgets[name] }
-    createWidgets {
-        widget_name_list.do { |name|
-            widgets[name].add;
-        }
+    widget { |name| ^widgets[name.asSymbol] }
+
+    removeWidget {
+        arg name;
+        name = name.asSymbol;
+        widgets[name].remove;
+        widgets[name] = nil;
     }
-    syncWidgets {
-        widget_name_list.do { |name|
-            widgets[name].sync;
-        }
-    }
+
+    createWidgets { widgets.do { |w| w.add } }
+    syncWidgets { widgets.do { |w| w.sync } }
     removeWidgets {
-        widget_name_list = [];
         widgets.do { |w| w.remove };
         widgets = nil;
     }
     freeWidgets {
-        widget_name_list = [];
         widgets.do { |w| w.free };
         widgets = nil;
     }
