@@ -14,7 +14,7 @@ GuidoPieceApp : GuidoAbstractApp {
     var <>phonesChannel;
     var <>onTimer;
     var timerTask;
-    var currentTime;
+    var <currentTime;
     var <taskDict;
 
     *initClass { dir = "~/.config/sc".standardizePath }
@@ -458,6 +458,14 @@ GuidoPieceApp : GuidoAbstractApp {
         super.sync;
         this.syncTitle;
         this.syncWidgets;
+    }
+
+    currentTime_ {
+        arg time;
+        if(time.isKindOf(Float)) { time = time.asInteger };
+        if(time.isKindOf(String)) { time = time.toSeconds };
+
+        currentTime = time;
     }
 
     addTask {

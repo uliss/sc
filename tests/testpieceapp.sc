@@ -145,6 +145,35 @@ TestGuidoPieceApp : GuidoTest {
         p.free;
         this.expect(listeners).to.be.equal_(this.oscListeners);
     }
+
+    test_task {
+        var p = GuidoPieceApp.new("Partita", "J.S.Bach", "/partita");
+        p.addTask(20, {});
+        this.expect(p.hasTask("00:20")).to.be.true_;
+        this.expect(p.hasTask("00:21")).to.be.false_;
+        p.addTask("01:20", {});
+        this.expect(p.hasTask(80)).to.be.true_;
+
+        {
+            var a, b;
+            p.addTask("01:25", { a = 1});
+            p.addTask(85, { |tm |b = tm });
+            p.currentTime = "01:21";
+            p.runTasks;
+
+            this.expect(a).to.be.not.equal_(1);
+            this.expect(b).to.be.not.equal_(2);
+
+            p.currentTime = "01:25";
+            p.runTasks;
+
+            this.expect(a).to.be.equal_(1);
+            this.expect(b).to.be.equal_(85);
+
+        }.value;
+
+        p.free;
+    }
 }
 
 // TestGuidoPieceApp.run
