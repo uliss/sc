@@ -32,14 +32,38 @@
             nil
         };
     }
+
+    failed { | method, message, report = true |
+        var r = UnitTestResult(this, method, message);
+        failures = failures.add(r);
+        if(report){
+            "".error;
+            Post << "FAIL:";
+            r.report;
+        };
+    }
+
+    *report {
+		Post.nl;
+		"UNIT TEST.............".warn;
+		if(failures.size > 0) {
+			"There were failures:".error;
+			failures.do {
+                arg results;
+				results.report
+			};
+		} {
+			"There were no failures".inform;
+		}
+	}
 }
 
 + UnitTestResult {
-	report {
-		var name = if(testMethod.notNil) { testMethod.name } { "unit test result" };
+    report {
+        var name = if(testMethod.notNil) { testMethod.name } { "unit test result" };
         Post << "  [" << name << "]";
         message !? ( Post << " " << (message !? (_.quote) ?? ""));
         Post << Char.nl;
-	}
+    }
 }
 
