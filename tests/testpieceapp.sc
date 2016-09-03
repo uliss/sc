@@ -56,6 +56,12 @@ TestGuidoPieceApp : GuidoTest {
         var p = GuidoPieceApp.new("Partita", "J.S.Bach", "/partita");
         p.addWidget(\knob1, NodeJS_Knob.new);
         this.expect(p.widget("knob1")).to.be.not.nil_;
+        p.createWidgets;
+        this.expect(p).to.sendOSC_(
+            "/guido/forward",
+            "/guido/widget/add",
+            "{\"max\": 1,\"size\": 100,\"min\": 0,\"parent\": \"ui-elements\",\"oscPath\": \"/ui\",\"value\": 0,\"idx\": \"knob1\",\"label\": \"\",\"type\": \"knob\"}");
+
         p.removeWidget("knob1");
         this.expect(p.widget("knob1")).to.be.nil_;
         p.free;

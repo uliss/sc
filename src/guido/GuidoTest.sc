@@ -22,7 +22,7 @@ GuidoTest : SP_Test {
     }
 
     beforeEach {
-        osc_args = []
+        osc_args = nil
     }
 
     after {
@@ -33,7 +33,7 @@ GuidoTest : SP_Test {
     sendOSC_ {
         arg ...args;
         expect_result = (osc_args == args);
-        this.assertResult("send OSC message:")
+        this.assertResult("send OSC message: %, but % was send".format(args, osc_args));
     }
 
     osc_ {

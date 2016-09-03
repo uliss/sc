@@ -154,8 +154,7 @@ GuidoPieceApp : GuidoAbstractApp {
 
     addWidget {
         arg name, widget;
-        name = name.asSymbol;
-        widgets[name] = widget;
+        widgets[name.asSymbol] = widget;
     }
 
     widget { |name| ^widgets[name.asSymbol] }
