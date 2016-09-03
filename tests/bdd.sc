@@ -59,7 +59,7 @@ SP_Test : UnitTest {
     }
 
     false_ {
-        expect_result = (checked_value === true);
+        expect_result = (checked_value === false);
         ^this.assertResult("false");
     }
 
@@ -88,18 +88,18 @@ SP_Test : UnitTest {
             this.processFlags;
 
             if(expect_result == true) {
-                this.passed();
+                this.passed(currentMethod);
             } {
-                this.failed(message: "Unexpected exception thrown: %".format(class));
+                this.failed(currentMethod, message: "Unexpected exception thrown: %".format(class));
             }
         } {
             expect_result = false;
             this.processFlags;
 
             if(expect_result == true) {
-                this.passed();
+                this.passed(currentMethod);
             } {
-                this.failed(message: "Expected exception (%) not thrown".format(class));
+                this.failed(currentMethod, message: "Expected exception (%) not thrown".format(class));
             }
         };
     }
@@ -114,10 +114,18 @@ SP_Test : UnitTest {
         this.processFlags;
         // this.assert(expect_result, error_msg);
         if(expect_result) {
-            this.passed();
+            this.passed(currentMethod);
         } {
-            this.failed(message: error_msg);
+            this.failed(currentMethod, message: error_msg);
         };
         ^expect_result;
+    }
+
+    test {
+        this.expect(false).to.be.false_;
+        this.expect(false).to.not.be.true_;
+        this.expect(true).to.be.true_;
+        this.expect(true).to.be.not.false_;
+        this.expect(111).to.be.equal_(111);
     }
 }

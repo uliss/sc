@@ -1,4 +1,4 @@
-TestSP_AbstractApp : UnitTest {
+TestSP_AbstractApp : SP_Test {
     var osc_msg;
 
     before {
@@ -12,37 +12,38 @@ TestSP_AbstractApp : UnitTest {
     beforeEach {
         osc_msg = [];
 
-        NodeJS.sendCallback = {|m|
-            osc_msg = m;
+        NodeJS.sendCallback = {
+            arg ...args;
+            osc_msg = args;
         };
     }
 
     test_SyncRegistration {
-        this.assert(SP_AbstractApp.hasSync("test").not);
+        this.expect(SP_AbstractApp.hasSync("test")).to.be.false_;
 
         SP_AbstractApp.registerSync("test", 1);
-        this.assert(SP_AbstractApp.hasSync("test"));
-        this.assertEquals(osc_msg, ["/guido/module/server", "sync_add", "test"], "OSC send msg");
+        this.expect(SP_AbstractApp.hasSync("test")).to.be.true_;
+        this.expect(osc_msg).to.equal_(["/guido/module/server", "sync_add", "test"]);
 
         SP_AbstractApp.unregisterSync("test");
-        this.assert(SP_AbstractApp.hasSync("test").not);
+        this.expect(SP_AbstractApp.hasSync("test")).to.be.false_;
     }
 
     test_New {
         var app = SP_AbstractApp.new("/osc", "/http");
-        this.assert(app.oscPath == "/osc");
-        this.assert(app.httpPath == "/http");
-        this.assert(SP_AbstractApp.hasSync("/http").not);
+        this.expect(app.oscPath).to.be.equal_("/osc");
+        this.expect(app.httpPath).to.be.equal_("/http");
+        this.expect(SP_AbstractApp.hasSync("test")).to.be.false_;
         app.free;
     }
 
     test_NewSynced {
         var app = SP_AbstractApp.new("/osc", "/http", true);
-        this.assert(app.oscPath == "/osc");
-        this.assert(app.httpPath == "/http");
-        this.assert(SP_AbstractApp.hasSync("/http"), "new sync added");
+        this.expect(app.oscPath).to.be.equal_("/osc");
+        this.expect(app.httpPath).to.be.equal_("/http");
+        this.expect(SP_AbstractApp.hasSync("/http")).to.be.true_;
         app.free;
-        this.assert(SP_AbstractApp.hasSync("/http").not, "sync removed");
+        this.expect(SP_AbstractApp.hasSync("/http")).to.be.false_;
     }
 }
 
