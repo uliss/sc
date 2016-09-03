@@ -1,11 +1,10 @@
-GuidoAbstractApp {
-    var <oscPath;
+GuidoAbstractApp : GuidoAbstractModule {
     var <httpPath;
     var <>onConnect;
 
     *new {
         arg oscPath, httpPath, syncOnConnect = false;
-        ^super.newCopyArgs(oscPath, httpPath).init(syncOnConnect);
+        ^super.newCopyArgs(oscPath).initApp(httpPath, syncOnConnect);
     }
 
     *hasSync {
@@ -32,8 +31,10 @@ GuidoAbstractApp {
         ^oscPath.basename;
     }
 
-    init {
-        arg syncOnConnect;
+    initApp {
+        arg path, syncOnConnect;
+
+        httpPath = path;
 
         if(syncOnConnect) {
             var fn = OSCFunc({|msg|

@@ -4,6 +4,6 @@ GuidoPing : GuidoAbstractModule {
     }
 
     processOsc { |msg|
-        NodeJS.send2Cli(path, *msg[1..]);
+        NodeJS.send2Cli(oscPath, *msg[1..]);
     }
 }

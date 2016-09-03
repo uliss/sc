@@ -1,16 +1,14 @@
 GuidoAbstractModule {
-    var <path;
+    var <oscPath;
     var oscf;
 
     *new {
-        arg path;
-        ^super.new.init(path)
+        arg oscPath;
+        ^super.newCopyArgs(oscPath).init;
     }
 
     init {
-        arg p;
-        path = p;
-        oscf = NodeJS.on(path, { |m| this.processOsc(m) });
+        oscf = NodeJS.on(oscPath, { |m| this.processOsc(m) });
     }
 
     processOsc {
@@ -24,11 +22,11 @@ GuidoAbstractModule {
 
     getValue {
         arg name, func;
-        NodeJS.on(path, { |m|
+        NodeJS.on(oscPath, { |m|
             if(m[1].asString == name.asString) {
                 func.value(m[2..])
             };
         }).oneShot;
-        NodeJS.sendMsg(path, name, ":back")
+        NodeJS.sendMsg(oscPath, name, ":back")
     }
 }
