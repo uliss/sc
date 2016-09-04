@@ -1,4 +1,4 @@
-Piece_Davidson_Spiral : SP_PdfMusicPiece {
+Piece_Davidson_Spiral : GuidoSheetMusicPiece {
     *new {
         ^super.new(this.scoresDir +/+ "Robert Davidson Spiral.pdf", "Spiral", "Robert Davidson", "/sc/spiral").loadParams;
     }

@@ -1,4 +1,4 @@
-Piece_Mazzoli_Tooth_and_Nail : SP_PdfMusicPiece {
+Piece_Mazzoli_Tooth_and_Nail : GuidoSheetMusicPiece {
     *new {
         ^super.new("/Users/serj/work/music/sc/concerts/pieces/scores/Missy Mazzoli Tooth and Nail.pdf", "Tooth and Nail", "Missy Mazzoli", "/sc/mazzoli").loadParams;
     }
