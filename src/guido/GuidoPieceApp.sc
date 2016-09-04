@@ -8,6 +8,7 @@ GuidoPieceApp : GuidoAbstractApp {
     var <>onStop;
     var <patches;
     var <widgets;
+    var <widgetsOrderList;
     var <bindings;
     var <monitor;
     var <>phonesChannel;
@@ -30,11 +31,12 @@ GuidoPieceApp : GuidoAbstractApp {
     }
 
     addMonitorWidget {
+        arg hidden = true;
         var box, toggle, slider;
-        box = NodeJS_VBox.new.title_("monitor").hidden_(true).borderColor_("#AAA").align_("center").titleIcon_("headphones");
+        box = NodeJS_VBox.new.title_("monitor").hidden_(hidden).borderColor_("#AAA").align_("center").titleIcon_("headphones");
         this.addWidget(\monitorBox, box);
 
-        toggle = NodeJS_Toggle.new(0).hidden_(true).label_("on").labelSize_(16).size_(40).layout_(box);
+        toggle = NodeJS_Toggle.new(0).hidden_(hidden).label_("on").labelSize_(16).size_(40).layout_(box);
         toggle.onValue = { |v|
             if(v > 0) {
                 this.startMonitor(widgets[\monitorAmp].value);
@@ -46,7 +48,7 @@ GuidoPieceApp : GuidoAbstractApp {
         };
         this.addWidget(\monitorToggle, toggle);
 
-        slider = NodeJS_Slider.new(0, 0, 1, 150).label_("amp").labelSize_(20).hidden_(true).layout_(box);
+        slider = NodeJS_Slider.new(0, 0, 1, 150).label_("amp").labelSize_(20).hidden_(hidden).layout_(box);
         slider.onValue = { |v| monitor.vol = v };
         this.addWidget(\monitorAmp, slider);
     }
@@ -83,6 +85,7 @@ GuidoPieceApp : GuidoAbstractApp {
         playState = 0;
         patches = Dictionary.new;
         widgets = Dictionary.new;
+        widgetsOrderList = List.new;
         bindings = Dictionary.new;
         monitor = Monitor.new;
         phonesChannel = 4;
@@ -156,7 +159,9 @@ GuidoPieceApp : GuidoAbstractApp {
 
     addWidget {
         arg name, widget;
-        widgets[name.asSymbol] = widget;
+        name = name.asSymbol;
+        widgets[name] = widget;
+        widgetsOrderList.add(name);
     }
 
     removeWidget {
@@ -166,16 +171,18 @@ GuidoPieceApp : GuidoAbstractApp {
         widgets[name].free;
         widgets[name] = nil;
         this.removeWidgetBinding(name);
+        widgetsOrderList.removeEvery([name]);
     }
 
-    showWidgets { widgets.do { |w| w.add } }
-    hideWidgets { widgets.do { |w| w.remove } }
+    showWidgets { widgetsOrderList.do { |name| widgets[name].add } }
+    hideWidgets { widgetsOrderList.do { |name| widgets[name].remove } }
 
-    syncWidgets { widgets.do { |w| w.sync } }
+    syncWidgets { widgetsOrderList.do { |name| widgets[name].sync } }
 
     removeWidgets {
         widgets.keys.do { |name| this.removeWidget(name) };
         widgets = nil;
+        widgetsOrderList.clear;
     }
 
     syncTitle {
@@ -454,6 +461,7 @@ GuidoPieceApp : GuidoAbstractApp {
 
     sync {
         super.sync;
+        NodeJS.send2Cli("/app/piece/set_osc_path", oscPath);
         this.syncTitle;
         this.syncWidgets;
     }

@@ -1,4 +1,4 @@
-SP_SheetMusicPiece : GuidoPieceApp {
+GuidoSheetMusicPieces : GuidoPieceApp {
     classvar <>gsPath;
     var slideshow;
     var <>namedTaskActions;
@@ -169,7 +169,7 @@ SP_SheetMusicPiece : GuidoPieceApp {
     }
 }
 
-SP_PdfMusicPiece : SP_SheetMusicPiece {
+SP_PdfMusicPiece : GuidoSheetMusicPieces {
     *new {
         arg pdf, title, composer = "PDF", oscPath = "/sheetmusic", params = [];
         var instance;

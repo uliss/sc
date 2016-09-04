@@ -1,4 +1,4 @@
-Piece_Part_Spiegel_im_Spiegel : SP_SheetMusicPiece {
+Piece_Part_Spiegel_im_Spiegel : GuidoSheetMusicPieces {
     *new {
         arg out = 0, violaIn = 0;
         ^super.new("Spigel im Spiegel", "Arvo Part", "/sc/spiegel", [\out, out]).swipe_(false).loadParams;
