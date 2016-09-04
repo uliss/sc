@@ -200,7 +200,7 @@ GuidoPieceApp : GuidoAbstractApp {
     }
 
     initOSC {
-        onConnect = { this.add };
+        onConnect = { this.add }
     }
 
     initMIDI {
@@ -457,13 +457,6 @@ GuidoPieceApp : GuidoAbstractApp {
         Library.put(\piece, composer.asSymbol, title.asSymbol, nil);
         timerTask.free;
         bindings = nil;
-    }
-
-    sync {
-        super.sync;
-        NodeJS.send2Cli("/app/piece/set_osc_path", oscPath);
-        this.syncTitle;
-        this.syncWidgets;
     }
 
     currentTime_ {
