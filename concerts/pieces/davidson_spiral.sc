@@ -134,10 +134,10 @@ Piece_Davidson_Spiral : GuidoSheetMusicPiece {
                     patches[\click].stop;
                     this.set(\viola, \freeze, 1);
                     {this.set(\viola, \echo_times, 40)}.defer(3);
-                    timerTask.pause;
+                    taskRunner.pause;
                 } {
                     patches[\click].play;
-                    timerTask.resume;
+                    taskRunner.resume;
                     this.set(\viola, \echo_times, 5);
                     this.set(\viola, \freeze, 0);
                 };
