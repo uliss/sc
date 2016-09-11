@@ -12,10 +12,8 @@ GuidoPieceApp : GuidoAbstractApp {
     var <bindings;
     var <monitor;
     var <>phonesChannel;
-    var <>onTimer;
-    var timerTask;
-    var <currentTime;
-    var <taskDict;
+    var <>taskRunner;
+    var onTaskLoad;
 
     *initClass { dir = "~/.config/sc".standardizePath }
 
@@ -89,16 +87,11 @@ GuidoPieceApp : GuidoAbstractApp {
         bindings = Dictionary.new;
         monitor = Monitor.new;
         phonesChannel = 4;
-        currentTime = 0;
-        timerTask = Task {
-            loop {
-                if(onTimer.notNil) { onTimer.value(currentTime) };
-                this.runTasks;
-                1.wait;
-                currentTime = currentTime + 1;
-            }
+        taskRunner = SP_TaskRunner.new;
+
+        onTaskLoad = { |name|
+            this.taskLoadProcess(name);
         };
-        taskDict = Dictionary.new;
 
         this.initOSC(params);
         this.initMIDI(params);
@@ -108,9 +101,9 @@ GuidoPieceApp : GuidoAbstractApp {
         ^this;
     }
 
-    isPlaying { ^ playState == 1 }
-    isStopped { ^ playState == 0 }
-    isPaused  { ^ playState == 2 }
+    isPlaying { ^ taskRunner.isPlaying }
+    isStopped { ^ taskRunner.isStopped }
+    isPaused  { ^ taskRunner.isPaused }
 
     addPatch {
         arg name, instrumentList, params = ();
@@ -221,42 +214,33 @@ GuidoPieceApp : GuidoAbstractApp {
     }
 
     play {
-        if(playState == 1) {
+        if(this.isPlaying) {
             "[%:play] already playing".format(this.class).warn;
             ^nil;
         };
 
-        if(this.isStopped) { timerTask.start };
-        if(this.isPaused)  { timerTask.resume };
-
         if(onPlay.notNil) { onPlay.value };
-        playState = 1;
+        taskRunner.play;
     }
 
     pause {
-        if(playState == 2) {
+        if(this.isPaused) {
             "[%:pause] already paused".format(this.class).warn;
             ^nil;
         };
 
-        if(this.isPlaying) { timerTask.pause };
-
         if(onPause.notNil) { onPause.value };
-        playState = 2;
+        taskRunner.pause;
     }
 
     stop {
-        if(playState == 0) {
+        if(this.isStopped) {
             "[%:stop] already stopped".format(this.class).warn;
             ^nil;
         };
 
-        timerTask.stop;
-        timerTask.reset;
-        currentTime = 0;
-
         if(onStop.notNil) { onStop.value };
-        playState = 0;
+        taskRunner.stop;
     }
 
     bindW2P { // bind widget to patch
@@ -455,57 +439,54 @@ GuidoPieceApp : GuidoAbstractApp {
         this.freePatches;
         this.removeWidgets;
         Library.put(\piece, composer.asSymbol, title.asSymbol, nil);
-        timerTask.free;
         bindings = nil;
     }
 
-    currentTime_ {
-        arg time;
-        if(time.isKindOf(Float)) { time = time.asInteger };
-        if(time.isKindOf(String)) { time = time.toSeconds };
-
-        currentTime = time;
+    *turnsDir {
+        ^this.filenameSymbol.asString.dirname +/+ "tasks";
     }
 
-    addTask {
-        arg time, func;
-        if(time.isKindOf(Float)) { time = time.asInteger };
-        if(time.isKindOf(String)) { time = time.toSeconds };
-
-        if(taskDict[time].isNil) { taskDict[time] = List.new(2) };
-        taskDict[time].add(func);
+    taskLoadProcess {
+        arg name;
+        name = name.asSymbol;
+        if(name == \print) {
+            ^{ arg ... args; args.postln };
+        } { ^{ |t| "[%] unknown task name: %".format(t.asTimeString.drop(-4), name).warn; } };
     }
 
-    addReplaceTask {
-        arg time, func;
-        this.removeTask(time);
-        this.addTask(time, func);
+    tasksFilename {
+        arg version;
+        if(version.isNil) {
+            ^this.class.turnsDir +/+ "%_%_tasks.txt".format(composer, title).toLower;
+        } {
+            ^this.class.turnsDir +/+ "%_%_tasks_%.txt".format(composer, title, version).toLower;
+        }
+
     }
 
-    removeTask {
-        arg time;
-        if(time.isKindOf(Float)) { time = time.asInteger };
-        if(time.isKindOf(String)) { time = time.toSeconds };
-
-        taskDict[time] = nil;
-    }
-
-    hasTask {
-        arg time;
-        if(time.isKindOf(Float)) { time = time.asInteger };
-        if(time.isKindOf(String)) { time = time.toSeconds };
-
-        ^taskDict[time].notNil;
-    }
-
-    runTasks {
-        var task_list = taskDict[currentTime];
-        if(task_list.notNil) {
-            task_list.do { |f| f.value(currentTime) }
+    loadTasks {
+        var res;
+        var path = this.tasksFilename;
+        "loading tasks from %".format(path).postln;
+        res = taskRunner.load(path, onTaskLoad);
+        if(res.isNil) {
+            "loading failed: %".format(path).error;
         }
     }
 
-    clearAllTasks {
-        taskDict = Dictionary.new;
+    saveTasks {
+        arg force = false;
+
+        var path = this.tasksFilename;
+
+        if(path.pathExists != false) {
+            if(force) {
+                taskRunner.save(path);
+            } {
+                "file already exists: %. use force=true, to overwrite".format(path).error;
+            };
+        } {
+            taskRunner.save(path);
+        }
     }
 }
