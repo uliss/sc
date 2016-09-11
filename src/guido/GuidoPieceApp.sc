@@ -302,6 +302,8 @@ GuidoPieceApp : GuidoAbstractApp {
         ^nil;
     }
 
+    appName { ^ (composer + title).replaceSpaces.toLower }
+
     params {
         var params = Dictionary.new;
         patches.keysValuesDo { |n, p|
@@ -342,7 +344,7 @@ GuidoPieceApp : GuidoAbstractApp {
         var params = this.params;
 
         File.mkdir(GuidoPieceApp.dir);
-        fname = GuidoPieceApp.dir +/+ (composer + title).replaceSpaces;
+        fname = GuidoPieceApp.dir +/+ this.appName;
         if(version.notNil) { fname = fname ++ "_" ++ version};
         fname = fname ++ ".params";
 
@@ -387,7 +389,7 @@ GuidoPieceApp : GuidoAbstractApp {
         arg version = nil;
         var fname;
 
-        fname = GuidoPieceApp.dir +/+ (composer + title).replaceSpaces;
+        fname = GuidoPieceApp.dir +/+ this.appName;
         if(version.notNil) {
             fname = fname ++ "_" ++ version ++ ".params";
             if(File.exists(fname).not) {
@@ -438,10 +440,12 @@ GuidoPieceApp : GuidoAbstractApp {
 
     tasksFilename {
         arg version;
+        var tr = { |str| str.tr($ , $_).toLower };
+
         if(version.isNil) {
-            ^this.class.tasksDir +/+ "%_%_tasks.txt".format(composer, title).toLower;
+            ^this.class.tasksDir +/+ this.appName ++ "_tasks.txt";
         } {
-            ^this.class.tasksDir +/+ "%_%_tasks_%.txt".format(composer, title, version).toLower;
+            ^this.class.tasksDir +/+ this.appName ++ "_tasks_%.txt".format(version);
         }
     }
 

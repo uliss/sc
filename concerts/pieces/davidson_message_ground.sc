@@ -125,7 +125,7 @@ Piece_Davidson_Message_Ground : GuidoSheetMusicPiece {
                 this.set(\click, \mute, v);
             };
 
-            this.addNamedTaskAction(\showMuteToggle, { mute_button.add });
+            this.addFunction(\showMuteToggle, { mute_button.add });
         }.value;
     }
 
@@ -134,6 +134,6 @@ Piece_Davidson_Message_Ground : GuidoSheetMusicPiece {
     }
 
     initPageTurns {
-        this.loadPageTurns(this.class.turnsDir +/+ "davidson_message_ground.txt");
+        this.loadTasks;
     }
 }
