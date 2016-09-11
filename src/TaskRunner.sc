@@ -146,14 +146,14 @@ SP_TaskRunner {
                 args = lst[2..];
 
                 if(actionResolver.notNil) {
-                    // "qwe".warn;
                     action = actionResolver.value(name.asSymbol);
-                    // action.warn;
                 } {
                     action = {};
                 };
 
-                this.addTask(time, action, name, args);
+                if(action.notNil) {
+                    this.addTask(time, action, name, args);
+                };
             };
         }
         {

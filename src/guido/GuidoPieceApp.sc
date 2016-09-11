@@ -13,7 +13,6 @@ GuidoPieceApp : GuidoAbstractApp {
     var <monitor;
     var <>phonesChannel;
     var <>taskRunner;
-    var onTaskLoad;
 
     *initClass { dir = "~/.config/sc".standardizePath }
 
@@ -88,8 +87,6 @@ GuidoPieceApp : GuidoAbstractApp {
         monitor = Monitor.new;
         phonesChannel = 4;
         taskRunner = SP_TaskRunner.new;
-
-        onTaskLoad = { |name| this.taskLoadProcess(name) };
 
         this.initOSC(params);
         this.initMIDI(params);
@@ -433,7 +430,7 @@ GuidoPieceApp : GuidoAbstractApp {
 
     free {
         super.free;
-        this.stop;
+        if(this.isStopped.not) { this.stop };
         this.freePatches;
         this.removeWidgets;
         this.removeAllTasks;
@@ -445,12 +442,15 @@ GuidoPieceApp : GuidoAbstractApp {
         ^this.filenameSymbol.asString.dirname +/+ "tasks";
     }
 
-    taskLoadProcess {
+    namedTask {
         arg name;
         name = name.asSymbol;
         if(name == \print) {
             ^{ arg ... args; args.postln };
-        } { ^{ |t| "[%] unknown task name: %".format(t.asTimeString.drop(-4), name).warn; } };
+        };
+
+        "[%] unknown task name: %".format(name).warn;
+        ^nil;
     }
 
     tasksFilename {
@@ -467,7 +467,7 @@ GuidoPieceApp : GuidoAbstractApp {
         var res;
         var path = this.tasksFilename;
         "loading tasks from %".format(path).postln;
-        res = taskRunner.load(path, onTaskLoad);
+        res = taskRunner.load(path, { |name| this.namedTask(name) } );
         if(res.isNil) {
             "loading failed: %".format(path).error;
             ^nil;

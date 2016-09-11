@@ -116,12 +116,20 @@ GuidoSheetMusicPiece : GuidoPieceApp {
     turnFirst { slideshow.first }
     toPage { |n| slideshow.toImage(n) }
 
-    *turnsDir {
-        ^this.filenameSymbol.asString.dirname +/+ "turns";
-    }
-
     *scoresDir {
         ^this.filenameSymbol.asString.dirname +/+ "scores";
+    }
+
+    taskLoadProcess {
+        arg name;
+        if(name.isNil) { ^{ this.turnNext} };
+
+        name = name.asSymbol;
+        switch(name,
+            \turn, { ^{ this.turnNext } },
+            \page, { ^{} },
+            { ^{ super.taskLoadProcess(name) } }
+        );
     }
 }
 

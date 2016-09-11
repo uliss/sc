@@ -209,7 +209,22 @@ TestGuidoPieceApp : GuidoTest {
 
     test_load_tasks {
         var p = GuidoPieceApp.new("Partita", "J.S.Bach", "/partita");
+        var fname = p.tasksFilename;
         this.expect(p.loadTasks()).to.be.nil_;
+
+        {
+            var f = File.new(fname, "w");
+            f << "0:01 print 1\n";
+            f << "1:01 unknown 1\n";
+            f.close;
+        }.value;
+
+        this.expect(p.loadTasks()).to.be.not.nil_;
+        this.expect(p.hasTask(1)).to.be.true_;
+        this.expect(p.hasTask(61)).to.be.false_;
+
+        File.delete(fname);
+
         p.free;
     }
 
