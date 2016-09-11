@@ -89,9 +89,7 @@ GuidoPieceApp : GuidoAbstractApp {
         phonesChannel = 4;
         taskRunner = SP_TaskRunner.new;
 
-        onTaskLoad = { |name|
-            this.taskLoadProcess(name);
-        };
+        onTaskLoad = { |name| this.taskLoadProcess(name) };
 
         this.initOSC(params);
         this.initMIDI(params);
@@ -438,11 +436,12 @@ GuidoPieceApp : GuidoAbstractApp {
         this.stop;
         this.freePatches;
         this.removeWidgets;
+        this.removeAllTasks;
         Library.put(\piece, composer.asSymbol, title.asSymbol, nil);
         bindings = nil;
     }
 
-    *turnsDir {
+    *tasksDir {
         ^this.filenameSymbol.asString.dirname +/+ "tasks";
     }
 
@@ -457,9 +456,9 @@ GuidoPieceApp : GuidoAbstractApp {
     tasksFilename {
         arg version;
         if(version.isNil) {
-            ^this.class.turnsDir +/+ "%_%_tasks.txt".format(composer, title).toLower;
+            ^this.class.tasksDir +/+ "%_%_tasks.txt".format(composer, title).toLower;
         } {
-            ^this.class.turnsDir +/+ "%_%_tasks_%.txt".format(composer, title, version).toLower;
+            ^this.class.tasksDir +/+ "%_%_tasks_%.txt".format(composer, title, version).toLower;
         }
 
     }
@@ -471,6 +470,7 @@ GuidoPieceApp : GuidoAbstractApp {
         res = taskRunner.load(path, onTaskLoad);
         if(res.isNil) {
             "loading failed: %".format(path).error;
+            ^nil;
         }
     }
 
@@ -479,7 +479,7 @@ GuidoPieceApp : GuidoAbstractApp {
 
         var path = this.tasksFilename;
 
-        if(path.pathExists != false) {
+        if(path.pathExists !== false) {
             if(force) {
                 taskRunner.save(path);
             } {
@@ -491,7 +491,7 @@ GuidoPieceApp : GuidoAbstractApp {
     }
 
     addTask {
-        arg time, func, name = \default, args;
+        arg time, func, name = \default ... args;
         taskRunner.addTask(time, func, name, args);
     }
 
