@@ -18,9 +18,11 @@ TestGuidoPieceApp : GuidoTest {
         this.expect(p.isStopped).to.be.true_;
         this.expect(p).listen.osc_("/partita");
         this.expect(p).listen.osc_("/guido/sync/piece");
+        p.addTask(1, {});
         p.free;
         this.expect(p).not.listen.osc_("/partita");
         this.expect(p).not.listen.osc_("/guido/sync/piece");
+        this.expect(p.taskRunner.asList).to.be.empty_;
     }
 
     test_patches {
@@ -203,6 +205,30 @@ TestGuidoPieceApp : GuidoTest {
 
         p.free;
         this.expect(listeners).to.be.equal_(this.oscListeners);
+    }
+
+    test_load_tasks {
+        var p = GuidoPieceApp.new("Partita", "J.S.Bach", "/partita");
+        this.expect(p.loadTasks()).to.be.nil_;
+        p.free;
+    }
+
+    test_save_tasks {
+        var p = GuidoPieceApp.new("Partita", "J.S.Bach", "/partita");
+        var fname = p.tasksFilename;
+        p.addTask("1:20", {}, \print, 2);
+        this.expect(p.hasTask(80)).to.be.true_;
+        p.saveTasks();
+        this.expect(fname).exists_;
+
+        {
+            var f = File.new(fname, "r");
+            this.expect(f.readAllString).to.be.equal_("00:01:20 print 2\n");
+            f.close;
+        }.value;
+
+        File.delete(fname);
+        p.free;
     }
 }
 
