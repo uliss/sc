@@ -2,10 +2,7 @@
 # start page - not first)
 0:00 print START
 0:00 page 2
-# turn to page 3
-01:21 page 3
-# turn to page 4
-02:42 page 4
-# turn to page 5
-03:45 page 5
+01:21 turn
+02:42 turn
+03:45 turn
 04:48 showMuteToggle
