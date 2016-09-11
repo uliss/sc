@@ -176,6 +176,10 @@ TestGuidoPieceApp : GuidoTest {
         p.removeTask(85);
         this.expect(p.hasTask(85)).to.be.false_;
 
+        p.addTask("01:20", {});
+        p.clearAllTasks;
+        this.expect(p.hasTask(80)).to.be.false_;
+
         p.free;
     }
 
@@ -190,7 +194,15 @@ TestGuidoPieceApp : GuidoTest {
         this.expect(p.isStopped).to.be.true_;
         this.expect(p.currentTime).to.be.equal_(0);
         p.free;
+    }
 
+    test_monitor {
+        var listeners = this.oscListeners;
+        var p = GuidoPieceApp.new("Partita", "J.S.Bach", "/partita");
+        p.addMonitorWidget(false);
+
+        p.free;
+        this.expect(listeners).to.be.equal_(this.oscListeners);
     }
 }
 
