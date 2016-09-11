@@ -436,17 +436,6 @@ GuidoPieceApp : GuidoAbstractApp {
         ^this.filenameSymbol.asString.dirname +/+ "tasks";
     }
 
-    namedTaskFunction {
-        arg name;
-        name = name.asSymbol;
-        if(name == \print) {
-            ^{ arg ... args; args.postln };
-        };
-
-        "[%] unknown task name: %".format(name).warn;
-        ^nil;
-    }
-
     tasksFilename {
         arg version;
         if(version.isNil) {
@@ -486,6 +475,13 @@ GuidoPieceApp : GuidoAbstractApp {
     addTask {
         arg time, func, name = \default ... args;
         taskRunner.addTask(time, func, name, args);
+    }
+
+    addFunctionTask {
+        arg time, name ... args;
+        if(this.hasFunction(name)) {
+            taskRunner.addTask(time, this.function(name), name, args);
+        };
     }
 
     hasTask {

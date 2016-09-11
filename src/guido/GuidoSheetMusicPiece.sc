@@ -38,6 +38,11 @@ GuidoSheetMusicPiece : GuidoPieceApp {
         slideshow = NodeJS_Slideshow.new(nil, [\hideButtons, true]).swipeDir_(-1);
         this.addWidget(\sheetMusic, slideshow);
         this.initScore;
+        this.addFunction(\turn, { this.turnNext });
+        this.addFunction(\page, { |n| this.toPage(n.asInteger) });
+        this.addFunction(\first, { this.turnFirst });
+        this.addFunction(\last, { this.turnLast });
+        this.addFunction(\prev, { this.turnPrev });
     }
 
     initScore {}
@@ -71,17 +76,17 @@ GuidoSheetMusicPiece : GuidoPieceApp {
         this.addTask(time, { |t|
             "[%] page turn at %".format(this.class, t).postln;
             this.turnNext
-        });
+        }, \turn);
         "[%] adding page turn at %".format(this.class, time).postln;
     }
 
     schedTurnToPage {
         arg time, page;
         this.addTask(time, { |t|
-            "[%] page turn to page 2 at (%)".format(this.class, page, t).postln;
+            "[%] page turn to page % at %".format(this.class, page, t).postln;
             this.toPage(page);
-        });
-        "[%] adding page turn to page % at (%)".format(this.class, page, time).postln;
+        }, \page, page);
+        "[%] adding page turn to page % at %".format(this.class, page, time).postln;
     }
 
     uid {
@@ -118,18 +123,6 @@ GuidoSheetMusicPiece : GuidoPieceApp {
 
     *scoresDir {
         ^this.filenameSymbol.asString.dirname +/+ "scores";
-    }
-
-    taskLoadProcess {
-        arg name;
-        if(name.isNil) { ^{ this.turnNext} };
-
-        name = name.asSymbol;
-        switch(name,
-            \turn, { ^{ this.turnNext } },
-            \page, { ^{} },
-            { ^{ super.taskLoadProcess(name) } }
-        );
     }
 }
 

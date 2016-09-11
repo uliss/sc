@@ -7,8 +7,7 @@ TestGuidoSheetMusicPiece : GuidoTest {
     test_new {
         var listeners = this.oscListeners;
         var p = GuidoSheetMusicPiece.new("Partita", "J.S.Bach", "/partita");
-
-
+        this.expect(p.functionList).to.be.equal_([\command, \css, \first, \last, \load, \page, \pause, \play, \prev, \print, \save, \stop, \title, \turn]);
         p.free;
         this.expect(listeners).to.be.equal_(this.oscListeners);
     }
@@ -39,16 +38,6 @@ TestGuidoSheetMusicPiece : GuidoTest {
         p.play;
         p.stop;
 
-
-        p.free;
-    }
-
-    test_named_task {
-        var p = GuidoSheetMusicPiece.new("Partita", "J.S.Bach", "/partita");
-
-        this.expect(p.namedTaskFunction(\print)).to.be.not.nil_;
-        this.expect(p.namedTaskFunction(nil)).to.be.not.nil_;
-        this.expect(p.namedTaskFunction(\unknown)).to.be.nil_;
 
         p.free;
     }
