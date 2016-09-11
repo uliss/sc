@@ -14,10 +14,18 @@ GuidoAbstractModule {
         fn_map = Dictionary.new;
     }
 
+    namedFunction { |name| ^fn_map[name.asSymbol] }
     addNamedFunction { |name, func| fn_map[name.asSymbol] = func }
     removeNamedFunction { |name| fn_map[name.asSymbol] = nil }
     removeAllNamedFunction { fn_map = Dictionary.new }
-    namedFunction { |name| ^fn_map[name.asSymbol] }
+    callNamedFunction {
+        arg name, ... args;
+        var fn = fn_map[name.asSymbol];
+        if(fn.notNil) { ^ fn.value(*args) } {
+            "[%] unknown named function: %".format(this.class, name).warn;
+            ^nil;
+        };
+    }
 
     processOsc {
         arg msg;
