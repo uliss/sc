@@ -139,6 +139,11 @@ SP_Test : UnitTest {
         };
     }
 
+    exists_ {
+        expect_result = (checked_value.pathExists !== false);
+        ^this.assertResult("exists");
+    }
+
     assertResult {
         arg msg;
         var error_msg;
