@@ -49,7 +49,10 @@ GuidoAbstractApp : GuidoAbstractModule {
             fn.permanent = true;
 
             GuidoAbstractApp.registerSync(httpPath, fn);
-        }
+        };
+
+        this.addFunction(\css, {  arg ... args; this.css(*args) });
+        this.addFunction(\title, { arg ... args; this.title_(*args) });
     }
 
     open {

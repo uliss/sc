@@ -19,6 +19,7 @@ GuidoAbstractModule {
     addFunction { |name, func| fn_map[name.asSymbol] = func }
     removeFunction { |name| fn_map[name.asSymbol] = nil }
     removeAllFunctions { fn_map = Dictionary.new }
+    functionList { ^ fn_map.keys.asArray.sort }
     callFunction {
         arg name ... args;
         var fn = fn_map[name.asSymbol];
