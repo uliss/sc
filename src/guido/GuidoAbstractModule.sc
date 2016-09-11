@@ -1,6 +1,7 @@
 GuidoAbstractModule {
     var <oscPath;
     var oscf;
+    var fn_map;
 
     *new {
         arg oscPath;
@@ -10,7 +11,13 @@ GuidoAbstractModule {
     init {
         oscf = NodeJS.on(oscPath, { |m| this.processOsc(m) });
         oscf.permanent = true;
+        fn_map = Dictionary.new;
     }
+
+    addNamedFunction { |name, func| fn_map[name.asSymbol] = func }
+    removeNamedFunction { |name| fn_map[name.asSymbol] = nil }
+    removeAllNamedFunction { fn_map = Dictionary.new }
+    namedFunction { |name| ^fn_map[name.asSymbol] }
 
     processOsc {
         arg msg;
