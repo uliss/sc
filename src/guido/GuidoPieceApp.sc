@@ -489,4 +489,27 @@ GuidoPieceApp : GuidoAbstractApp {
             taskRunner.save(path);
         }
     }
+
+    addTask {
+        arg time, func, name = \default, args;
+        taskRunner.addTask(time, func, name, args);
+    }
+
+    hasTask {
+        arg time;
+        ^ taskRunner.hasTaskAt(time);
+    }
+
+    removeTask {
+        arg time;
+        taskRunner.removeTask(time);
+    }
+
+    currentTime_ {
+        arg time;
+        taskRunner.currentTime = time;
+    }
+
+    currentTime { ^taskRunner.currentTime }
+    removeAllTasks { taskRunner.removeAllTasks }
 }

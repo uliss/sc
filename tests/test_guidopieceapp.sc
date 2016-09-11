@@ -157,15 +157,15 @@ TestGuidoPieceApp : GuidoTest {
         {
             var a, b;
             p.addTask("01:25", { a = 1});
-            p.addTask(85, { |tm |b = tm });
+            p.addTask(85, { |tm| b = tm });
             p.currentTime = "01:21";
-            p.runTasks;
+            p.taskRunner.runTasks;
 
             this.expect(a).to.be.not.equal_(1);
             this.expect(b).to.be.not.equal_(2);
 
             p.currentTime = "01:25";
-            p.runTasks;
+            p.taskRunner.runTasks;
 
             this.expect(a).to.be.equal_(1);
             this.expect(b).to.be.equal_(85);
@@ -177,7 +177,7 @@ TestGuidoPieceApp : GuidoTest {
         this.expect(p.hasTask(85)).to.be.false_;
 
         p.addTask("01:20", {});
-        p.clearAllTasks;
+        p.removeAllTasks;
         this.expect(p.hasTask(80)).to.be.false_;
 
         p.free;
