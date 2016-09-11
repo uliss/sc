@@ -159,7 +159,7 @@ TestGuidoPieceApp : GuidoTest {
         {
             var a, b;
             p.addTask("01:25", { a = 1});
-            p.addTask(85, { |tm| b = tm });
+            p.addTask(85, { |tm| b = tm }, \default, 45);
             p.currentTime = "01:21";
             p.taskRunner.runTasks;
 
@@ -170,7 +170,7 @@ TestGuidoPieceApp : GuidoTest {
             p.taskRunner.runTasks;
 
             this.expect(a).to.be.equal_(1);
-            this.expect(b).to.be.equal_(85);
+            this.expect(b).to.be.equal_(45);
 
         }.value;
 

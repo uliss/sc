@@ -1,4 +1,4 @@
-Piece_Davidson_Message_Ground : GuidoSheetMusicPiece {
+Piece_Davidson_Message_Ground : GuidoPdfMusicPiece {
     var mute_button;
 
     *new {

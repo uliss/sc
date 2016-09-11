@@ -78,9 +78,9 @@ TestSP_TaskRunner : GuidoTest {
     test_save {
         var tmp = PathName.tmp +/+ "test.tmp";
         var t = SP_TaskRunner.new;
-        t.addTask("1:25", {}, \task1, []);
-        t.addTask("1:25", {}, \task2, [1,2,3]);
-        t.addTask("0:25", {}, \task3, [1]);
+        t.addTask("1:25", {}, \task1, [1]);
+        t.addTask("1:25", {}, \task2, [2,3]);
+        t.addTask("0:25", {}, \task3, [3]);
 
         t.save(tmp);
 
@@ -118,12 +118,12 @@ TestSP_TaskRunner : GuidoTest {
             this.expect(u.tasksAt("1:25").first.action).to.be.not.nil_;
             u.currentTime = 25;
             u.runTasks;
-            this.expect(c).to.be.equal_(25);
+            this.expect(c).to.be.equal_("3");
 
             u.currentTime = 85;
             u.runTasks;
-            this.expect(a).to.be.equal_(85);
-            this.expect(b).to.be.equal_(85);
+            this.expect(a).to.be.equal_("1");
+            this.expect(b).to.be.equal_("2");
         }.value;
     }
 

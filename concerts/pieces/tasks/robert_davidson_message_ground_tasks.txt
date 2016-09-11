@@ -1,5 +1,6 @@
 # Robert Davidson Message Ground page turns and actions
 # start page - not first)
+0:00 print START
 0:00 page 2
 # turn to page 3
 01:21 page 3

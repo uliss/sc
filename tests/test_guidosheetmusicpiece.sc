@@ -38,6 +38,8 @@ TestGuidoSheetMusicPiece : GuidoTest {
         p.play;
         p.stop;
 
+        File.delete(p.tasksFilename);
+
 
         p.free;
     }

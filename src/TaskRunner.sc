@@ -188,7 +188,7 @@ SP_Task {
     }
 
     run {
-        if(action.notNil) { action.value(time, *args) };
+        if(action.notNil) { action.value(*args) };
     }
 
     asString {

@@ -39,7 +39,7 @@ GuidoSheetMusicPiece : GuidoPieceApp {
         this.addWidget(\sheetMusic, slideshow);
         this.initScore;
         this.addFunction(\turn, { this.turnNext });
-        this.addFunction(\page, { |n| this.toPage(n.asInteger) });
+        this.addFunction(\page, { arg ... args; this.toPage(args[0].asInteger); });
         this.addFunction(\first, { this.turnFirst });
         this.addFunction(\last, { this.turnLast });
         this.addFunction(\prev, { this.turnPrev });
@@ -130,7 +130,7 @@ GuidoPdfMusicPiece : GuidoSheetMusicPiece {
     *new {
         arg pdf, title, composer = "PDF", oscPath = "/sheetmusic", params = [];
         var instance;
-        title = title ? pdf.basename;
+        title = title ?? pdf.basename;
 
         instance = super.new(title, composer, oscPath, params);
         if(instance.notNil) { instance.addPdf(pdf) };
