@@ -14,12 +14,13 @@ GuidoAbstractModule {
         fn_map = Dictionary.new;
     }
 
-    namedFunction { |name| ^fn_map[name.asSymbol] }
-    addNamedFunction { |name, func| fn_map[name.asSymbol] = func }
-    removeNamedFunction { |name| fn_map[name.asSymbol] = nil }
-    removeAllNamedFunction { fn_map = Dictionary.new }
-    callNamedFunction {
-        arg name, ... args;
+    function { |name| ^fn_map[name.asSymbol] }
+    hasFunction { |name| ^this.function(name).notNil }
+    addFunction { |name, func| fn_map[name.asSymbol] = func }
+    removeFunction { |name| fn_map[name.asSymbol] = nil }
+    removeAllFunctions { fn_map = Dictionary.new }
+    callFunction {
+        arg name ... args;
         var fn = fn_map[name.asSymbol];
         if(fn.notNil) { ^ fn.value(*args) } {
             "[%] unknown named function: %".format(this.class, name).warn;
@@ -29,12 +30,17 @@ GuidoAbstractModule {
 
     processOsc {
         arg msg;
-        "[%] sould be implemeneted".format(thisMethod);
+        var fn, fn_name = msg[1];
+        if(fn_name.isNil) { ^nil };
+        this.callFunction(fn_name, *msg[2..]);
     }
 
     start { oscf.enable }
     stop { oscf.disable }
-    free { oscf.free }
+    free {
+        oscf.free;
+        this.removeAllFunctions;
+    }
 
     getValue {
         arg name, func;
