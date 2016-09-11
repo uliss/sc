@@ -126,6 +126,25 @@ TestSP_TaskRunner : GuidoTest {
             this.expect(b).to.be.equal_(85);
         }.value;
     }
+
+     test_save2 {
+        var tmp = PathName.tmp +/+ "test2.tmp";
+        var t = SP_TaskRunner.new;
+        t.addTask("1:25", {}, \task1, []);
+        t.addTask("1:25", {}, \task2, [1,2,3]);
+        t.addTask("0:25", {}, \task3, [1]);
+        t.save(tmp);
+
+        this.expect(tmp).exists_;
+
+        {
+            var f = File.new(tmp, "r");
+            this.expect(f.readAllString).to.be.equal_("00:00:25 task3 1\n00:01:25 task1\n00:01:25 task2 1 2 3\n");
+            f.close;
+        }.value;
+
+        File.delete(tmp);
+    }
 }
 
 // SP_TaskRunner.test
