@@ -1,26 +1,15 @@
 GuidoSheetMusicPiece : GuidoPieceApp {
     classvar <>gsPath;
     var slideshow;
-    var <>namedTaskActions;
     var turns_tmp_file;
 
     *new {
         arg title, composer, oscPath, params = [];
-        var instance = super.new(title, composer, oscPath, params);
-        if(instance.notNil) {
-            instance.initSheetMusic.initPageTurns;
-        };
-        ^instance;
+        ^super.new(title, composer, oscPath, params).initSheetMusic.initPageTurns;
     }
 
     *initClass {
         gsPath = "/usr/local/bin/gs"
-    }
-
-    addNamedTaskAction {
-        arg name, func;
-        if(namedTaskActions.isNil) { namedTaskActions = Dictionary.new };
-        namedTaskActions[name] = func;
     }
 
     startTurnsRecord {
@@ -29,7 +18,7 @@ GuidoSheetMusicPiece : GuidoPieceApp {
 
         turns_tmp_file = File.new(path, "w");
         slideshow.onTurn = { |page|
-            var time_at = currentTime.asTimeString.drop(-4).drop(3);
+            var time_at = taskRunner.currentTime.asTimeString.drop(-4).drop(3);
             "TURN happens at (%) to page: %".format(time_at, page).postln;
             turns_tmp_file.write("# turn to page:" + page.asString ++ "\n");
             turns_tmp_file.write(time_at ++ "\n");
@@ -93,39 +82,6 @@ GuidoSheetMusicPiece : GuidoPieceApp {
             this.toPage(page);
         });
         "[%] adding page turn to page % at (%)".format(this.class, page, time).postln;
-    }
-
-    loadPageTurns {
-        arg path;
-        var f;
-
-        if(path.pathExists === false) { ^nil };
-
-        f = File.new(path, "r");
-        f.readAllString.split(Char.nl)
-          .collect({|l| l.trim }) // trim all whitespaces
-          .reject({|l| l.isEmpty })  // skip empty lines
-          .reject({|l| l[0] == $# }) // skip comment
-          .do { |ln|
-            var time, action, argument;
-            #time, action, argument = ln.split($ );
-            switch(action,
-                "turn", { this.schedTurnNext(time) },
-                "page", { this.schedTurnToPage(time, argument.asInteger) },
-                nil, { this.schedTurnNext(time) },
-                {
-                    var func = namedTaskActions[action.asSymbol];
-                    if(func.notNil) {
-                        "[%] adding action % at (%)".format(this.class, action.quote, time).postln;
-                        this.addTask(time, { func.value(time, argument) });
-
-                    } {
-                        "[%] unknown action % at (%)".format(this.class, action.quote, time).warn
-                    }
-                };
-            );
-        };
-        f.close;
     }
 
     uid {
