@@ -12,6 +12,7 @@ GuidoAbstractModule {
         oscf = NodeJS.on(oscPath, { |m| this.processOsc(m) });
         oscf.permanent = true;
         fn_map = Dictionary.new;
+        this.addFunction(\print, { arg ... args; args.join(" ").postln });
     }
 
     function { |name| ^fn_map[name.asSymbol] }

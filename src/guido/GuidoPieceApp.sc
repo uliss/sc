@@ -62,20 +62,6 @@ GuidoPieceApp : GuidoAbstractApp {
         widgets[\monitorToggle].value = 0;
     }
 
-    processOsc { |msg|
-        switch(msg[1].asString,
-            "play", { this.play },
-            "pause", { this.pause },
-            "stop", { this.stop },
-            "command", { this.command(msg[2..]) },
-            "load", {this.loadParams },
-            "save", {this.saveParams },
-            {
-                "[%] unknown message: %".format(this.class.name, msg).warn;
-            }
-        );
-    }
-
     initPiece {
         arg params;
 
@@ -93,6 +79,14 @@ GuidoPieceApp : GuidoAbstractApp {
         this.initPatches(params);
         this.initUI(params);
         this.initFinal(params);
+
+        this.addFunction(\play, { this.play });
+        this.addFunction(\pause, { this.pause });
+        this.addFunction(\stop, { this.stop });
+        this.addFunction(\command, { arg ... args; this.command(args) });
+        this.addFunction(\load, { this.loadParams });
+        this.addFunction(\save, { this.saveParams });
+
         ^this;
     }
 
@@ -442,7 +436,7 @@ GuidoPieceApp : GuidoAbstractApp {
         ^this.filenameSymbol.asString.dirname +/+ "tasks";
     }
 
-    namedTask {
+    namedTaskFunction {
         arg name;
         name = name.asSymbol;
         if(name == \print) {
@@ -460,14 +454,13 @@ GuidoPieceApp : GuidoAbstractApp {
         } {
             ^this.class.tasksDir +/+ "%_%_tasks_%.txt".format(composer, title, version).toLower;
         }
-
     }
 
     loadTasks {
         var res;
         var path = this.tasksFilename;
         "loading tasks from %".format(path).postln;
-        res = taskRunner.load(path, { |name| this.namedTask(name) } );
+        res = taskRunner.load(path, { |name| this.function(name) } );
         if(res.isNil) {
             "loading failed: %".format(path).error;
             ^nil;

@@ -21,7 +21,7 @@ TestGuidoAbstractApp : GuidoTest {
         this.expect(app).listen.osc_("/osc");
         this.expect(GuidoAbstractApp.hasSync("/http")).to.be.false_;
 
-        this.expect(app.functionList).to.be.equal_([\css, \title]);
+        this.expect(app.functionList).to.be.equal_([\css, \print, \title]);
 
         app.free;
         this.expect(app).not.listen.osc_("/osc");

@@ -3,6 +3,7 @@ TestGuidoAbstractModule : GuidoTest {
         var path = "/test/path1";
         var m = GuidoAbstractModule.new(path);
         this.expect(m).listen.osc_(path);
+        this.expect(m.function(\print)).to.be.a_(Function);
         CmdPeriod.run;
         this.expect(m).listen.osc_(path);
         m.free;
@@ -23,7 +24,7 @@ TestGuidoAbstractModule : GuidoTest {
         m.callFunction(\testB, 1, 2, 3);
         this.expect(b).to.be.equal_([1 ,2, 3]);
 
-        this.expect(m.functionList).to.be.equal_([\testA, \testB]);
+        this.expect(m.functionList).to.be.equal_([\print, \testA, \testB]);
 
         m.removeFunction(\testB);
         this.expect(m.hasFunction(\testB)).to.be.false_;
