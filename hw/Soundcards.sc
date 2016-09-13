@@ -25,6 +25,11 @@ SoundCard {
         ^super.new.init("BuiltIn", bufSize, memSize, inCh, outCh, "127.0.0.1", 58011);
     }
 
+    *presonus {
+        arg bufSize = 256, memSize = (2**10) * 100 /* 100Mb*/, inCh = 6, outCh = 4;
+        ^super.new.init("PreSonus FireStudio", bufSize, memSize, inCh, outCh, "127.0.0.1", 58012);
+    }
+
     *soundflower {
         arg bufSize = 512, memSize = (2**10) * 100 /* 100Mb*/, inCh = 2, outCh = 16;
         ^super.new.init("Soundflower (64ch)", bufSize, memSize, inCh, outCh, "127.0.0.1", 58011);
