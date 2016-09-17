@@ -9,6 +9,7 @@ Instr("route.->6|", { |in| Out.ar(6, in) },[ AudioSpec() ], outSpec: AudioSpec(1
 Instr("route.->7|", { |in| Out.ar(7, in) },[ AudioSpec() ], outSpec: AudioSpec(1));
 Instr("route.->left|", { |in| Out.ar(0, in) },[ AudioSpec(1) ], outSpec: AudioSpec(1));
 Instr("route.->right|", { |in| Out.ar(1, in) },[ AudioSpec(1) ], outSpec: AudioSpec(1));
+Instr("route.->none|", { |in| Silence.ar },[ AudioSpec() ], outSpec: ControlSpec());
 Instr("route.->N|", { |in, out|
     Out.ar(out, in)
 },[ AudioSpec(1),  InOutBusSpec() ], outSpec: AudioSpec(1));
@@ -58,5 +59,3 @@ Instr("route.->phones|", { |in, phones_ch = 4, phones_amp = 1|
     InOutBusSpec(4),
     [0, 10, \amp, 1, "amp"]
 ], outSpec: AudioSpec(1));
-
-
