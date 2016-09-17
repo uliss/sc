@@ -88,3 +88,43 @@ Instr("common.pseudoStereo", {
 ],
 outSpec: AudioSpec(2)
 );
+
+Instr("common.recBuf", {
+    arg in, recbuf_on = 0, recbuf_buf;
+    RecordBuf.ar(in * Linen.kr(recbuf_on, releaseTime: 0.1), recbuf_buf.bufnumIr, 0, 1, loop: 0, trigger: recbuf_on);
+    in;
+}, [
+    AudioSpec(),
+    [0, 1, \lin, 1, 0],
+    BufferProxySpec()
+],
+outSpec: AudioSpec());
+
+Instr("common.playBuf", {
+    arg playbuf_buf, playbuf_rate, playbuf_trig, playbuf_start, playbuf_loop;
+    PlayBuf.ar(playbuf_buf.numChannels,
+        playbuf_buf.bufnumIr,
+        BufRateScale.kr(playbuf_buf.bufnumIr) * playbuf_rate,
+        playbuf_trig,
+        playbuf_start * SampleRate.ir,
+        playbuf_loop);
+}, [
+    BufferProxySpec(),
+    [0.2, 4, \lin, 0, 1],
+    \trig,
+    [0, 600, \lin, 0, 0],
+    [0, 1, \lin, 1, 0]
+],
+outSpec: AudioSpec());
+
+Instr("common.test_voice", {
+    arg test_loop = 1;
+    PlayBuf.ar(1, Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav"), loop: test_loop);
+}, [
+    [0, 1, \lin, 1, 1]
+],
+outSpec: AudioSpec(1));
+
+Instr("common.simpleloop", {
+
+});
