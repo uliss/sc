@@ -13,6 +13,7 @@ GuidoPieceApp : GuidoAbstractApp {
     var <monitor;
     var <>phonesChannel;
     var <>taskRunner;
+    var guiLib;
 
     *initClass { dir = "~/.config/sc".standardizePath }
 
@@ -25,6 +26,17 @@ GuidoPieceApp : GuidoAbstractApp {
         instance = super.new(oscPath, "/piece", true).title_(title).composer_(composer).initPiece(params);
         Library.put(\piece, composer.asSymbol, title.asSymbol, instance);
         ^instance;
+    }
+
+    addFromLibrary {
+        arg name;
+        var pairs = guiLib.groupWidgetAssoc(name);
+
+        pairs.do { |p|
+            var wname = name.asString ++ "_" ++ p.key.asString;
+            "adding widget with name: %".format(wname).postln;
+            this.addWidget(wname.asSymbol, p.value);
+        };
     }
 
     addMonitorWidget {
@@ -73,6 +85,7 @@ GuidoPieceApp : GuidoAbstractApp {
         monitor = Monitor.new;
         phonesChannel = 4;
         taskRunner = SP_TaskRunner.new;
+        guiLib = GuidoGuiLibrary.new;
 
         this.initOSC(params);
         this.initMIDI(params);

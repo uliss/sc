@@ -245,6 +245,19 @@ TestGuidoPieceApp : GuidoTest {
         File.delete(fname);
         p.free;
     }
+
+    test_add_from_library {
+        var p = GuidoPieceApp.new("Partita", "J.S.Bach", "/partita");
+        p.addFromLibrary(\monitor);
+        this.expect(p.widgets[\monitor_box]).to.be.not.nil_;
+        this.expect(p.widgets[\monitor_mute]).to.be.not.nil_;
+        this.expect(p.widgets[\monitor_vol]).to.be.not.nil_;
+
+        this.expect(p.hasWidgetBinding(\monitor_box)).to.be.false_;
+        this.expect(p.hasWidgetBinding(\monitor_mute)).to.be.false_;
+        this.expect(p.hasWidgetBinding(\monitor_vol)).to.be.false_;
+        p.free;
+    }
 }
 
 // TestGuidoPieceApp.run
