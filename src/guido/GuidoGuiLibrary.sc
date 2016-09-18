@@ -49,6 +49,16 @@ GuidoGuiLibrary {
         ^dict[name].select({|i| i.isKindOf(Symbol)});
     }
 
+    groupWidgetAssoc {
+        arg name;
+        var res = List.new;
+        name = name.asSymbol;
+        if(dict[name].isNil) { ^nil };
+
+        dict[name].pairsDo { |k,v| res.add((k -> v)) };
+        ^res.asArray;
+    }
+
     addGroup {
         arg name, widgets;
         name = name.asSymbol;
