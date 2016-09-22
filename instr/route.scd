@@ -41,6 +41,7 @@ Instr("route.N->", { |bus| In.ar(bus) }, [ InOutBusSpec() ], outSpec: AudioSpec(
 
 // swap stereo channels
 Instr("route.swap", { |in| [in.at(1), in.at(0)] }, [ AudioSpec(2) ], outSpec: AudioSpec(2));
+Instr("route.pass", { |in| in }, [ AudioSpec() ], outSpec: AudioSpec());
 
 // headphones monitoring
 Instr("route.->phones->", { |in, phones_ch = 4, phones_amp = 1|

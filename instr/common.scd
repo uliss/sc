@@ -1,3 +1,32 @@
+Instr("common.in", {
+    arg in = 0, in_amp = 1;
+    SoundIn.ar(in) * in_amp;
+}, [
+    \bus,
+    [0, 2, \amp, 0]
+],
+outSpec: AudioSpec(1)
+);
+
+Instr("common.gain", {
+    arg in, gain = 1;
+    in * gain;
+}, [
+    AudioSpec(),
+    [0, 4, \amp, 1]
+],
+outSpec: AudioSpec());
+
+Instr("common.env", {
+    arg in, env, gate;
+    in * EnvGen.kr(env, gate, doneAction:2)
+}, [
+    AudioSpec(),
+    EnvSpec(Env.perc),
+    [0, 1, \lin, 1, 1]
+],
+outSpec: AudioSpec());
+
 Instr("common.pan2", {
     arg in, pan = 0;
     Pan2.ar(in, pan);
@@ -110,9 +139,19 @@ Instr("common.playBuf", {
         playbuf_loop);
 }, [
     BufferProxySpec(),
-    [0.2, 4, \lin, 0, 1],
+    [0, 4, \lin, 0, 1],
     \trig,
     [0, 600, \lin, 0, 0],
+    [0, 1, \lin, 1, 0]
+],
+outSpec: AudioSpec());
+
+Instr("common.playCueBuf", {
+    arg playcuebuf_buf, playcuebuf_rate, playcuebuf_loop;
+    VDiskIn.ar(playcuebuf_buf.numChannels, playcuebuf_buf.bufnumIr, playcuebuf_rate, playcuebuf_loop);
+}, [
+    BufferProxySpec(),
+    [0, 4, \lin, 0, 1],
     [0, 1, \lin, 1, 0]
 ],
 outSpec: AudioSpec());
