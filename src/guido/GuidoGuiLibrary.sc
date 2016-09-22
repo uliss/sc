@@ -1,14 +1,7 @@
 GuidoGuiLibrary {
-    classvar instance;
     var dict;
 
-    *new {
-        if(instance.isNil) {
-            instance = super.new.init;
-        };
-
-        ^instance;
-    }
+    *new { ^super.new.init }
 
     init {
         dict = Dictionary.new;
