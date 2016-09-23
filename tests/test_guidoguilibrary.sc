@@ -4,7 +4,7 @@ TestGuidoGuiLibrary : GuidoTest {
         var l2 = GuidoGuiLibrary.new;
         var w;
 
-        this.expect(l).to.be.identical_(l2);
+        this.expect(l).to.be.not.identical_(l2);
 
         this.expect(l.groups).to.be.equal_([\freeverb, \monitor]);
         this.expect(l.groupWidgets(\unknown)).to.be.nil_;
