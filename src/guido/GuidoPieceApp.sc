@@ -29,37 +29,32 @@ GuidoPieceApp : GuidoAbstractApp {
     }
 
     addFromLibrary {
-        arg name;
+        arg name, hidden = true;
         var pairs = guiLib.groupWidgetAssoc(name);
 
         pairs.do { |p|
             var wname = name.asString ++ "_" ++ p.key.asString;
             "adding widget with name: %".format(wname).postln;
             this.addWidget(wname.asSymbol, p.value);
+            p.value.hidden_(hidden);
         };
     }
 
     addMonitorWidget {
         arg hidden = true;
-        var box, toggle, slider;
-        box = NodeJS_VBox.new.title_("monitor").hidden_(hidden).borderColor_("#AAA").align_("center").titleIcon_("headphones");
-        this.addWidget(\monitorBox, box);
+        this.addFromLibrary(\monitor);
 
-        toggle = NodeJS_Toggle.new(0).hidden_(hidden).label_("on").labelSize_(16).size_(40).layout_(box);
-        toggle.onValue = { |v|
+        this.widgets[\monitor_mute].onValue = { |v|
             if(v > 0) {
-                this.startMonitor(widgets[\monitorAmp].value);
+                this.startMonitor(widgets[\monitor_vol].value);
                 "[%] monitor ON".format(this.class).postln;
             } {
                 this.stopMonitor;
                 "[%] monitor OFF".format(this.class).postln;
             }
         };
-        this.addWidget(\monitorToggle, toggle);
 
-        slider = NodeJS_Slider.new(0, 0, 1, 150).label_("amp").labelSize_(20).hidden_(hidden).layout_(box);
-        slider.onValue = { |v| monitor.vol = v };
-        this.addWidget(\monitorAmp, slider);
+        this.widgets[\monitor_vol].onValue = { |v| monitor.vol = v };
     }
 
     startMonitor {
@@ -518,4 +513,25 @@ GuidoPieceApp : GuidoAbstractApp {
 
     currentTime { ^taskRunner.currentTime }
     removeAllTasks { taskRunner.removeAllTasks }
+
+    // default gui
+    addVBox {
+        arg title;
+        var box = NodeJS_VBox.new.title_(title).borderColor_("#AAA").align_("left");
+        this.addWidget((title ++ "Box").asSymbol, box);
+        ^box;
+    }
+
+     addHBox {
+        arg title;
+        var box = NodeJS_HBox.new.title_(title).borderColor_("#AAA").align_("left");
+        this.addWidget((title ++ "Box").asSymbol, box);
+        ^box;
+    }
+
+    addParams {
+        var p = NodeJS_Widget.new(\params);
+        this.addWidget(\paramsWidget, p);
+        ^p;
+    }
 }

@@ -22,7 +22,8 @@ GuidoTest : SP_Test {
     }
 
     beforeEach {
-        osc_args = nil
+        osc_args = nil;
+        NodeJS_Widget.idx_count = 1;
     }
 
     after {
