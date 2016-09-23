@@ -917,6 +917,13 @@ NodeJS_Playcontrol : NodeJS_Widget {
     sections {
         ^sectionTimes;
     }
+
+    currentTime { ^currentTime }
+    currentTime_ {
+        arg tm;
+        currentTime = tm.asInteger;
+        this.sync;
+    }
 }
 
 NodeJS_Image : NodeJS_Widget {
