@@ -13,7 +13,7 @@ Instr("common.gain", {
     in * gain;
 }, [
     AudioSpec(),
-    [0, 4, \amp, 1]
+    [0, 4, \amp, 0, 1]
 ],
 outSpec: AudioSpec());
 
