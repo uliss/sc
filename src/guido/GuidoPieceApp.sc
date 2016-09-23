@@ -211,32 +211,36 @@ GuidoPieceApp : GuidoAbstractApp {
     }
 
     play {
+        arg params;
+
         if(this.isPlaying) {
             "[%:play] already playing".format(this.class).warn;
             ^nil;
         };
 
-        if(onPlay.notNil) { onPlay.value };
+        if(onPlay.notNil) { onPlay.value(params) };
         taskRunner.play;
     }
 
     pause {
+        arg params;
         if(this.isPaused) {
             "[%:pause] already paused".format(this.class).warn;
             ^nil;
         };
 
-        if(onPause.notNil) { onPause.value };
+        if(onPause.notNil) { onPause.value(params) };
         taskRunner.pause;
     }
 
     stop {
+        arg params;
         if(this.isStopped) {
             "[%:stop] already stopped".format(this.class).warn;
             ^nil;
         };
 
-        if(onStop.notNil) { onStop.value };
+        if(onStop.notNil) { onStop.value(params) };
         taskRunner.stop;
     }
 
