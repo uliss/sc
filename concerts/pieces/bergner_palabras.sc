@@ -6,7 +6,7 @@ Piece_Bergner_Palabras : GuidoPdfMusicPiece {
 
     initPatches {
         arg params;
-        this.addPatch(\cello, ["common.in", "common.env", "common.pan2", "common.freeverb2"]);
+        this.addPatch(\viola, ["common.in", "common.env", "common.pan2", "common.freeverb2"]);
         this.addPatch(\track, ["common.gain", "common.env"], (
             in: SFP("/Users/serj/work/music/sounds/pieces/bergner_palabras.aif"),
             env: Env.asr(releaseTime: params[\fadeTime])
@@ -57,7 +57,6 @@ Piece_Bergner_Palabras : GuidoPdfMusicPiece {
             this.bindW2P(\trackAmp, \track, \gain);
         }.value;
 
-        /*
         // VIOLA STAFF
         {
         var amp, pan, box, mix, room;
@@ -65,7 +64,7 @@ Piece_Bergner_Palabras : GuidoPdfMusicPiece {
         // VIOLA AMP
         amp = NodeJS_Slider.new(1, 0, 2).label_("viola").labelSize_(20).hidden_(true);
         this.addWidget(\violaAmp, amp);
-        this.bindW2P(\violaAmp, \viola, \amp);
+        this.bindW2P(\violaAmp, \viola, \in_amp);
 
         // VIOLA PAN
         amp = NodeJS_Pan.new(0, 100).label_("vla pan").hidden_(true);
@@ -79,14 +78,15 @@ Piece_Bergner_Palabras : GuidoPdfMusicPiece {
         // REVERB MIX
         mix = NodeJS_Knob.new(0.5, 0, 1).size_(70).label_("mix").labelSize_(20).hidden_(true).layout_(box);
         this.addWidget(\violaReverbMix, mix);
-        this.bindW2P(\violaReverbMix, \viola, \mix);
+        this.bindW2P(\violaReverbMix, \viola, \freeverb2_mix);
 
         // REVERB ROOM
         room = NodeJS_Knob.new(0.7, 0, 1).size_(70).label_("room").labelSize_(20).hidden_(true).layout_(box);
         this.addWidget(\violaReverbRoom, room);
-        this.bindW2P(\violaReverbRoom, \viola, \room);
+        this.bindW2P(\violaReverbRoom, \viola, \freeverb2_room);
         }.value;
 
+        /*
         // CLICK WIDGETS
         {
         var amp;
@@ -96,6 +96,19 @@ Piece_Bergner_Palabras : GuidoPdfMusicPiece {
         }.value;
 
         this.addMonitorWidget;*/
+
+        {
+            var cursor = NodeJS_Widget.new(\cursor);
+            this.addWidget(\cursor, cursor);
+
+            this.addFunction(\cursor, {
+                arg ... args;
+                var x = args[0].asInteger;
+                var y = args[1].asInteger;
+                args.postln;
+                cursor.command(\rel, [x, y])
+            });
+        }.value;
     }
 
     syncTitle {
