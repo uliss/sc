@@ -1,5 +1,23 @@
 00:00 page 2
+00:00 cursor 205 240
+00:03 cursor 443 240
+00:06 cursor 622 240
+00:09 cursor 808 240
+00:12 cursor 990 240
+00:15 cursor 205 745
+00:18 cursor 420 745
+00:21 cursor 600 745
+00:24 cursor 795 745
+00:27 cursor 984 745
+00:30 cursor 205 1270
+00:33 cursor 425 1270
+00:36 cursor 615 1270
+00:39 cursor 800 1270
+00:42 cursor 980 1270
 00:43 turn
+00:45 cursor 200 225
+00:48 cursor 420 225
+00:51 cursor 610 225
 01:29 turn
 02:15 turn
 02:59 turn
