@@ -37,6 +37,16 @@ Instr("common.pan2", {
 outSpec: AudioSpec(2)
 );
 
+Instr("common.autopan2", {
+    arg in, autopan2_period = 0;
+    Pan2.ar(in, LFTri.kr(autopan2_period.reciprocal));
+}, [
+    AudioSpec(1),
+    [0.1, 30, \lin, 0, 1]
+],
+outSpec: AudioSpec(2)
+);
+
 Instr("common.mute", {
     arg in, mute = 0;
     in * Linen.kr((1 - mute), 0.005, 1, 0.005);
@@ -94,6 +104,18 @@ Instr("common.reverb", {
     [0, 1, \lin, 0, 0.5]
 ]);
 
+Instr("common.freeverb", {
+    arg in, freeverb_mix = 0.53, freeverb_room = 0.75, freeverb_damp = 0.5;
+    FreeVerb2.ar(in[0], in[1], freeverb_mix, freeverb_room, freeverb_damp);
+}, [
+    AudioSpec(1),
+    [0, 1, \lin, 0, 0.55],
+    [0, 1, \lin, 0, 0.75],
+    [0, 1, \lin, 0, 0.5]
+],
+outSpec: AudioSpec(1)
+);
+
 Instr("common.freeverb2", {
     arg in, freeverb2_mix = 0.53, freeverb2_room = 0.75, freeverb2_damp = 0.5;
     FreeVerb2.ar(in[0], in[1], freeverb2_mix, freeverb2_room, freeverb2_damp);
@@ -140,7 +162,7 @@ Instr("common.playBuf", {
 }, [
     BufferProxySpec(),
     [0, 4, \lin, 0, 1],
-    \trig,
+    [0, 1, \lin, 1, 0],
     [0, 600, \lin, 0, 0],
     [0, 1, \lin, 1, 0]
 ],
