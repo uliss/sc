@@ -2,8 +2,10 @@ Piece_Filonenko_JacksonG : GuidoPieceApp {
     var bproxy;
 
     *new {
-        arg time = 2;
-        ^super.new("Jackson(G)", "Alexandra Filonenko", "/jacksong", params: (fadeTime: time)).loadParams;
+        arg time = 2, bassMic = 0, vocalMic = 1;
+        ^super.new("Jackson(G)", "Alexandra Filonenko", "/jacksong",
+            params: (fadeTime: time, vocalMic: vocalMic, bassMic: bassMic)
+        ).loadParams;
     }
 
     clearLoop {
@@ -12,12 +14,17 @@ Piece_Filonenko_JacksonG : GuidoPieceApp {
 
     initPatches {
         arg params;
+        params.postln;
 
         bproxy = BufferProxy.new(44100 * 10);
 
-        this.addPatch(\voice, ["common.in", "common.env", "common.pan2", "common.freeverb2"], (in: 0, env: Env.asr(0.5, 1, params[\fadeTime])));
-        this.addPatch(\bass,  ["common.in", "common.pan2", "common.freeverb2"], (in: 1));
-        this.addPatch(\loop, [ "filonenko.note_repeat", "common.freeverb", "common.autopan2"]);
+        this.addPatch(\voice, ["common.in", "common.env", "common.pan2", "common.freeverb2"],
+            (in: params[\vocalMic], env: Env.asr(0.5, 1, params[\fadeTime])));
+        this.addPatch(\bass,  ["common.in", "common.pan2", "common.freeverb2"],
+            (in: params[\bassMic]));
+        this.addPatch(\loop, [ "filonenko.note_repeat", "common.gain", "common.freeverb", "common.autopan2"], (in: params[\bassMic]));
+        this.addPatch(\final, ["common.in", "filonenko.final", "common.env"],
+            (in: params[\bassMic], env: Env.asr(2, 1, 2)));
 
         onPlay = {
             // this.playPatches;
@@ -80,8 +87,73 @@ Piece_Filonenko_JacksonG : GuidoPieceApp {
                 this.addWidget(\voiceMix, voice_mix);
                 this.bindW2P(\voiceMix, \voice, \freeverb2_mix);
             }.value;
+        }.value;
+
+        {
+            var bass_box = this.addHBox("bass");
+
+            {
+                var bass_amp = NodeJS_Slider.new(0.5).label_("amp").layout_(bass_box);
+                this.addWidget(\bassAmp, bass_amp);
+                this.bindW2P(\bassAmp, \bass, \in_amp);
+
+            }.value;
+
+            {
+                var box;
+                var bass_room;
+                var bass_mix;
+
+                box = NodeJS_VBox.new.layout_(bass_box).align_(\center);
+                this.addWidget(\bassBox3, box);
+
+                bass_room = NodeJS_Knob.new(0.5, 0, 0.9).size_(100).label_("room").layout_(box);
+                this.addWidget(\bassRoom, bass_room);
+                this.bindW2P(\bassRoom, \bass, \freeverb2_room);
+
+                bass_mix = NodeJS_Knob.new(0.5, 0, 0.9).size_(100).label_("mix").layout_(box);
+                this.addWidget(\bassMix, bass_mix);
+                this.bindW2P(\bassMix, \bass, \freeverb2_mix);
+            }.value;
+        }.value;
+
+        {
+            var loop_box = this.addHBox("loop");
+
+            {
+                var stop_btn;
+                var rec_btn;
+                var box;
+
+                box = NodeJS_VBox.new.layout_(loop_box);
+                this.addWidget(\loopBox1, box);
+
+                rec_btn = NodeJS_Button.new.size_(80).label_("rec").layout_(box);
+                rec_btn.onPress = { this.patch(\loop).play };
+                this.addWidget(\loopRec, rec_btn);
+
+                stop_btn = NodeJS_Button.new.size_(80).label_("stop").layout_(box);
+                stop_btn.onPress = { this.patch(\loop).stop };
+                this.addWidget(\loopStop, stop_btn);
+            }.value;
 
 
+            {
+                var amp = NodeJS_Slider.new(1, 0, 4).label_("gain").layout_(loop_box);
+                this.addWidget(\loopAmp, amp);
+                this.bindW2P(\loopAmp, \loop, \gain);
+            }.value;
+
+
+        }.value;
+
+
+        {
+            var final = NodeJS_Toggle.new(0).size_(150).label_("FINAL");
+            final.onValue = { |v|
+                if(v == 1) { this.patch(\final).play } {  this.patch(\final).release(2) };
+            };
+            this.addWidget(\final, final);
         }.value;
 
         /*  {
