@@ -2,7 +2,7 @@ Piece_Shannon_Bachiana : GuidoPieceApp {
     var <>fadeTime;
     *new {
         arg time = 2;
-        ^super.new("Tableau alla Bachiana", "William R. Shannon", "/shannon", params: (fadeTime: time));
+        ^super.new("Tableau alla Bachiana", "William R. Shannon", "/shannon", params: (fadeTime: time)).loadParams;
     }
 
     initPatches {
@@ -21,10 +21,12 @@ Piece_Shannon_Bachiana : GuidoPieceApp {
 
         onPause = {
             this.stopPatches;
+            this.widget(\trackPlay).value = 0;
         };
 
         onStop = {
             this.releasePatches(params[\fadeTime]);
+            this.widget(\trackPlay).value = 0;
         };
     }
 
