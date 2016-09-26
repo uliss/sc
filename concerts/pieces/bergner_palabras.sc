@@ -86,16 +86,6 @@ Piece_Bergner_Palabras : GuidoPdfMusicPiece {
         this.bindW2P(\violaReverbRoom, \viola, \freeverb2_room);
         }.value;
 
-        /*
-        // CLICK WIDGETS
-        {
-        var amp;
-        amp = NodeJS_Slider.new(1, 0, 1).label_("click").labelSize_(20).hidden_(true);
-        this.addWidget(\clickAmp, amp);
-        this.bindW2P(\clickAmp, \click, \amp);
-        }.value;
-
-        this.addMonitorWidget;*/
 
         {
             var cursor = NodeJS_Widget.new(\cursor);
@@ -105,17 +95,13 @@ Piece_Bergner_Palabras : GuidoPdfMusicPiece {
                 arg ... args;
                 var x = args[0].asInteger;
                 var y = args[1].asInteger;
-                args.postln;
+                // args.postln;
                 cursor.command(\rel, [x, y])
             });
         }.value;
     }
 
     syncTitle {
-        // NodeJS.sendMsg("/node/title", "");
-    }
-
-    initPageTurns {
-        // this.loadPageTurns(this.class.turnsDir +/+ "mazzoli_tooth_and_nail.txt");
+        NodeJS.sendMsg("/node/title", "");
     }
 }
