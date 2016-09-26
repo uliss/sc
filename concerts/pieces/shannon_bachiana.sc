@@ -15,7 +15,8 @@ Piece_Shannon_Bachiana : GuidoPieceApp {
         ));
 
         onPlay = {
-            this.playPatches;
+            this.patch(\cello).play;
+            // this.playPatches;
         };
 
         onPause = {
@@ -28,15 +29,16 @@ Piece_Shannon_Bachiana : GuidoPieceApp {
     }
 
     initUI {
+        arg params;
+
         var playback;
         var track_box;
         var track_gain;
+        var track_play;
         var cello_box;
-        var cello_amp;
         var cello_reverb_box;
         var cello_reverb_mix;
         var cello_reverb_room;
-        var cello_pan;
 
         playback = NodeJS_Playcontrol.new(false, false, true);
         playback.onPlay = { this.play };
@@ -45,9 +47,24 @@ Piece_Shannon_Bachiana : GuidoPieceApp {
         this.addWidget(\playback, playback);
 
         cello_box = this.addHBox("cello");
-        cello_amp = NodeJS_Slider.new(1).label_("amp").layout_(cello_box);
-        this.addWidget(\celloAmp, cello_amp);
-        this.bindW2P(\celloAmp, \cello, \in_amp);
+
+        {
+            var box;
+            var cello_amp;
+            var cello_pan;
+
+            box = NodeJS_VBox.new.layout_(cello_box).align_(\center);
+            this.addWidget(\box1, box);
+
+            cello_pan = NodeJS_Pan.new.layout_(box).label_("");
+            this.addWidget(\celloPan, cello_pan);
+            this.bindW2P(\celloPan, \cello, \pan);
+
+            cello_amp = NodeJS_Slider.new(1).label_("amp").layout_(box);
+            this.addWidget(\celloAmp, cello_amp);
+            this.bindW2P(\celloAmp, \cello, \in_amp);
+        }.value;
+
 
         cello_reverb_box = NodeJS_VBox.new.layout_(cello_box);
         this.addWidget(\celloReverbBox, cello_reverb_box);
@@ -60,7 +77,13 @@ Piece_Shannon_Bachiana : GuidoPieceApp {
         this.bindW2P(\celloReverbRoom, \cello, \freeverb2_room);
 
 
-        track_box = this.addVBox("track");
+        track_box = this.addVBox("track").align_(\center);
+
+        track_play = NodeJS_Toggle.new.label_("play").size_(50).layout_(track_box).labelSize_(20);
+        track_play.onValue = {|v|
+            if(v == 1) { this.patch(\track).play } { this.patch(\track).release(params[\fadeTime]) };
+        };
+        this.addWidget(\trackPlay, track_play);
 
         track_gain = NodeJS_Slider.new(1).vertical_(true).label_("amp").layout_(track_box);
         this.addWidget(\trackGain, track_gain);
