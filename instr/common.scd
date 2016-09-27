@@ -3,7 +3,7 @@ Instr("common.in", {
     SoundIn.ar(in) * in_amp;
 }, [
     \bus,
-    [0, 2, \amp, 0]
+    [0, 4, \amp, 0]
 ],
 outSpec: AudioSpec(1)
 );
@@ -13,7 +13,7 @@ Instr("common.gain", {
     in * gain;
 }, [
     AudioSpec(),
-    [0, 4, \amp, 0, 1]
+    [0, 8, \amp, 0, 1]
 ],
 outSpec: AudioSpec());
 

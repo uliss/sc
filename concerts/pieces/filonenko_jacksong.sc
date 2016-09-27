@@ -23,17 +23,21 @@ Piece_Filonenko_JacksonG : GuidoPieceApp {
         this.addPatch(\bass,  ["common.in", "common.pan2", "common.freeverb2"],
             (in: params[\bassMic]));
         this.addPatch(\loop, [ "filonenko.note_repeat", "common.gain", "common.freeverb", "common.autopan2"], (in: params[\bassMic]));
-        this.addPatch(\final, ["common.in", "filonenko.final", "common.env"],
+        this.addPatch(\final, ["common.in", "filonenko.final", "common.gain", "common.env"],
             (in: params[\bassMic], env: Env.asr(2, 1, 2)));
 
         onPlay = {
             // this.playPatches;
             this.patch(\voice).play;
+            this.widget(\voiceOn).value = 1;
             this.patch(\bass).play;
+            this.widget(\bassOn).value = 1;
         };
 
         onPause = {
             this.stopPatches;
+            this.widget(\voiceOn).value = 0;
+            this.widget(\bassOn).value = 0;
         };
 
         onStop = {
@@ -43,7 +47,7 @@ Piece_Filonenko_JacksonG : GuidoPieceApp {
 
     initUI {
         {
-            var start = NodeJS_Toggle.new(0).size_(150).label_("START");
+            var start = NodeJS_Toggle.new(0).size_(120).label_("START");
             start.onValue = { |v|
                 if(v == 1) { this.play } { this.stop };
             };
@@ -52,21 +56,39 @@ Piece_Filonenko_JacksonG : GuidoPieceApp {
 
 
         {
-            var voice_box;
-
-            voice_box = this.addHBox("voice");
+            var voice_box = this.addVBox("voice");
+            var main_box;
 
             {
+                var box, on;
+                box = NodeJS_HBox.new.layout_(voice_box);
+                this.addWidget(\voiceToggleBox, box);
+
+                on = NodeJS_Toggle.new.size_(40).label_("on").labelSize_(20).layout_(box);
+                this.addWidget(\voiceOn, on);
+                on.onValue = { |v|
+                    if(v == 1) { this.patch(\voice).play } { this.patch(\voice).release(0.1) }
+                };
+            }.value;
+
+
+            main_box = NodeJS_HBox.new.layout_(voice_box);
+            this.addWidget(\voiceMainBox, main_box);
+
+            {
+
                 var voice_amp;
                 var voice_pan;
-                var box = NodeJS_VBox.new.layout_(voice_box).align_(\center);
+                var box;
+
+                box = NodeJS_VBox.new.layout_(main_box).align_(\center);
                 this.addWidget(\box1, box);
 
                 voice_pan = NodeJS_Pan.new.label_("").layout_(box);
                 this.addWidget(\voicePan, voice_pan);
                 this.bindW2P(\voicePan, \voice, \pan);
 
-                voice_amp = NodeJS_Slider.new(1).label_("amp").layout_(box);
+                voice_amp = NodeJS_Slider.new(1, 0, 4).label_("amp").layout_(box);
                 this.addWidget(\voiceAmp, voice_amp);
                 this.bindW2P(\voiceAmp, \voice, \in_amp);
             }.value;
@@ -75,17 +97,22 @@ Piece_Filonenko_JacksonG : GuidoPieceApp {
                 var box2;
                 var voice_room;
                 var voice_mix;
+                var voice_damp;
 
-                box2 = NodeJS_VBox.new.layout_(voice_box).align_(\center);
+                box2 = NodeJS_VBox.new.layout_(main_box).align_(\center);
                 this.addWidget(\box2, box2);
 
-                voice_room = NodeJS_Knob.new(0.5, 0, 0.9).size_(100).label_("room").layout_(box2);
+                voice_room = NodeJS_Knob.new(0.5, 0, 0.9).size_(70).labelSize_(20).label_("room").layout_(box2);
                 this.addWidget(\voiceRoom, voice_room);
                 this.bindW2P(\voiceRoom, \voice, \freeverb2_room);
 
-                voice_mix = NodeJS_Knob.new(0.5, 0, 0.9).size_(100).label_("mix").layout_(box2);
+                voice_mix = NodeJS_Knob.new(0.5, 0, 0.5).size_(70).labelSize_(20).label_("mix").layout_(box2);
                 this.addWidget(\voiceMix, voice_mix);
                 this.bindW2P(\voiceMix, \voice, \freeverb2_mix);
+
+                voice_damp = NodeJS_Knob.new(0.5, 0, 0.9).size_(70).labelSize_(20).label_("damp").layout_(box2);
+                this.addWidget(\voiceDamp, voice_damp);
+                this.bindW2P(\voiceDamp, \voice, \freeverb2_damp);
             }.value;
         }.value;
 
@@ -93,8 +120,19 @@ Piece_Filonenko_JacksonG : GuidoPieceApp {
             var bass_box = this.addHBox("bass");
 
             {
-                var bass_amp = NodeJS_Slider.new(0.5).label_("amp").layout_(bass_box);
-                this.addWidget(\bassAmp, bass_amp);
+                var box, on, amp;
+
+                box = NodeJS_VBox.new.align_(\center).layout_(bass_box);
+                this.addWidget(\bassBoxToggle, box);
+
+                on = NodeJS_Toggle.new.size_(40).label_("on").labelSize_(20).layout_(box);
+                this.addWidget(\bassOn, on);
+                on.onValue = { |v|
+                    if(v == 1) { this.patch(\bass).play } { this.patch(\bass).stpp }
+                };
+
+                amp = NodeJS_Slider.new(0.5).label_("amp").layout_(box);
+                this.addWidget(\bassAmp, amp);
                 this.bindW2P(\bassAmp, \bass, \in_amp);
 
             }.value;
@@ -103,17 +141,22 @@ Piece_Filonenko_JacksonG : GuidoPieceApp {
                 var box;
                 var bass_room;
                 var bass_mix;
+                var bass_damp;
 
                 box = NodeJS_VBox.new.layout_(bass_box).align_(\center);
                 this.addWidget(\bassBox3, box);
 
-                bass_room = NodeJS_Knob.new(0.5, 0, 0.9).size_(100).label_("room").layout_(box);
+                bass_room = NodeJS_Knob.new(0.5, 0, 0.9).size_(70).labelSize_(20).label_("room").layout_(box);
                 this.addWidget(\bassRoom, bass_room);
                 this.bindW2P(\bassRoom, \bass, \freeverb2_room);
 
-                bass_mix = NodeJS_Knob.new(0.5, 0, 0.9).size_(100).label_("mix").layout_(box);
+                bass_mix = NodeJS_Knob.new(0.5, 0, 0.9).size_(70).labelSize_(20).label_("mix").layout_(box);
                 this.addWidget(\bassMix, bass_mix);
                 this.bindW2P(\bassMix, \bass, \freeverb2_mix);
+
+                bass_damp = NodeJS_Knob.new(0.5, 0, 0.9).size_(70).labelSize_(20).label_("damp").layout_(box);
+                this.addWidget(\bassDamp, bass_damp);
+                this.bindW2P(\bassDamp, \bass, \freeverb2_damp);
             }.value;
         }.value;
 
@@ -139,7 +182,16 @@ Piece_Filonenko_JacksonG : GuidoPieceApp {
 
 
             {
-                var amp = NodeJS_Slider.new(1, 0, 4).label_("gain").layout_(loop_box);
+                var box, amp, autopan;
+
+                box = NodeJS_VBox.new.layout_(loop_box).align_(\center);
+                this.addWidget(\loopBox3, box);
+
+                autopan = NodeJS_Knob.new(2, 0.1, 20).label_("pan freq(Hz)").labelSize_(20).size_(60).layout_(box);
+                this.addWidget(\loopAutopan, autopan);
+                this.bindW2P(\loopAutopan, \loop, \autopan2_period);
+
+                amp = NodeJS_Slider.new(1, 0, 8).label_("gain").layout_(box);
                 this.addWidget(\loopAmp, amp);
                 this.bindW2P(\loopAmp, \loop, \gain);
             }.value;
@@ -149,86 +201,26 @@ Piece_Filonenko_JacksonG : GuidoPieceApp {
 
 
         {
-            var final = NodeJS_Toggle.new(0).size_(150).label_("FINAL");
+            var box, main_box, amp;
+            var final;
+
+            box = this.addVBox("final");
+            final = NodeJS_Toggle.new(0).size_(120).label_("FINAL").layout_(box);
             final.onValue = { |v|
                 if(v == 1) { this.patch(\final).play } {  this.patch(\final).release(2) };
             };
             this.addWidget(\final, final);
+
+            main_box = NodeJS_HBox.new.layout_(box);
+            this.addWidget(\finalMainBox, main_box);
+
+            amp = NodeJS_Slider.new(0.1).layout_(main_box).label_("title");
+            this.addWidget(\finalAmp, amp);
+            this.bindW2P(\finalAmp, \final, \gain);
         }.value;
-
-        /*  {
-        var rec_box;
-        var rec_toggle;
-        var loop_clear;
-
-        rec_box = this.addVBox("record");
-
-        rec_toggle = NodeJS_Toggle.new.label_("start").size_(100).layout_(rec_box);
-        this.addWidget(\recToggle, rec_toggle);
-        rec_toggle.onValue = { |v|
-        // v.postln;
-        if(v == 1) {
-        this.patch(\loopRec).play;
-        this.patch(\loopRec).set(\recbuf_on, 1);
-        } {
-        this.patch(\loopRec).stop;
-        };
-        };
-
-        loop_clear = NodeJS_Toggle.new.label_("clear loop").layout_(rec_box);
-        this.addWidget(\loopClear, loop_clear);
-        loop_clear.onValue = { |v|
-        if(v == 1) {
-        "LOOP CLEAR!".postln;
-        this.clearLoop;
-        }
-        };
-
-        }.value;
-
-        {
-        var play_box;
-        var play_toggle;
-        var play_loop;
-        var play_amp;
-
-        play_box = this.addHBox("play");
-        this.addWidget(\playBox, play_box);
-
-        play_toggle = NodeJS_Toggle.new.label_("play").size_(100).layout_(play_box);
-        this.addWidget(\playToggle, play_toggle);
-
-        play_toggle.onValue = { |v|
-        // v.postln;
-        if(v == 1) {
-        this.patch(\loopPlay).play;
-        this.patch(\loopPlay).set(\playbuf_trig, 1);
-        } {
-        this.patch(\loopPlay).release(2);
-        }
-        };
-
-        play_loop = NodeJS_Toggle.new.label_("loop").size_(50).layout_(play_box);
-        this.addWidget(\playLoop, play_loop);
-        this.bindW2P(\playLoop, \loopPlay, \playbuf_loop);
-
-        play_amp = NodeJS_Slider.new(1, 0, 2).label_("amp").layout_(play_box);
-        this.addWidget(\playAmp, play_amp);
-        this.bindW2P(\playAmp, \loopPlay, \gain);
-        }.value;*/
-
-
-
-        // this.addWidget(\celloReverbBox, cello_reverb_box);
-        //
-        // cello_reverb_mix = NodeJS_Knob.new(0.5).label_("reverb mix").size_(85).labelSize_(20).layout_(cello_reverb_box);
-        // this.addWidget(\celloReverbMix, cello_reverb_mix);
-        // this.bindW2P(\celloReverbMix, \cello, \freeverb2_mix);
-        // cello_reverb_room = NodeJS_Knob.new(0.7).label_("reverb room").size_(85).labelSize_(20).layout_(cello_reverb_box);
-        // this.addWidget(\celloReverbRoom, cello_reverb_room);
-        // this.bindW2P(\celloReverbRoom, \cello, \freeverb2_room);
 
 
         this.addParams;
     }
 }
+
