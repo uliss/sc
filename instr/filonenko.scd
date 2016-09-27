@@ -26,11 +26,13 @@ Instr("filonenko.note_repeat", {
 
 Instr("filonenko.final", {
     arg in = 0;
-    var p1, p2;
-    var sig = SwitchDelay.ar(in, 0, 0.3, [0.2, 0.5, 0.7, 1.3, 0.35, 0.56, 0.41], [0.7, 0.8, 0.8]);
+    var p1, p2, p3, p4;
+    var sig = SwitchDelay.ar(in, 0, 0.3, [0.2, 1.5, 0.7, 1.3, 2.35, 3.86, 0.41], [0.7, 0.8, 0.8]);
     p1 = PitchShift.ar(sig[3], 0.2, 0.5);
-    p2 = PitchShift.ar(sig[5], 0.2, 0.35);
-    sig = Splay.ar(sig + [p1, p2]);
+    p2 = PitchShift.ar(sig[5], 0.8, 0.35);
+    p3 = PitchShift.ar(sig[2], 0.5, 0.45);
+    p4 = PitchShift.ar(sig[0, 0.2, 0.15]);
+    sig = Splay.ar(sig + [p1, p2, p3, p4]);
     sig = FreeVerb.ar(sig, 0.6, 0.7);
     Pan2.ar(sig);
 }, [
