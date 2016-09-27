@@ -62,7 +62,7 @@ Piece_Shannon_Bachiana : GuidoPieceApp {
             this.addWidget(\celloPan, cello_pan);
             this.bindW2P(\celloPan, \cello, \pan);
 
-            cello_amp = NodeJS_Slider.new(1).label_("amp").layout_(box);
+            cello_amp = NodeJS_Slider.new(1, 0, 2).label_("amp").layout_(box);
             this.addWidget(\celloAmp, cello_amp);
             this.bindW2P(\celloAmp, \cello, \in_amp);
         }.value;
