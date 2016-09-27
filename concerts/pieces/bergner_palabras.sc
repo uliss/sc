@@ -6,11 +6,19 @@ Piece_Bergner_Palabras : GuidoPdfMusicPiece {
 
     initPatches {
         arg params;
+        var initTrack;
+
         this.addPatch(\viola, ["common.in", "common.env", "common.pan2", "common.freeverb2"]);
-        this.addPatch(\track, ["common.gain", "common.env"], (
-            in: SFP("/Users/serj/work/music/sounds/pieces/bergner_palabras.aif"),
-            env: Env.asr(releaseTime: params[\fadeTime])
-        ));
+
+        initTrack = {
+            this.removePatch(\track);
+            this.addPatch(\track, ["common.gain", "common.env"], (
+                in: SFP("/Users/serj/work/music/sounds/pieces/bergner_palabras.aif"),
+                env: Env.asr(releaseTime: params[\fadeTime])
+            ));
+        };
+
+        initTrack.();
 
         onPlay = {
             arg params;
@@ -20,11 +28,7 @@ Piece_Bergner_Palabras : GuidoPdfMusicPiece {
             begin = params[\begin] ? 0;
             fade = params[\fadeTime] ? 2;
 
-            this.removePatch(\track);
-            this.addPatch(\track, ["common.gain", "common.env"], (
-                in: SFP("/Users/serj/work/music/sounds/pieces/bergner_palabras.aif").start_(begin),
-                env: Env.asr(releaseTime: fade)
-            ));
+            initTrack.();
 
             this.playPatches;
         };
