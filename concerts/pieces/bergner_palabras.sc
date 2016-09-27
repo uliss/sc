@@ -112,8 +112,4 @@ Piece_Bergner_Palabras : GuidoPdfMusicPiece {
             this.addFunctionTask(i, \pulse);
         };
     }
-
-    syncTitle {
-        NodeJS.sendMsg("/node/title", "");
-    }
 }

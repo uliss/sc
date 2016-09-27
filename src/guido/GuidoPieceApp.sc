@@ -176,7 +176,12 @@ GuidoPieceApp : GuidoAbstractApp {
     }
 
     syncTitle {
-        NodeJS.sendMsg("/guido/module/client", "title", title);
+        this.pageTitle_(title);
+    }
+
+    pageTitle_ {
+        arg txt;
+        NodeJS.sendMsg("/guido/module/client", "title", txt);
     }
 
     add {

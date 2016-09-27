@@ -112,7 +112,7 @@ GuidoSheetMusicPiece : GuidoPieceApp {
     }
 
     syncTitle {
-        NodeJS.sendMsg("/node/title", "");
+        this.pageTitle_("");
     }
 
     turnPrev { slideshow.prev }
