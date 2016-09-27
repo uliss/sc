@@ -30,7 +30,7 @@
 01:21 cursor 610 1270
 01:24 cursor 800 1270
 01:27 cursor 980 1270
-01:29 turn
+01:27 turn
 01:30 cursor 220 230
 01:33 cursor 445 230
 01:36 cursor 625 230
