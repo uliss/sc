@@ -1,4 +1,5 @@
 s.boot;
+NodeJS.restart(debugLevel: "debug")
 
 (
 s.makeWindow.window.alwaysOnTop_(true).background_(\red).name_(s.options.device);
