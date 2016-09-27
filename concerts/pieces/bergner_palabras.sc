@@ -98,7 +98,15 @@ Piece_Bergner_Palabras : GuidoPdfMusicPiece {
                 // args.postln;
                 cursor.command(\rel, [x, y])
             });
+
+            this.addFunction(\pulse, {
+                cursor.command(\pulse, 1);
+            });
         }.value;
+
+        360.do {|i|
+            this.addFunctionTask(i, \pulse);
+        };
     }
 
     syncTitle {
