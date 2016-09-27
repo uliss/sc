@@ -59,31 +59,35 @@ Piece_Bergner_Palabras : GuidoPdfMusicPiece {
 
         // VIOLA STAFF
         {
-        var amp, pan, box, mix, room;
+            var amp, pan, box, mix, room, damp;
 
-        // VIOLA AMP
-        amp = NodeJS_Slider.new(1, 0, 2).label_("viola").labelSize_(20).hidden_(true);
-        this.addWidget(\violaAmp, amp);
-        this.bindW2P(\violaAmp, \viola, \in_amp);
+            // VIOLA AMP
+            amp = NodeJS_Slider.new(1, 0, 6).label_("viola").labelSize_(20).hidden_(true);
+            this.addWidget(\violaAmp, amp);
+            this.bindW2P(\violaAmp, \viola, \in_amp);
 
-        // VIOLA PAN
-        amp = NodeJS_Pan.new(0, 100).label_("vla pan").hidden_(true);
-        this.addWidget(\violaPan, amp);
-        this.bindW2P(\violaPan, \viola, \pan);
+            // VIOLA PAN
+            amp = NodeJS_Pan.new(0, 100).label_("vla pan").hidden_(true);
+            this.addWidget(\violaPan, amp);
+            this.bindW2P(\violaPan, \viola, \pan);
 
-        // REVERB BOX
-        box = NodeJS_VBox.new.title_("viola reverb").hidden_(true).borderColor_("#AAA").align_("left");
-        this.addWidget(\violaReverbBox, box);
+            // REVERB BOX
+            box = NodeJS_VBox.new.title_("viola reverb").borderColor_("#AAA").align_("left").hidden_(true);
+            this.addWidget(\violaReverbBox, box);
 
-        // REVERB MIX
-        mix = NodeJS_Knob.new(0.5, 0, 1).size_(70).label_("mix").labelSize_(20).hidden_(true).layout_(box);
-        this.addWidget(\violaReverbMix, mix);
-        this.bindW2P(\violaReverbMix, \viola, \freeverb2_mix);
+            // REVERB MIX
+            mix = NodeJS_Knob.new(0.5, 0, 1).size_(70).label_("mix").labelSize_(20).layout_(box).hidden_(true);
+            this.addWidget(\violaReverbMix, mix);
+            this.bindW2P(\violaReverbMix, \viola, \freeverb2_mix);
 
-        // REVERB ROOM
-        room = NodeJS_Knob.new(0.7, 0, 1).size_(70).label_("room").labelSize_(20).hidden_(true).layout_(box);
-        this.addWidget(\violaReverbRoom, room);
-        this.bindW2P(\violaReverbRoom, \viola, \freeverb2_room);
+            // REVERB ROOM
+            room = NodeJS_Knob.new(0.7, 0, 1).size_(70).label_("room").labelSize_(20).layout_(box).hidden_(true);
+            this.addWidget(\violaReverbRoom, room);
+            this.bindW2P(\violaReverbRoom, \viola, \freeverb2_room);
+
+            damp = NodeJS_Knob.new(0.5, 0, 1).labelSize_(20).layout_(box).size_(70).label_("dump").hidden_(true);
+            this.addWidget(\violaReverbDump, damp);
+            this.bindW2P(\violaReverbDump, \viola, \freeverb2_damp);
         }.value;
 
 
