@@ -39,4 +39,42 @@ Instr("filonenko.final", {
 outSpec: AudioSpec(2)
 );
 
+Instr("filonenko.gain", {
+    arg in, gain = 1;
+    in * gain;
+}, [
+    AudioSpec(),
+    [0, 20, \amp, 0, 1]
+],
+outSpec: AudioSpec());
+
+
+Instr("filonenko.lownoise", {
+    arg amp = 1;
+    var a;
+    a = LPF.ar(BrownNoise.ar, 3000);
+    a = Resonz.ar(a, [25, 30, 37, 50, 58, 60, 100, 134]);
+    a = Splay.ar(a);
+    a = LeakDC.ar(a, 0.99);
+    AllpassL.ar(a) * amp;
+}, [
+    \amp
+],
+outSpec: AudioSpec(2));
+
+
+Instr("filonenko.gul", {
+    arg amp = 1;
+    var a;
+    a = Klank.ar(`[[2000, 356, 671, 1153] * 0.15, nil, [1, 1, 1, 1]], BrownNoise.ar([0.05, 0.05])) * 0.05;
+    a = Splay.ar(a);
+    a = LeakDC.ar(a, 0.99);
+    AllpassL.ar(a) * amp;
+}, [
+    \amp
+],
+outSpec: AudioSpec(2));
+
+
+
   
