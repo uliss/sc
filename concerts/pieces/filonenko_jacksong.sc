@@ -22,9 +22,12 @@ Piece_Filonenko_JacksonG : GuidoPieceApp {
             (in: params[\vocalMic], env: Env.asr(0.5, 1, params[\fadeTime])));
         this.addPatch(\bass,  ["common.in", "common.pan2", "common.freeverb2"],
             (in: params[\bassMic]));
-        this.addPatch(\loop, [ "filonenko.note_repeat", "common.gain", "common.freeverb", "common.autopan2"], (in: params[\bassMic]));
+        this.addPatch(\loop, [ "filonenko.note_repeat", "filonenko.gain", "common.freeverb", "common.autopan2"], (in: params[\bassMic]));
         this.addPatch(\final, ["common.in", "filonenko.final", "common.gain", "common.env"],
             (in: params[\bassMic], env: Env.asr(2, 1, 2)));
+
+        this.addPatch(\noise1, ["filonenko.lownoise", "common.env"], (env: Env.asr(5, 1, 2)));
+        this.addPatch(\noise2, ["filonenko.gul", "common.env"], (env: Env.asr(5, 1, 2)));
 
         onPlay = {
             // this.playPatches;
@@ -128,7 +131,7 @@ Piece_Filonenko_JacksonG : GuidoPieceApp {
                 on = NodeJS_Toggle.new.size_(40).label_("on").labelSize_(20).layout_(box);
                 this.addWidget(\bassOn, on);
                 on.onValue = { |v|
-                    if(v == 1) { this.patch(\bass).play } { this.patch(\bass).stpp }
+                    if(v == 1) { this.patch(\bass).play } { this.patch(\bass).stop }
                 };
 
                 amp = NodeJS_Slider.new(0.5).label_("amp").layout_(box);
@@ -171,11 +174,11 @@ Piece_Filonenko_JacksonG : GuidoPieceApp {
                 box = NodeJS_VBox.new.layout_(loop_box);
                 this.addWidget(\loopBox1, box);
 
-                rec_btn = NodeJS_Button.new.size_(80).label_("rec").layout_(box);
+                rec_btn = NodeJS_Button.new.label_("rec").layout_(box);
                 rec_btn.onPress = { this.patch(\loop).play };
                 this.addWidget(\loopRec, rec_btn);
 
-                stop_btn = NodeJS_Button.new.size_(80).label_("stop").layout_(box);
+                stop_btn = NodeJS_Button.new.label_("stop").layout_(box);
                 stop_btn.onPress = { this.patch(\loop).stop };
                 this.addWidget(\loopStop, stop_btn);
             }.value;
@@ -191,7 +194,7 @@ Piece_Filonenko_JacksonG : GuidoPieceApp {
                 this.addWidget(\loopAutopan, autopan);
                 this.bindW2P(\loopAutopan, \loop, \autopan2_period);
 
-                amp = NodeJS_Slider.new(1, 0, 8).label_("gain").layout_(box);
+                amp = NodeJS_Slider.new(1, 0, 16).label_("gain").layout_(box);
                 this.addWidget(\loopAmp, amp);
                 this.bindW2P(\loopAmp, \loop, \gain);
             }.value;
@@ -205,7 +208,7 @@ Piece_Filonenko_JacksonG : GuidoPieceApp {
             var final;
 
             box = this.addVBox("final");
-            final = NodeJS_Toggle.new(0).size_(120).label_("FINAL").layout_(box);
+            final = NodeJS_Toggle.new(0).size_(60).label_("FINAL").layout_(box);
             final.onValue = { |v|
                 if(v == 1) { this.patch(\final).play } {  this.patch(\final).release(2) };
             };
@@ -214,9 +217,47 @@ Piece_Filonenko_JacksonG : GuidoPieceApp {
             main_box = NodeJS_HBox.new.layout_(box);
             this.addWidget(\finalMainBox, main_box);
 
-            amp = NodeJS_Slider.new(0.1).layout_(main_box).label_("title");
+            amp = NodeJS_Slider.new(0.1, 0, 4).layout_(main_box).label_("amp");
             this.addWidget(\finalAmp, amp);
             this.bindW2P(\finalAmp, \final, \gain);
+        }.value;
+
+        {
+            var box, main_box, amp;
+            var noise1;
+
+            box = this.addVBox("noise1");
+            noise1 = NodeJS_Toggle.new(0).size_(60).label_("NOISE1").layout_(box);
+            noise1.onValue = { |v|
+                if(v == 1) { this.patch(\noise1).play } {  this.patch(\noise1).release(2) };
+            };
+            this.addWidget(\noise1, noise1);
+
+            main_box = NodeJS_HBox.new.layout_(box);
+            this.addWidget(\noise1MainBox, main_box);
+
+            amp = NodeJS_Slider.new(0.1, 0, 1).layout_(main_box).label_("amp");
+            this.addWidget(\noise1Amp, amp);
+            this.bindW2P(\noise1Amp, \noise1, \amp);
+        }.value;
+
+         {
+            var box, main_box, amp;
+            var noise2;
+
+            box = this.addVBox("noise2");
+            noise2 = NodeJS_Toggle.new(0).size_(60).label_("NOISE2").layout_(box);
+            noise2.onValue = { |v|
+                if(v == 1) { this.patch(\noise2).play } {  this.patch(\noise2).release(2) };
+            };
+            this.addWidget(\noise2, noise2);
+
+            main_box = NodeJS_HBox.new.layout_(box);
+            this.addWidget(\noise2MainBox, main_box);
+
+            amp = NodeJS_Slider.new(0.1, 0, 1).layout_(main_box).label_("amp");
+            this.addWidget(\noise2Amp, amp);
+            this.bindW2P(\noise2Amp, \noise2, \amp);
         }.value;
 
 
