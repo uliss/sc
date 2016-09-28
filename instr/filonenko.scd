@@ -34,6 +34,7 @@ Instr("filonenko.final", {
     p4 = PitchShift.ar(sig[0, 0.2, 0.15]);
     sig = Splay.ar(sig + [p1, p2, p3, p4]);
     sig = FreeVerb.ar(sig, 0.6, 0.7);
+    sig = LeakDC.ar(sig);
     Pan2.ar(sig);
 }, [
     AudioSpec(1)
