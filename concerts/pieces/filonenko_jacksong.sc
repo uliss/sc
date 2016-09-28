@@ -18,7 +18,7 @@ Piece_Filonenko_JacksonG : GuidoPieceApp {
 
         bproxy = BufferProxy.new(44100 * 10);
 
-        this.addPatch(\voice, ["common.in", "common.env", "common.pan2", "common.freeverb2"],
+        this.addPatch(\voice, ["common.in", "common.compress", "common.env", "common.pan2", "common.freeverb2"],
             (in: params[\vocalMic], env: Env.asr(0.5, 1, params[\fadeTime])));
         this.addPatch(\bass,  ["common.in", "common.pan2", "common.freeverb2"],
             (in: params[\bassMic]));
@@ -97,12 +97,35 @@ Piece_Filonenko_JacksonG : GuidoPieceApp {
             }.value;
 
             {
+                var box;
+                var thresh;
+                var slopeBelow;
+                var slopeAbove;
+
+                box = NodeJS_VBox.new.title_("compress").layout_(main_box).align_(\center);
+                this.addWidget(\compressBox, box);
+
+                thresh = NodeJS_Knob.new.label_("thresh").labelSize_(20).size_(70).layout_(box);
+                this.addWidget(\voiceCompressThresh, thresh);
+                this.bindW2P(\voiceCompressThresh, \voice, \compress_thresh);
+
+                slopeBelow = NodeJS_Knob.new(1, 0.5, 1.5).label_("slope below").labelSize_(20).size_(70).layout_(box);
+                this.addWidget(\voiceCompressBelow, slopeBelow);
+                this.bindW2P(\voiceCompressBelow, \voice, \compress_slopeBelow);
+
+                slopeAbove = NodeJS_Knob.new.label_("slope above").labelSize_(20).size_(70).layout_(box);
+                this.addWidget(\voiceCompressAbove, slopeAbove);
+                this.bindW2P(\voiceCompressAbove, \voice, \compress_slopeAbove);
+
+            }.value;
+
+            {
                 var box2;
                 var voice_room;
                 var voice_mix;
                 var voice_damp;
 
-                box2 = NodeJS_VBox.new.layout_(main_box).align_(\center);
+                box2 = NodeJS_VBox.new.layout_(main_box).align_(\center).title_("reverb");
                 this.addWidget(\box2, box2);
 
                 voice_room = NodeJS_Knob.new(0.5, 0, 0.9).size_(70).labelSize_(20).label_("room").layout_(box2);

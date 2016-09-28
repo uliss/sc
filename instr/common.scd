@@ -178,6 +178,20 @@ Instr("common.playCueBuf", {
 ],
 outSpec: AudioSpec());
 
+Instr("common.compress", {
+    arg in, compress_thresh, compress_slopeBelow = 1, compress_slopeAbove = 1/3, compress_clampTime =  0.01, compress_relaxTime = 0.1;
+    CompanderD.ar(in, compress_thresh, compress_slopeBelow, compress_slopeAbove, compress_clampTime, compress_relaxTime);
+}, [
+    AudioSpec(),
+    [0, 1, \lin, 0, 0.7],
+    [0, 2, \lin, 0, 1],
+    [0, 1, \lin, 0, 1/3],
+    [0.01, 0.02, \lin, 0, 0.01],
+    [0.1, 0.5, \lin, 0, 0.1]
+],
+outSpec: AudioSpec()
+);
+
 Instr("common.test_voice", {
     arg test_loop = 1;
     PlayBuf.ar(1, Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav"), loop: test_loop);
