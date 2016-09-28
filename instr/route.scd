@@ -43,6 +43,8 @@ Instr("route.N->", { |bus| In.ar(bus) }, [ InOutBusSpec() ], outSpec: AudioSpec(
 Instr("route.swap", { |in| [in.at(1), in.at(0)] }, [ AudioSpec(2) ], outSpec: AudioSpec(2));
 Instr("route.pass", { |in| in }, [ AudioSpec() ], outSpec: AudioSpec());
 
+Instr("route.split", { |in, split_bus = 2| Out.ar(split_bus, in); in; }, [AudioSpec(0), InOutBusSpec(2)], AudioSpec());
+
 // headphones monitoring
 Instr("route.->phones->", { |in, phones_ch = 4, phones_amp = 1|
     Out.ar(phones_ch, in * phones_amp);
