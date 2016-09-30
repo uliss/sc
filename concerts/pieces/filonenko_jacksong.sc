@@ -18,16 +18,20 @@ Piece_Filonenko_JacksonG : GuidoPieceApp {
 
         bproxy = BufferProxy.new(44100 * 10);
 
-        this.addPatch(\voice, ["common.in", "common.compress", "common.env", "common.pan2", "common.freeverb2"],
-            (in: params[\vocalMic], env: Env.asr(0.5, 1, params[\fadeTime])));
+        this.addPatch(\voice, ["common.in", "common.compress", "common.env", "common.pan2", "common.freeverb2", "route.split"],
+            (in: params[\vocalMic], env: Env.asr(0.5, 1, params[\fadeTime]), split_bus: 2));
         this.addPatch(\bass,  ["common.in", "common.pan2", "common.freeverb2"],
             (in: params[\bassMic]));
-        this.addPatch(\loop, [ "filonenko.note_repeat", "filonenko.gain", "common.freeverb", "common.autopan2"], (in: params[\bassMic]));
-        this.addPatch(\final, ["common.in", "filonenko.final", "common.gain", "common.env"],
-            (in: params[\bassMic], env: Env.asr(2, 1, 2)));
+        this.addPatch(\loop, [ "filonenko.note_repeat", "filonenko.gain", "common.freeverb", "common.autopan2", "route.split"], (in: params[\bassMic], split_bus: 2));
+        this.addPatch(\final, ["common.in", "filonenko.final", "common.gain", "common.env", "route.split"],
+            (in: params[\bassMic],
+                env: Env.asr(2, 1, 2),
+                split_bus: 2));
 
-        this.addPatch(\noise1, ["filonenko.lownoise", "common.env"], (env: Env.asr(5, 1, 2)));
-        this.addPatch(\noise2, ["filonenko.gul", "common.env"], (env: Env.asr(5, 1, 2)));
+        this.addPatch(\noise1, ["filonenko.lownoise", "common.env", "route.split"],
+            (env: Env.asr(5, 1, 2), split_bus: 2));
+        this.addPatch(\noise2, ["filonenko.gul", "common.env", "route.split"],
+            (env: Env.asr(5, 1, 2), split_bus: 2));
 
         onPlay = {
             // this.playPatches;
