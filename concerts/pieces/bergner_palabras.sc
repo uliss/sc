@@ -8,13 +8,14 @@ Piece_Bergner_Palabras : GuidoPdfMusicPiece {
         arg params;
         var initTrack;
 
-        this.addPatch(\viola, ["common.in", "common.env", "common.pan2", "common.freeverb2"]);
+        this.addPatch(\viola, ["common.in", "common.env", "common.pan2"], (in: 0));
 
         initTrack = {
             this.removePatch(\track);
-            this.addPatch(\track, ["common.gain", "common.env"], (
+            this.addPatch(\track, ["common.gain", "common.env", "route.split"], (
                 in: SFP("/Users/serj/work/music/sounds/pieces/bergner_palabras.aif"),
-                env: Env.asr(releaseTime: params[\fadeTime])
+                env: Env.asr(releaseTime: params[\fadeTime]),
+                split_bus: 2
             ));
         };
 
@@ -75,7 +76,7 @@ Piece_Bergner_Palabras : GuidoPdfMusicPiece {
             this.addWidget(\violaPan, amp);
             this.bindW2P(\violaPan, \viola, \pan);
 
-            // REVERB BOX
+       /*     // REVERB BOX
             box = NodeJS_VBox.new.title_("viola reverb").borderColor_("#AAA").align_("left").hidden_(true);
             this.addWidget(\violaReverbBox, box);
 
@@ -91,7 +92,7 @@ Piece_Bergner_Palabras : GuidoPdfMusicPiece {
 
             damp = NodeJS_Knob.new(0.5, 0, 1).labelSize_(20).layout_(box).size_(70).label_("dump").hidden_(true);
             this.addWidget(\violaReverbDump, damp);
-            this.bindW2P(\violaReverbDump, \viola, \freeverb2_damp);
+            this.bindW2P(\violaReverbDump, \viola, \freeverb2_damp);*/
         }.value;
 
 
