@@ -1,4 +1,8 @@
 s.boot;
+s.quit
+s.reboot
+NodeJS.restart
+s.options.device = "Mbox Pro"
 NodeJS.restart(debugLevel: "debug")
 
 (
