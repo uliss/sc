@@ -9,9 +9,10 @@ Piece_Shannon_Bachiana : GuidoPieceApp {
         arg params;
 
         this.addPatch(\cello, ["common.in", "common.pan2", "common.freeverb2"]);
-        this.addPatch(\track, ["common.gain", "common.env"], (
+        this.addPatch(\track, ["common.gain", "common.env", "route.split"], (
             in: SFP("/Users/serj/work/music/sounds/pieces/shannon_tableau_bachiana.wav"),
-            env: Env.asr(releaseTime: params[\fadeTime])
+            env: Env.asr(releaseTime: params[\fadeTime]),
+            split_bus: 2
         ));
 
         onPlay = {
