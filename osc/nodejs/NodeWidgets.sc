@@ -518,6 +518,46 @@ NodeJS_TouchButton : NodeJS_Widget {
     }
 }
 
+NodeJS_Cursor : NodeJS_Widget {
+    var <x, <y;
+
+    *new {
+        ^super.new(\cursor).x_(0).y_(0);
+    }
+
+    sync {
+        this.command(\rel, [x, y]);
+    }
+
+    x_ { |pos|
+        pos = pos ? 0;
+        x = pos.asInteger;
+        this.sync;
+    }
+
+    y_ { |pos|
+        pos = pos ? 0;
+        y = pos.asInteger;
+        this.sync;
+    }
+
+    pos_ { |xPos, yPos|
+        xPos = xPos ? 0;
+        xPos = xPos.asInteger;
+        yPos = yPos ? 0;
+        yPos = yPos.asInteger;
+
+        x = xPos;
+        y = yPos;
+        this.sync;
+    }
+
+    blink {
+        arg flashTime = 100;
+        this.command(\pulse, flashTime);
+    }
+}
+
 NodeJS_Pianoroll : NodeJS_Widget {
     var <>onNote;
 
