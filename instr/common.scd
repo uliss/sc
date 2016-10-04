@@ -200,6 +200,19 @@ Instr("common.test_voice", {
 ],
 outSpec: AudioSpec(1));
 
+Instr("common.vu", {
+    arg in, vu_rate, vu_peak_lag, vu_id;
+    SendPeakRMS.kr(in, vu_rate, vu_peak_lag, "/common/vu", vu_id);
+    in;
+}, [
+    AudioSpec(),
+    [0, 20, \lin, 0, 5],
+    [0.1, 3, \lin, 0, 2],
+    [-1, 8192, \lin, 1, -1]
+],
+outSpec: AudioSpec()
+);
+
 Instr("common.simpleloop", {
 
 });

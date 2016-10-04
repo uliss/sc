@@ -558,6 +558,63 @@ NodeJS_Cursor : NodeJS_Widget {
     }
 }
 
+NodeJS_VU : NodeJS_Widget {
+    classvar dict;
+    var <>path;
+    var <>oscId;
+    var <>rms;
+    var <>peak;
+
+    *initClass { dict = Dictionary.new }
+
+    *new {
+        arg oscId, path = "/common/vu";
+        var listener, obj;
+
+        path = path.asSymbol;
+        listener = dict[path];
+        if(listener.isNil) {
+            listener = Dictionary.new;
+            dict[path] = listener;
+            listener[\subscribers] = List.new;
+            listener[\osc] = OSCFunc({|msg|
+                listener[\subscribers].do { |vu|
+                    if(vu.oscId == msg[2]) {
+                        vu.rms = msg[3];
+                        vu.peak = msg[4];
+                        vu.sync;
+                    }
+                };
+            }, path);
+            listener[\osc].permanent = true;
+        };
+
+        obj = super.new(\vu).oscId_(oscId).path_(path).rms_(0).peak_(0);
+        listener[\subscribers].add(obj);
+        CmdPeriod.add({ obj.rms = 0; obj.peak = 0; obj.sync });
+        ^obj;
+    }
+
+    sync {
+        this.command(\state, [rms, peak]);
+    }
+
+    free {
+        var listener;
+
+        super.free;
+        listener = this.class.dict[path];
+        if(listener.notNil) {
+            listener[\subscribers].do { |vu|
+                if(vu === this) {
+                    "found.".postln;
+                    listener[\subscribers] = nil;
+                }
+            }
+        }
+    }
+}
+
 NodeJS_Pianoroll : NodeJS_Widget {
     var <>onNote;
 
