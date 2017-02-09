@@ -8,7 +8,7 @@ Piece_Bergner_Palabras : GuidoPdfMusicPiece {
         arg params;
         var initTrack;
 
-        this.addPatch(\viola, ["common.in", "common.env", "common.pan2"], (in: 0));
+        this.addPatch(\viola, ["common.in", "common.env", "common.pan2", "common.freeverb2"], (in: 0));
 
         initTrack = {
             this.removePatch(\track);
@@ -76,7 +76,7 @@ Piece_Bergner_Palabras : GuidoPdfMusicPiece {
             this.addWidget(\violaPan, amp);
             this.bindW2P(\violaPan, \viola, \pan);
 
-       /*     // REVERB BOX
+            // REVERB BOX
             box = NodeJS_VBox.new.title_("viola reverb").borderColor_("#AAA").align_("left").hidden_(true);
             this.addWidget(\violaReverbBox, box);
 
@@ -92,25 +92,19 @@ Piece_Bergner_Palabras : GuidoPdfMusicPiece {
 
             damp = NodeJS_Knob.new(0.5, 0, 1).labelSize_(20).layout_(box).size_(70).label_("dump").hidden_(true);
             this.addWidget(\violaReverbDump, damp);
-            this.bindW2P(\violaReverbDump, \viola, \freeverb2_damp);*/
+            this.bindW2P(\violaReverbDump, \viola, \freeverb2_damp);
         }.value;
 
 
         {
-            var cursor = NodeJS_Widget.new(\cursor);
+            var cursor = NodeJS_Cursor.new;
             this.addWidget(\cursor, cursor);
 
-            this.addFunction(\cursor, {
-                arg ... args;
-                var x = args[0].asInteger;
-                var y = args[1].asInteger;
-                // args.postln;
-                cursor.command(\rel, [x, y])
+            this.addFunction(\cursor, { |x, y|
+                cursor.pos_(x, y);
             });
 
-            this.addFunction(\pulse, {
-                cursor.command(\pulse, 1);
-            });
+            this.addFunction(\pulse, { cursor.blink });
         }.value;
 
         360.do {|i|
