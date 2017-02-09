@@ -1,6 +1,6 @@
-Piece_Davidson_Spiral : GuidoSheetMusicPiece {
+Piece_Davidson_Spiral : GuidoPdfMusicPiece {
     *new {
-        ^super.new(this.scoresDir +/+ "Robert Davidson Spiral.pdf", "Spiral", "Robert Davidson", "/sc/spiral").loadParams;
+        ^super.new(this.scoresDir +/+ "Robert Davidson Spiral.pdf", "Spiral", "Robert Davidson", "/spiral").loadParams.loadTasks;
     }
 
     resetPatch {
@@ -146,13 +146,5 @@ Piece_Davidson_Spiral : GuidoSheetMusicPiece {
         }.value;
 
         this.addMonitorWidget;
-    }
-
-    syncTitle {
-        NodeJS.sendMsg("/node/title", "");
-    }
-
-    initPageTurns {
-        this.loadPageTurns(this.class.turnsDir +/+ "davidson_spiral.txt");
     }
 }
