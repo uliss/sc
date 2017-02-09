@@ -531,7 +531,7 @@ GuidoPieceApp : GuidoAbstractApp {
         ^box;
     }
 
-     addHBox {
+    addHBox {
         arg title;
         var box = NodeJS_HBox.new.title_(title).borderColor_("#AAA").align_("left");
         this.addWidget((title ++ "Box").asSymbol, box);
