@@ -1,6 +1,6 @@
-Piece_Mazzoli_Tooth_and_Nail : GuidoSheetMusicPiece {
+Piece_Mazzoli_Tooth_and_Nail : GuidoPdfMusicPiece {
     *new {
-        ^super.new("/Users/serj/work/music/sc/concerts/pieces/scores/Missy Mazzoli Tooth and Nail.pdf", "Tooth and Nail", "Missy Mazzoli", "/sc/mazzoli").loadParams;
+        ^super.new("/Users/serj/work/music/sc/concerts/pieces/scores/Missy Mazzoli Tooth and Nail.pdf", "Tooth and Nail", "Missy Mazzoli", "/sc/mazzoli").loadParams.loadTasks;
     }
 
     resetPatch {
@@ -13,9 +13,9 @@ Piece_Mazzoli_Tooth_and_Nail : GuidoSheetMusicPiece {
 
     initPatches {
         this.resetPatch;
+
         onPlay = {
             this.resetPatch;
-            this.syncPatchesParams;
             this.startMonitor(0.4);
             this.playPatches;
         };
@@ -90,13 +90,5 @@ Piece_Mazzoli_Tooth_and_Nail : GuidoSheetMusicPiece {
         }.value;
 
         this.addMonitorWidget;
-    }
-
-    syncTitle {
-        NodeJS.sendMsg("/node/title", "");
-    }
-
-    initPageTurns {
-        this.loadPageTurns(this.class.turnsDir +/+ "mazzoli_tooth_and_nail.txt");
     }
 }

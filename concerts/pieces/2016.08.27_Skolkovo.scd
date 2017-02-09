@@ -4,6 +4,7 @@ ServerBoot.add({NodeJS.restart}, \default);
 {s.boot}.defer(2);
 )
 
+NodeJS.open
 NodeJS.redirect("/piece")
 NodeJS.reload
 NodeJS.verbose(true)

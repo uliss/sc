@@ -24,6 +24,7 @@ GuidoPieceApp : GuidoAbstractApp {
         if(instance.notNil) { ^instance };
 
         instance = super.new(oscPath, "/piece", true).title_(title).composer_(composer).initPiece(params);
+        instance.phonesChannel = 4;
         Library.put(\piece, composer.asSymbol, title.asSymbol, instance);
         ^instance;
     }
@@ -60,13 +61,13 @@ GuidoPieceApp : GuidoAbstractApp {
     startMonitor {
         arg amp = 1;
         monitor.play(0, 2, phonesChannel, 2, volume: amp, fadeTime: 0.5);
-        widgets[\monitorToggle].value = 1;
-        widgets[\monitorAmp].value = amp;
+        widgets[\monitor_mute].value = 1;
+        widgets[\monitor_vol].value = amp;
     }
 
     stopMonitor {
         monitor.stop;
-        widgets[\monitorToggle].value = 0;
+        widgets[\monitor_mute].value = 0;
     }
 
     initPiece {
